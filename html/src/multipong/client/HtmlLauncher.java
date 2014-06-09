@@ -7,13 +7,15 @@ import multipong.Multipong;
 
 public class HtmlLauncher extends GwtApplication {
 
-        @Override
-        public GwtApplicationConfiguration getConfig () {
-                return new GwtApplicationConfiguration(480, 320);
-        }
+	@Override
+	public GwtApplicationConfiguration getConfig() {
+		GwtApplicationConfiguration cfg = new GwtApplicationConfiguration(800,
+				480);
+		return cfg;
+	}
 
-        @Override
-        public ApplicationListener getApplicationListener () {
-                return new Multipong();
-        }
+	@Override
+	public ApplicationListener getApplicationListener() {
+		return new Multipong();
+	}
 }
