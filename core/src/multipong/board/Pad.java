@@ -5,8 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Pad extends BoundedRectangle {
 
 	static final float ACCELERATION = 1000f;
-	static final float MAX_VEL = 300f;
-	static final float DAMP = 0.1f;
+	static final float MAX_VEL = 500f;
 
 	Vector2 start = new Vector2();
 	Vector2 accel = new Vector2();

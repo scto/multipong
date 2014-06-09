@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Ball extends BoundedRectangle {
 
 	static final float ACCELERATION = 100f;
-	static final float MAX_VEL = 10f;
+	static final float MAX_VEL = 2000f;
 	static final float DAMP = 0.90f;
 
 	Vector2 start = new Vector2();
@@ -49,6 +49,11 @@ public class Ball extends BoundedRectangle {
 		vel.y = -vel.y;
 	}
 
+	public void dampen() {
+		vel.y *= DAMP;
+		vel.x *= DAMP;
+	}
+
 	public void reset(float startingXDirection) {
 		accel.x = 0;
 		accel.y = 0;
@@ -64,6 +69,15 @@ public class Ball extends BoundedRectangle {
 		vel.add(accel.x, accel.y);
 	}
 
+	private void checkVelocity() {
+		float velTot = vel.len();
+		if (velTot > MAX_VEL) {
+			float downScale = MAX_VEL / velTot;
+			vel.x *= downScale;
+			vel.y *= downScale;
+		}
+	}
+
 	public void update(float deltaTime) {
 		accel.scl(deltaTime);
 		vel.add(accel.x, accel.y);
@@ -74,6 +88,8 @@ public class Ball extends BoundedRectangle {
 		bounds.y += vel.y;
 
 		vel.scl(1.0f / deltaTime);
+
+		checkVelocity();
 
 		stateTime += deltaTime;
 

@@ -51,6 +51,7 @@ public class BoardState {
 	private void generateBall(float x, float y, float width, float height) {
 		float ballSize = width * 0.010f;
 		float ballStartingXDirection = (MathUtils.random(0, 1) != 1) ? -1f : 1f;
+
 		ball = new Ball(x + width / 2, y + height / 2, ballSize,
 				ballStartingXDirection);
 	}
@@ -69,6 +70,7 @@ public class BoardState {
 			float height) {
 		float playerScoreXoffset = width / 4;
 		float playerScoreYoffset = height / 10;
+
 		leftPlayerScore = new Vector2(x + playerScoreXoffset, y
 				+ playerScoreYoffset);
 		rightPlayerScore = new Vector2(x + playerScoreXoffset * 3, y
@@ -77,12 +79,15 @@ public class BoardState {
 
 	private void generateSeparator(float x, float y, float width, float height) {
 		float separatorAmount = 32;
-		float separatorXoffset = width / 2;
-		separatorLength = height / ((separatorAmount * 2) - 1);
+		separatorLength = height / (separatorAmount * 4);
 		separatorPos = new Vector2[(int) separatorAmount];
+
+		float xOffset = x + width / 2;
+		float yStep = (height - separatorLength) / (separatorAmount - 1);
+
 		for (int i = 0; i < separatorAmount; i++) {
-			separatorPos[i] = new Vector2(x + separatorXoffset, y
-					+ separatorLength * i * 2);
+
+			separatorPos[i] = new Vector2(xOffset, y + i * yStep);
 		}
 	}
 

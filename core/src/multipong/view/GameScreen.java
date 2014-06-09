@@ -68,10 +68,10 @@ public class GameScreen extends AbstractGameScreen {
 
 		deltaTime = Math.min(0.06f, Gdx.graphics.getDeltaTime());
 
-		BoardEvaluator.update(match1, deltaTime);
-		BoardEvaluator.update(match2, deltaTime);
-		BoardEvaluator.update(match3, deltaTime);
-		BoardEvaluator.update(match4, deltaTime);
+		BoardEvaluator.evaluate(match1, deltaTime);
+		BoardEvaluator.evaluate(match2, deltaTime);
+		BoardEvaluator.evaluate(match3, deltaTime);
+		BoardEvaluator.evaluate(match4, deltaTime);
 
 		renderer1.render(deltaTime);
 		renderer2.render(deltaTime);
