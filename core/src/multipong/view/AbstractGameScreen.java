@@ -3,11 +3,11 @@ package multipong.view;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 
-public abstract class PongScreen implements Screen {
+public abstract class AbstractGameScreen implements Screen {
 
 	Game game;
 
-	public PongScreen(Game game) {
+	public AbstractGameScreen(Game game) {
 		this.game = game;
 	}
 

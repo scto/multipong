@@ -1,4 +1,4 @@
-package multipong;
+package multipong.board;
 
 import com.badlogic.gdx.math.Rectangle;
 

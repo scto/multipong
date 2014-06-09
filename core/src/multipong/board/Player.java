@@ -1,4 +1,4 @@
-package multipong;
+package multipong.board;
 
 public class Player {
 

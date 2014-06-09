@@ -1,26 +1,27 @@
 package multipong.view;
 
-import multipong.Board;
-import multipong.BoardRenderer;
-import multipong.Player;
+import multipong.board.BoardEvaluator;
+import multipong.board.BoardRenderer;
+import multipong.board.BoardState;
+import multipong.board.Player;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 
-public class GameScreen extends PongScreen {
+public class GameScreen extends AbstractGameScreen {
 
-	Board match1;
+	BoardState match1;
 	BoardRenderer renderer1;
 
-	Board match2;
+	BoardState match2;
 	BoardRenderer renderer2;
 
-	Board match3;
+	BoardState match3;
 	BoardRenderer renderer3;
 
-	Board match4;
+	BoardState match4;
 	BoardRenderer renderer4;
 
 	int x, y, width, height, bWidth, bHeight;
@@ -48,13 +49,11 @@ public class GameScreen extends PongScreen {
 		Player player6 = new Player("player6", 0, Keys.U, Keys.J);
 		Player player7 = new Player("player7", 0, Keys.I, Keys.K);
 
-		match1 = new Board(0, 0, bWidth, bHeight, player0, player1);
-
-		match2 = new Board(bWidth, 0, bWidth, bHeight, player2, player3);
-
-		match3 = new Board(0, bHeight, bWidth, bHeight, player4, player5);
-
-		match4 = new Board(bWidth, bHeight, bWidth, bHeight, player6, player7);
+		match1 = new BoardState(0, 0, bWidth, bHeight, player0, player1);
+		match2 = new BoardState(bWidth, 0, bWidth, bHeight, player2, player3);
+		match3 = new BoardState(0, bHeight, bWidth, bHeight, player4, player5);
+		match4 = new BoardState(bWidth, bHeight, bWidth, bHeight, player6,
+				player7);
 
 		renderer1 = new BoardRenderer(match1);
 		renderer2 = new BoardRenderer(match2);
@@ -69,10 +68,10 @@ public class GameScreen extends PongScreen {
 
 		deltaTime = Math.min(0.06f, Gdx.graphics.getDeltaTime());
 
-		match1.update(deltaTime);
-		match2.update(deltaTime);
-		match3.update(deltaTime);
-		match4.update(deltaTime);
+		BoardEvaluator.update(match1, deltaTime);
+		BoardEvaluator.update(match2, deltaTime);
+		BoardEvaluator.update(match3, deltaTime);
+		BoardEvaluator.update(match4, deltaTime);
 
 		renderer1.render(deltaTime);
 		renderer2.render(deltaTime);
