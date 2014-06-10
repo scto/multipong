@@ -4,15 +4,14 @@ import com.badlogic.gdx.Gdx;
 
 public class BoardEvaluator {
 
-	public static void evaluate(BoardState data, float deltaTime) {
+	public static boolean evaluate(BoardState data, float deltaTime) {
+		parseInput(data);
+		updateState(data, deltaTime);
+
 		checkBallHit(data);
 		checkPadBounds(data);
 		checkBallBounce(data);
-		checkBallWin(data);
-
-		parseInput(data);
-
-		updateState(data, deltaTime);
+		return roundIsWon(data);
 
 	}
 
@@ -47,20 +46,23 @@ public class BoardEvaluator {
 
 	}
 
-	private static void checkBallWin(BoardState data) {
+	private static boolean roundIsWon(BoardState data) {
 		if (data.ball.getRight() >= data.field.getRight()) {
 
 			data.ball.bounds.x = data.field.getRight()
 					- data.ball.bounds.getWidth();
 			data.ball.reset(1);
 			data.leftPlayer.incrementScore();
+			return true;
 
 		} else if (data.ball.getLeft() <= data.field.getLeft()) {
 
 			data.ball.bounds.x = data.field.getLeft();
 			data.ball.reset(-1);
 			data.rightPlayer.incrementScore();
+			return true;
 		}
+		return false;
 	}
 
 	private static void checkPadBounds(BoardState data) {
@@ -82,7 +84,6 @@ public class BoardEvaluator {
 	}
 
 	private static void parseInput(BoardState data) {
-
 		parseInput(data.leftPlayer.downKey, data.leftPlayer.upKey,
 				data.leftPlayerPad);
 		parseInput(data.rightPlayer.downKey, data.rightPlayer.upKey,

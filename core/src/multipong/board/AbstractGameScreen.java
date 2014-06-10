@@ -1,4 +1,4 @@
-package multipong.view;
+package multipong.board;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;

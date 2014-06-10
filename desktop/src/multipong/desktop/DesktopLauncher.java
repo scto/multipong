@@ -1,5 +1,7 @@
 package multipong.desktop;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
@@ -12,5 +14,6 @@ public class DesktopLauncher {
 		cfg.width = 800;
 		cfg.height = 480;
 		new LwjglApplication(new Multipong(), cfg);
+		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 	}
 }

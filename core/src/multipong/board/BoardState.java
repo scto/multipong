@@ -33,11 +33,7 @@ public class BoardState {
 	 * @param height
 	 *            Board height
 	 */
-	public BoardState(float x, float y, float width, float height,
-			Player leftPlayer, Player rightPlayer) {
-
-		this.leftPlayer = leftPlayer;
-		this.rightPlayer = rightPlayer;
+	public BoardState(float x, float y, float width, float height) {
 
 		generatePads(x, y, width, height);
 		generateSeparator(x, y, width, height);
@@ -46,6 +42,15 @@ public class BoardState {
 		generateField(x, y, width, height);
 		generateBall(x, y, width, height);
 
+	}
+
+	public BoardState() {
+
+	}
+
+	public void setPlayers(Player leftPlayer, Player rightPlayer) {
+		this.leftPlayer = leftPlayer;
+		this.rightPlayer = rightPlayer;
 	}
 
 	private void generateBall(float x, float y, float width, float height) {
