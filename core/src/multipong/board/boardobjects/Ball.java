@@ -1,4 +1,4 @@
-package multipong.board;
+package multipong.board.boardobjects;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -54,7 +54,15 @@ public class Ball extends BoundedRectangle {
 		vel.x *= DAMP;
 	}
 
-	public void reset(float startingXDirection) {
+	public void resetWithLeftPlayerDirection() {
+		reset(-1);
+	}
+
+	public void resetWithRightPlayerDirection() {
+		reset(1);
+	}
+
+	private void reset(float startingXDirection) {
 		accel.x = 0;
 		accel.y = 0;
 		vel.x = 0;

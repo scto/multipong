@@ -1,35 +1,43 @@
-package multipong.board;
+package multipong.screens;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import multipong.board.BoardRenderer;
+import multipong.match.Match;
+import multipong.matchhandlers.DropInMatchHandler;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
-public class MainScreen extends AbstractGameScreen {
+public class MainScreen implements Screen {
 
-	int width, height;
+	int appWidth, appHeight;
 
 	List<KeyMap> availableKeyMaps;
 
-	BoardHandler handler;
+	DropInMatchHandler handler;
 
 	BoardRenderer renderer;
 
-	public MainScreen(Game game, int width, int height) {
-		super(game);
-		this.width = width;
-		this.height = height;
+	Game game;
+
+	public MainScreen(Game game, int appWidth, int appHeight) {
+		this.appWidth = appWidth;
+		this.appHeight = appHeight;
+		this.game = game;
 
 		availableKeyMaps = loadKeyMaps();
 
-		handler = new BoardHandler(width, height);
-		renderer = new BoardRenderer(width, height, handler.visibleBoards);
+		handler = new DropInMatchHandler(appWidth, appHeight);
+		renderer = new BoardRenderer(appWidth, appHeight,
+				handler.getVisibleMatches());
 
-		Board firstBoard = new Board(0, 0, width, height);
-		handler.addBoard(firstBoard);
+		Match firstBoard = new Match(0, 0, appWidth, appHeight);
+		handler.addMatch(firstBoard);
 
 		Gdx.app.debug("First board", firstBoard.toString());
 	}
@@ -41,24 +49,19 @@ public class MainScreen extends AbstractGameScreen {
 
 		deltaTime = Math.min(0.06f, Gdx.graphics.getDeltaTime());
 
-		KeyMap newPlayerKeys = getNewPlayerKeys();
+		KeyMap newPlayerKeys = getPressedKeyMap();
 
 		if (newPlayerKeys != null) {
 			handler.addNewPlayer(newPlayerKeys);
 		}
-		handler.showHiddenBoards();
-		handler.updateBoards(deltaTime);
+		handler.showBoardsOfHiddenMatches();
+		handler.updateBoardsOfVisibleMatches(deltaTime);
 
 		renderer.render(deltaTime);
 
 	}
 
-	@Override
-	public void show() {
-
-	}
-
-	private KeyMap getNewPlayerKeys() {
+	private KeyMap getPressedKeyMap() {
 		for (KeyMap keys : availableKeyMaps) {
 			if (Gdx.input.isKeyPressed(keys.enterKey)) {
 				// TODO: simultaneous press possible, use a list probably
@@ -67,11 +70,6 @@ public class MainScreen extends AbstractGameScreen {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public void hide() {
-		renderer.dispose();
 	}
 
 	private static List<KeyMap> loadKeyMaps() {
@@ -97,5 +95,39 @@ public class MainScreen extends AbstractGameScreen {
 		availableKeyMaps.add(new KeyMap(Keys.RIGHT_BRACKET, Keys.ENTER,
 				Keys.EQUALS));
 		return availableKeyMaps;
+	}
+
+	@Override
+	public void hide() {
+		renderer.dispose();
+	}
+
+	@Override
+	public void dispose() {
+		renderer.dispose();
+		game.dispose();
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void show() {
+
 	}
 }

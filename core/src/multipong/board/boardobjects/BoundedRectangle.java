@@ -1,10 +1,10 @@
-package multipong.board;
+package multipong.board.boardobjects;
 
 import com.badlogic.gdx.math.Rectangle;
 
 public abstract class BoundedRectangle {
 
-	Rectangle bounds;
+	public Rectangle bounds;
 
 	public BoundedRectangle(float x, float y, float width, float height) {
 		bounds = new Rectangle(x, y, width, height);

@@ -1,4 +1,4 @@
-package multipong.board;
+package multipong.board.boardobjects;
 
 public class Field extends BoundedRectangle {
 

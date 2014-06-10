@@ -1,13 +1,13 @@
-package multipong.board;
+package multipong.board.boardobjects;
 
 public class Player {
 
-	String name;
+	public String name;
 	int padGfx;
-	int score = 0;
+	public int score = 0;
 
-	int upKey;
-	int downKey;
+	public int upKey;
+	public int downKey;
 
 	public Player(String name, int padGfx, int upKey, int downKey) {
 		super();
@@ -20,10 +20,6 @@ public class Player {
 
 	public void incrementScore() {
 		score++;
-	}
-
-	public int getScore() {
-		return score;
 	}
 
 	public void update(float deltaTime) {

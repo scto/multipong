@@ -1,82 +1,119 @@
 package multipong.board;
 
+import multipong.board.boardobjects.Ball;
+import multipong.board.boardobjects.Field;
+import multipong.board.boardobjects.Pad;
+import multipong.board.boardobjects.Player;
+
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+
 public class Board {
 
+	Vector2[] separatorPos;
+	float separatorLength;
+
 	Player leftPlayer;
+	Pad leftPlayerPad;
+	Vector2 leftPlayerScore;
+	Vector2 leftPlayerName;
+
 	Player rightPlayer;
+	Pad rightPlayerPad;
+	Vector2 rightPlayerScore;
+	Vector2 rightPlayerName;
 
-	public BoardState state;
+	Field field;
+	public Ball ball;
 
-	boolean paused = true;
+	public int stateTime = 0;
+	private float x, y, width, height;
 
-	boolean pauseWhenRoundWon = false;
+	/**
+	 * 
+	 * @param x
+	 *            Screen x-coordinate of board
+	 * @param y
+	 *            Screen y-coordinate of board
+	 * @param width
+	 *            Board width
+	 * @param height
+	 *            Board height
+	 */
+	public Board(float x, float y, float width, float height) {
 
-	int winScore = 5000;
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+
+		createPads();
+		createSeparator();
+		createScorePositions();
+		createPlayerNamePositions();
+		createField();
+		createBall();
+	}
 
 	public Board() {
-		state = new BoardState();
-	}
-
-	public Board(float x, float y, float width, float height) {
-		recalculateBoardGeometry(x, y, width, height);
-	}
-
-	public void recalculateBoardGeometry(float x, float y, float width,
-			float height) {
-		// TODO: maybe set pads to previous place if applicable...
-		state = new BoardState(x, y, width, height);
-		state.setPlayers(leftPlayer, rightPlayer);
 
 	}
 
-	public boolean isPlayable() {
-		return state != null && leftPlayer != null && rightPlayer != null;
+	public void setPlayers(Player leftPlayer, Player rightPlayer) {
+		this.leftPlayer = leftPlayer;
+		this.rightPlayer = rightPlayer;
 	}
 
-	public boolean hasFirstPlayer() {
-		return leftPlayer != null;
+	private void createBall() {
+		float ballSize = width * 0.010f;
+		float ballStartingXDirection = (MathUtils.random(0, 1) != 1) ? -1f : 1f;
+
+		ball = new Ball(x + width / 2, y + height / 2, ballSize,
+				ballStartingXDirection);
 	}
 
-	public boolean hasChallanger() {
-		return rightPlayer != null;
+	private void createField() {
+		field = new Field(x, y, width, height);
 	}
 
-	public boolean isFinished() {
-		return (leftPlayer.score == winScore || rightPlayer.score == winScore);
+	private void createPlayerNamePositions() {
+		leftPlayerName = new Vector2(x, y);
+		rightPlayerName = new Vector2(x + width / 2, y);
 	}
 
-	public void addFirstPlayer(KeyMap firstPlayerKeyMap) {
-		leftPlayer = new Player("player0", 0, firstPlayerKeyMap.upKey,
-				firstPlayerKeyMap.downKey);
+	private void createScorePositions() {
+		float playerScoreXoffset = width / 4;
+		float playerScoreYoffset = height / 10;
+
+		leftPlayerScore = new Vector2(x + playerScoreXoffset, y
+				+ playerScoreYoffset);
+		rightPlayerScore = new Vector2(x + playerScoreXoffset * 3, y
+				+ playerScoreYoffset);
 	}
 
-	public void addChallanger(KeyMap secondPlayerKeyMap) {
-		rightPlayer = new Player("player1", 0, secondPlayerKeyMap.upKey,
-				secondPlayerKeyMap.downKey);
-		state.setPlayers(leftPlayer, rightPlayer);
-		paused = true;
-	}
+	private void createSeparator() {
+		float separatorAmount = 32;
+		separatorLength = height / (separatorAmount * 4);
+		separatorPos = new Vector2[(int) separatorAmount];
 
-	public void pauseWhenRoundWon() {
-		pauseWhenRoundWon = true;
-	}
+		float xOffset = x + width / 2;
+		float yStep = (height - separatorLength) / (separatorAmount - 1);
 
-	public void resume() {
-		pauseWhenRoundWon = false;
-		paused = false;
-	}
+		for (int i = 0; i < separatorAmount; i++) {
 
-	public boolean isPaused() {
-		return paused;
-	}
-
-	public void update(float deltaTime) {
-		if (!paused) {
-			boolean roundIsWon = BoardEvaluator.evaluate(state, deltaTime);
-			if (roundIsWon && pauseWhenRoundWon) {
-				paused = true;
-			}
+			separatorPos[i] = new Vector2(xOffset, y + i * yStep);
 		}
 	}
 
+	private void createPads() {
+		float padHeight = height * 0.055f;
+		float padWidth = width * 0.020f;
+		float padXoffset = width * 0.16f;
+		float padYoffset = (height - padHeight) / 2f;
+
+		leftPlayerPad = new Pad(x + padXoffset, y + padYoffset, padWidth,
+				padHeight);
+		rightPlayerPad = new Pad(x + width - padXoffset - padWidth, y
+				+ padYoffset, padWidth, padHeight);
+	}
 }

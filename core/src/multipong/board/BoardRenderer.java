@@ -2,6 +2,8 @@ package multipong.board;
 
 import java.util.List;
 
+import multipong.match.Match;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -12,7 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class BoardRenderer {
 
-	List<Board> boards;
+	List<Match> visibleMatches;
 	BitmapFont font;
 	SpriteBatch batch = new SpriteBatch();
 	ShapeRenderer renderer = new ShapeRenderer();
@@ -20,26 +22,27 @@ public class BoardRenderer {
 
 	float stateTime = 0;
 
-	public BoardRenderer(int width, int height, List<Board> boards) {
-		this.boards = boards;
+	public BoardRenderer(int appWidth, int appHeight, List<Match> visibleMatches) {
+		this.visibleMatches = visibleMatches;
 
 		font = new BitmapFont(true);
 
-		camera = new OrthographicCamera(width, height);
+		camera = new OrthographicCamera(appWidth, appHeight);
 		camera.setToOrtho(true);
-		camera.position.set(width / 2, height / 2, 0);
+		camera.position.set(appWidth / 2, appHeight / 2, 0);
 		camera.update();
 	}
 
 	public void render(float deltaTime) {
-		for (Board board : boards) {
 
-			if (!board.isPlayable()) {
+		for (Match match : visibleMatches) {
+
+			if (!match.isPlayable()) {
 				continue;
 			}
 
 			camera.update();
-			BoardState state = board.state;
+			Board state = match.board;
 
 			renderer.setProjectionMatrix(camera.combined);
 			batch.setProjectionMatrix(camera.combined);

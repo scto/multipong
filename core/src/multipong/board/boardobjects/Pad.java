@@ -1,4 +1,4 @@
-package multipong.board;
+package multipong.board.boardobjects;
 
 import com.badlogic.gdx.math.Vector2;
 
