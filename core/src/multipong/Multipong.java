@@ -1,6 +1,6 @@
 package multipong;
 
-import multipong.board.GameScreen;
+import multipong.board.MainScreen;
 
 import com.badlogic.gdx.Game;
 
@@ -11,7 +11,7 @@ public class Multipong extends Game {
 
 	@Override
 	public void create() {
-		setScreen(new GameScreen(this, SCREEN_WIDTH, SCREEN_HEIGHT));
+		setScreen(new MainScreen(this, SCREEN_WIDTH, SCREEN_HEIGHT));
 	}
 
 	@Override

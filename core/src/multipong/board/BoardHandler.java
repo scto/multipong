@@ -3,63 +3,34 @@ package multipong.board;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.GL20;
 
-public class GameScreen extends AbstractGameScreen {
+public class BoardHandler {
+	List<Board> visibleBoards = new ArrayList<Board>();
+	List<Board> hiddenBoards = new ArrayList<Board>();
 
 	int width, height;
 
-	List<KeyMap> availableKeyMaps;
-
-	List<Board> shownBoards = new ArrayList<Board>();
-	List<Board> hiddenBoards = new ArrayList<Board>();
-
-	BoardRenderer renderer;
-
-	public GameScreen(Game game, int width, int height) {
-		super(game);
+	public BoardHandler(int width, int height) {
 		this.width = width;
 		this.height = height;
-
-		renderer = new BoardRenderer(width, height, shownBoards);
-
-		availableKeyMaps = loadKeyMaps();
-
-		Board firstBoard = new Board(0, 0, width, height);
-		shownBoards.add(firstBoard);
-		Gdx.app.debug("First board", firstBoard.toString());
 	}
 
-	@Override
-	public void render(float deltaTime) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		deltaTime = Math.min(0.06f, Gdx.graphics.getDeltaTime());
-
-		KeyMap newPlayerKeys = getNewPlayerKeys();
-
-		if (newPlayerKeys != null) {
-			addNewPlayer(newPlayerKeys);
+	public void addBoard(Board board) {
+		if (visibleBoards.isEmpty()) {
+			visibleBoards.add(board);
+		} else {
+			hiddenBoards.add(board);
 		}
+	}
 
-		if (!hiddenBoards.isEmpty() && allBoardsArePaused()) {
-			showHiddenBoards();
-			resumeAllPlayableBoards();
-		}
-
-		for (Board board : shownBoards) {
+	public void updateBoards(float deltaTime) {
+		for (Board board : visibleBoards) {
 			board.update(deltaTime);
 		}
-
-		renderer.render(deltaTime);
-
 	}
 
-	private void addNewPlayer(KeyMap newPlayerKeys) {
+	public void addNewPlayer(KeyMap newPlayerKeys) {
 
 		Board boardWithoutChallanger = getBoardWithoutChallanger();
 
@@ -72,7 +43,7 @@ public class GameScreen extends AbstractGameScreen {
 
 			// Unpause the board if it is visible, otherwise, set all boards to
 			// pause when current rounds are finished.
-			if (shownBoards.contains(boardWithoutChallanger)) {
+			if (visibleBoards.contains(boardWithoutChallanger)) {
 				boardWithoutChallanger.resume();
 				Gdx.app.debug("Board without challanger is a shown board",
 						boardWithoutChallanger.toString());
@@ -101,22 +72,30 @@ public class GameScreen extends AbstractGameScreen {
 		hiddenBoards.add(hiddenBoard);
 
 		// There must be an even number of boards.
-		int totalAmountBoards = shownBoards.size() + hiddenBoards.size();
+		int totalAmountBoards = visibleBoards.size() + hiddenBoards.size();
 		if (totalAmountBoards > 1 && (totalAmountBoards % 2) != 0) {
 			hiddenBoards.add(new Board());
 			Gdx.app.debug("Added extra hidden board", hiddenBoard.toString());
 		}
 
+
+	}
+	
+	public void showHiddenBoards() {
+		if (!hiddenBoards.isEmpty() && allBoardsArePaused()) {
+			recalculateAndShowBoards();
+			resumeAllPlayableBoards();
+		}
 	}
 
-	private void showHiddenBoards() {
+	private void recalculateAndShowBoards() {
 		// recalc boards
-		shownBoards.addAll(hiddenBoards);
+		visibleBoards.addAll(hiddenBoards);
 		hiddenBoards.clear();
 
 		List<Board> recalculatedBoards = new ArrayList<Board>();
 
-		int amountBoards = shownBoards.size();
+		int amountBoards = visibleBoards.size();
 
 		int rows = (amountBoards > 2) ? 2 : 1;
 		int columns;
@@ -136,12 +115,12 @@ public class GameScreen extends AbstractGameScreen {
 
 		for (int y = 0; y < rows; y++) {
 			for (int x = 0; x < columns; x++) {
-				if (shownBoards.isEmpty()) {
+				if (visibleBoards.isEmpty()) {
 					break;
 				}
 
-				Board currentBoard = shownBoards.get(0);
-				shownBoards.remove(0);
+				Board currentBoard = visibleBoards.get(0);
+				visibleBoards.remove(0);
 				currentBoard.recalculateBoardGeometry(x * boardWidth, y
 						* boardHeight, boardWidth, boardHeight);
 
@@ -151,26 +130,11 @@ public class GameScreen extends AbstractGameScreen {
 				recalculatedBoards.add(currentBoard);
 			}
 		}
-		shownBoards.addAll(recalculatedBoards);
-	}
-
-	@Override
-	public void show() {
-	}
-
-	private KeyMap getNewPlayerKeys() {
-		for (KeyMap keys : availableKeyMaps) {
-			if (Gdx.input.isKeyPressed(keys.enterKey)) {
-				// TODO: simultaneous press possible, use a list probably
-				availableKeyMaps.remove(keys);
-				return keys;
-			}
-		}
-		return null;
+		visibleBoards.addAll(recalculatedBoards);
 	}
 
 	private Board getEmptyBoard() {
-		for (Board board : shownBoards) {
+		for (Board board : visibleBoards) {
 			if (!board.hasFirstPlayer()) {
 				return board;
 			}
@@ -184,7 +148,7 @@ public class GameScreen extends AbstractGameScreen {
 	}
 
 	private Board getBoardWithoutChallanger() {
-		for (Board board : shownBoards) {
+		for (Board board : visibleBoards) {
 			if (board.hasFirstPlayer() && !board.hasChallanger()) {
 				return board;
 			}
@@ -198,7 +162,7 @@ public class GameScreen extends AbstractGameScreen {
 	}
 
 	private boolean allBoardsArePaused() {
-		for (Board board : shownBoards) {
+		for (Board board : visibleBoards) {
 			if (!board.isPaused()) {
 				return false;
 			}
@@ -207,46 +171,16 @@ public class GameScreen extends AbstractGameScreen {
 	}
 
 	private void pauseAllBoardsWhenRoundWon() {
-		for (Board board : shownBoards) {
+		for (Board board : visibleBoards) {
 			board.pauseWhenRoundWon();
 		}
 	}
 
 	private void resumeAllPlayableBoards() {
-		for (Board board : shownBoards) {
+		for (Board board : visibleBoards) {
 			if (board.isPlayable()) {
 				board.resume();
 			}
 		}
-	}
-
-	@Override
-	public void hide() {
-		renderer.dispose();
-	}
-
-	private static List<KeyMap> loadKeyMaps() {
-		List<KeyMap> availableKeyMaps = new ArrayList<KeyMap>();
-
-		availableKeyMaps.add(new KeyMap(Keys.Q, Keys.A, Keys.NUM_1));
-		availableKeyMaps.add(new KeyMap(Keys.W, Keys.S, Keys.NUM_2));
-
-		availableKeyMaps.add(new KeyMap(Keys.E, Keys.D, Keys.NUM_3));
-		availableKeyMaps.add(new KeyMap(Keys.R, Keys.F, Keys.NUM_4));
-
-		availableKeyMaps.add(new KeyMap(Keys.T, Keys.G, Keys.NUM_5));
-		availableKeyMaps.add(new KeyMap(Keys.Y, Keys.H, Keys.NUM_6));
-
-		availableKeyMaps.add(new KeyMap(Keys.U, Keys.J, Keys.NUM_7));
-		availableKeyMaps.add(new KeyMap(Keys.I, Keys.K, Keys.NUM_8));
-
-		availableKeyMaps.add(new KeyMap(Keys.O, Keys.L, Keys.NUM_9));
-		availableKeyMaps.add(new KeyMap(Keys.P, Keys.COLON, Keys.NUM_0));
-
-		availableKeyMaps.add(new KeyMap(Keys.LEFT_BRACKET, Keys.APOSTROPHE,
-				Keys.MINUS));
-		availableKeyMaps.add(new KeyMap(Keys.RIGHT_BRACKET, Keys.ENTER,
-				Keys.EQUALS));
-		return availableKeyMaps;
 	}
 }
