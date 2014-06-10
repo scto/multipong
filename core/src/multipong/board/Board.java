@@ -10,20 +10,20 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Board {
 
-	Vector2[] separatorPos;
-	float separatorLength;
+	public Vector2[] separatorPos;
+	public float separatorLength;
 
-	Player leftPlayer;
-	Pad leftPlayerPad;
-	Vector2 leftPlayerScore;
-	Vector2 leftPlayerName;
+	public Player leftPlayer;
+	public Pad leftPlayerPad;
+	public Vector2 leftPlayerScore;
+	public Vector2 leftPlayerName;
 
-	Player rightPlayer;
-	Pad rightPlayerPad;
-	Vector2 rightPlayerScore;
-	Vector2 rightPlayerName;
+	public Player rightPlayer;
+	public Pad rightPlayerPad;
+	public Vector2 rightPlayerScore;
+	public Vector2 rightPlayerName;
 
-	Field field;
+	public Field field;
 	public Ball ball;
 
 	public int stateTime = 0;

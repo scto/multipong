@@ -27,7 +27,7 @@ public class DropInMatchHandler {
 		}
 	}
 
-	public void updateBoardsOfVisibleMatches(float deltaTime) {
+	public void updateBoardsInVisibleMatches(float deltaTime) {
 		for (Match match : getVisibleMatches()) {
 			match.update(deltaTime);
 		}
@@ -84,7 +84,7 @@ public class DropInMatchHandler {
 
 	}
 
-	public void showBoardsOfHiddenMatches() {
+	public void showBoardsInHiddenMatches() {
 		if (!hiddenMatches.isEmpty() && allVisibleMatchesArePaused()) {
 			recalculateAndShowBoards();
 			resumeAllPlayableMatches();
