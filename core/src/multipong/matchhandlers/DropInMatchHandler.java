@@ -46,7 +46,7 @@ public class DropInMatchHandler {
 			// There is a shown or hidden board without challanger
 			Gdx.app.debug(className, "Found board without challanger: "
 					+ boardWithoutChallanger.toString());
-			boardWithoutChallanger.addChallanger(newPlayerKeys);
+			boardWithoutChallanger.addRightPlayer(newPlayerKeys);
 
 			// Unpause the board if it is visible, otherwise, set all boards to
 			// pause when current rounds are finished.
@@ -69,7 +69,7 @@ public class DropInMatchHandler {
 			// There is a shown or hidden empty board
 			Gdx.app.debug(className,
 					"Found empty board: " + emptyBoard.toString());
-			emptyBoard.addFirstPlayer(newPlayerKeys);
+			emptyBoard.addLeftPlayer(newPlayerKeys);
 
 			// Board still lacks challanger so do not unpause it
 			return;
@@ -79,7 +79,7 @@ public class DropInMatchHandler {
 		Match hiddenBoard = new Match();
 		Gdx.app.debug(className,
 				"Created new hidden board: " + hiddenBoard.toString());
-		hiddenBoard.addFirstPlayer(newPlayerKeys);
+		hiddenBoard.addLeftPlayer(newPlayerKeys);
 		hiddenMatches.add(hiddenBoard);
 
 		// There must be an even number of boards.

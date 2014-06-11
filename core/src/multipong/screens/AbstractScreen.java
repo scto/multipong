@@ -21,8 +21,8 @@ public class AbstractScreen implements Screen {
 	Game game;
 	private List<KeyMap> keyMaps;
 
-	float keyDelay = 0.2f;
-	float timeSinceKeyPressed = keyDelay;
+	float keyDelay = 0.3f;
+	float timeSinceKeyPressed = 0;
 
 	protected BitmapFont font = new BitmapFont(true);
 	protected SpriteBatch batch = new SpriteBatch();

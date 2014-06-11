@@ -17,18 +17,24 @@ public class Board {
 	public Player leftPlayer;
 	public Pad leftPlayerPad;
 	public Vector2 leftPlayerScore;
-	public Vector2 leftPlayerName;
+	public Vector2 leftPlayerNamePos;
 
 	public Player rightPlayer;
 	public Pad rightPlayerPad;
 	public Vector2 rightPlayerScore;
-	public Vector2 rightPlayerName;
+	public Vector2 rightPlayerNamePos;
 
 	public Field field;
 	public Ball ball;
 
 	public int stateTime = 0;
-	private float x, y, width, height;
+	public float x, y, width, height;
+
+	public float midPointX;
+	public float midPointY;
+
+	public float leftMidPointX;
+	public float rightMidPointX;
 
 	/**
 	 * An empty board.
@@ -55,6 +61,12 @@ public class Board {
 		this.width = width;
 		this.height = height;
 
+		midPointX = x + width / 2;
+		midPointY = y + height / 2;
+
+		leftMidPointX = midPointX / 2;
+		rightMidPointX = midPointX / 2 * 3;
+
 		createPads();
 		createSeparator();
 		createScorePositions();
@@ -67,8 +79,7 @@ public class Board {
 		float ballSize = height * Settings.ballSizePercentOfBoardHeight / 100;
 		float ballStartingXDirection = (MathUtils.random(0, 1) != 1) ? -1f : 1f;
 
-		ball = new Ball(x + width / 2, y + height / 2, ballSize,
-				ballStartingXDirection);
+		ball = new Ball(midPointX, midPointY, ballSize, ballStartingXDirection);
 	}
 
 	private void createField() {
@@ -88,8 +99,8 @@ public class Board {
 	}
 
 	private void createPlayerNamePositions() {
-		leftPlayerName = new Vector2(x, y);
-		rightPlayerName = new Vector2(x + width / 2, y);
+		leftPlayerNamePos = new Vector2(x, y);
+		rightPlayerNamePos = new Vector2(x + width / 2, y);
 	}
 
 	private void createScorePositions() {

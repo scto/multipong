@@ -4,7 +4,6 @@ import multipong.board.Board;
 import multipong.board.BoardUpdater;
 import multipong.board.boardobjects.Player;
 import multipong.screens.KeyMap;
-import multipong.settings.Settings;
 
 public class Match {
 
@@ -50,13 +49,14 @@ public class Match {
 		return (leftPlayer.score == winScore || rightPlayer.score == winScore);
 	}
 
-	public void addFirstPlayer(KeyMap firstPlayerKeyMap) {
-		leftPlayer = new Player("player0", 0, firstPlayerKeyMap.upKey,
+	public void addLeftPlayer(KeyMap firstPlayerKeyMap) {
+		leftPlayer = new Player("leftPlayer", 0, firstPlayerKeyMap.upKey,
 				firstPlayerKeyMap.downKey);
+		board.leftPlayer = leftPlayer;
 	}
 
-	public void addChallanger(KeyMap secondPlayerKeyMap) {
-		rightPlayer = new Player("player1", 0, secondPlayerKeyMap.upKey,
+	public void addRightPlayer(KeyMap secondPlayerKeyMap) {
+		rightPlayer = new Player("rightPlayer", 0, secondPlayerKeyMap.upKey,
 				secondPlayerKeyMap.downKey);
 		board.setPlayers(leftPlayer, rightPlayer);
 		paused = true;
