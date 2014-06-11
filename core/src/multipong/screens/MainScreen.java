@@ -1,7 +1,5 @@
 package multipong.screens;
 
-import multipong.settings.Settings;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -108,7 +106,7 @@ public class MainScreen extends AbstractScreen {
 				font.setColor(Color.GRAY);
 			}
 			float xOffset = itemsXOffset
-					- ((float) font.getBounds(item.name()).width / 2);
+					- (font.getBounds(item.name()).width / 2);
 			float yOffset = (i + 1) * itemsYOffset;
 
 			font.draw(batch, item.name(), xOffset, yOffset);
