@@ -8,6 +8,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class AbstractScreen implements Screen {
 
@@ -18,11 +24,25 @@ public class AbstractScreen implements Screen {
 	float keyDelay = 0.2f;
 	float timeSinceKeyPressed = keyDelay;
 
+	protected BitmapFont font = new BitmapFont(true);
+	protected SpriteBatch batch = new SpriteBatch();
+	protected ShapeRenderer renderer = new ShapeRenderer();
+	protected OrthographicCamera camera;
+	protected float stateTime = 0;
+	protected Viewport viewport;
+
 	public AbstractScreen(Game game, int width, int height) {
 		this.game = game;
 		this.height = height;
 		this.width = width;
 		keyMaps = loadKeyMaps();
+
+		camera = new OrthographicCamera(width, height);
+		camera.setToOrtho(true);
+		camera.position.set(width / 2, height / 2, 0);
+		camera.update();
+
+		viewport = new StretchViewport(width, height, camera);
 	}
 
 	@Override
@@ -30,6 +50,14 @@ public class AbstractScreen implements Screen {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		camera.update();
+		renderer.setProjectionMatrix(camera.combined);
+		batch.setProjectionMatrix(camera.combined);
+
+		updateKeyDelay(deltaTime);
+	}
+
+	private void updateKeyDelay(float deltaTime) {
 		if (timeSinceKeyPressed < 0) {
 			timeSinceKeyPressed = keyDelay;
 		}
@@ -115,8 +143,7 @@ public class AbstractScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-
+		viewport.update(width, height);
 	}
 
 	@Override
@@ -146,6 +173,9 @@ public class AbstractScreen implements Screen {
 	@Override
 	public void dispose() {
 		game.dispose();
+		batch.dispose();
+		font.dispose();
+		renderer.dispose();
 	}
 
 }

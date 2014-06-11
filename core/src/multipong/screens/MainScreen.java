@@ -1,10 +1,8 @@
 package multipong.screens;
 
-import multipong.renderers.MainMenuRenderer;
-
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 
 public class MainScreen extends AbstractScreen {
 
@@ -44,21 +42,24 @@ public class MainScreen extends AbstractScreen {
 	}
 
 	public MainMenuItem selectedItem = MainMenuItem.values()[0];
-	MainMenuRenderer renderer;
+
+	MainMenuItem[] items = MainMenuItem.values();
+	int itemsSize = MainMenuItem.values().length;
+
+	float itemsYOffset;
+	float itemsXOffset;
 
 	public MainScreen(Game game, int width, int height) {
 		super(game, width, height);
-
-		renderer = new MainMenuRenderer(width, height);
+		itemsXOffset = ((float) width / 2);
+		itemsYOffset = ((float) height / (itemsSize + 2));
 	}
 
-	@Override
-	public void render(float deltaTime) {
-		super.render(deltaTime);
-
+	private void update() {
 		if (playerPressedEnter()) {
 
 			switch (selectedItem) {
+
 			case DROPIN:
 				game.setScreen(new DropInScreen(game, width, height));
 				break;
@@ -86,7 +87,30 @@ public class MainScreen extends AbstractScreen {
 			selectedItem = selectedItem.getDown(selectedItem);
 		}
 
-		renderer.selected = selectedItem;
-		renderer.render(deltaTime);
+	}
+
+	@Override
+	public void render(float deltaTime) {
+		super.render(deltaTime);
+
+		update();
+
+		batch.begin();
+
+		for (int i = 0; i < itemsSize; i++) {
+
+			MainMenuItem item = MainMenuItem.values()[i];
+			if (item == selectedItem) {
+				font.setColor(Color.WHITE);
+			} else {
+				font.setColor(Color.GRAY);
+			}
+			float xOffset = itemsXOffset
+					- ((float) font.getBounds(item.name()).width / 2);
+			float yOffset = (i + 1) * itemsYOffset;
+
+			font.draw(batch, item.name(), xOffset, yOffset);
+		}
+		batch.end();
 	}
 }
