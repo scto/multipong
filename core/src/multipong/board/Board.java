@@ -4,6 +4,7 @@ import multipong.board.boardobjects.Ball;
 import multipong.board.boardobjects.Field;
 import multipong.board.boardobjects.Pad;
 import multipong.board.boardobjects.Player;
+import multipong.settings.Settings;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -28,6 +29,13 @@ public class Board {
 
 	public int stateTime = 0;
 	private float x, y, width, height;
+
+	/**
+	 * An empty board.
+	 */
+	public Board() {
+
+	}
 
 	/**
 	 * 
@@ -55,17 +63,8 @@ public class Board {
 		createBall();
 	}
 
-	public Board() {
-
-	}
-
-	public void setPlayers(Player leftPlayer, Player rightPlayer) {
-		this.leftPlayer = leftPlayer;
-		this.rightPlayer = rightPlayer;
-	}
-
 	private void createBall() {
-		float ballSize = width * 0.010f;
+		float ballSize = height * Settings.ballSizePercentOfBoardHeight / 100;
 		float ballStartingXDirection = (MathUtils.random(0, 1) != 1) ? -1f : 1f;
 
 		ball = new Ball(x + width / 2, y + height / 2, ballSize,
@@ -74,6 +73,18 @@ public class Board {
 
 	private void createField() {
 		field = new Field(x, y, width, height);
+	}
+
+	private void createPads() {
+		float padHeight = height * Settings.padHeightPercentOfBoardHeight / 100;
+		float padWidth = width * Settings.padWidthPercentOfBoardWidth / 100;
+		float padXoffset = width * Settings.padXOffsetPercentOfBoardWidth / 100;
+		float padYoffset = (height - padHeight) / 2f;
+
+		leftPlayerPad = new Pad(x + padXoffset, y + padYoffset, padWidth,
+				padHeight);
+		rightPlayerPad = new Pad(x + width - padXoffset - padWidth, y
+				+ padYoffset, padWidth, padHeight);
 	}
 
 	private void createPlayerNamePositions() {
@@ -105,15 +116,8 @@ public class Board {
 		}
 	}
 
-	private void createPads() {
-		float padHeight = height * 0.055f;
-		float padWidth = width * 0.020f;
-		float padXoffset = width * 0.16f;
-		float padYoffset = (height - padHeight) / 2f;
-
-		leftPlayerPad = new Pad(x + padXoffset, y + padYoffset, padWidth,
-				padHeight);
-		rightPlayerPad = new Pad(x + width - padXoffset - padWidth, y
-				+ padYoffset, padWidth, padHeight);
+	public void setPlayers(Player leftPlayer, Player rightPlayer) {
+		this.leftPlayer = leftPlayer;
+		this.rightPlayer = rightPlayer;
 	}
 }

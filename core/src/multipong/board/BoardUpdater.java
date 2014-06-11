@@ -21,11 +21,13 @@ public class BoardUpdater {
 
 			board.ball.bounds.y = board.field.getTop() - board.ball.getHeight();
 			board.ball.reverseY();
+			board.ball.dampen();
 
 		} else if (board.ball.getBottom() < board.field.getBottom()) {
 
 			board.ball.bounds.y = board.field.getBottom();
 			board.ball.reverseY();
+			board.ball.dampen();
 		}
 	}
 
@@ -33,14 +35,14 @@ public class BoardUpdater {
 
 		if (board.ball.bounds.overlaps(board.rightPlayerPad.bounds)) {
 
-			board.ball.vel.y += board.rightPlayerPad.getVelocity();
+			board.ball.addYVelocity(board.rightPlayerPad.getVelocity());
 			board.ball.bounds.x = board.rightPlayerPad.getLeft()
 					- board.ball.bounds.getWidth();
 			board.ball.reverseX();
 
 		} else if (board.ball.bounds.overlaps(board.leftPlayerPad.bounds)) {
 
-			board.ball.vel.y += board.leftPlayerPad.getVelocity();
+			board.ball.addYVelocity(board.leftPlayerPad.getVelocity());
 			board.ball.bounds.x = board.leftPlayerPad.getRight();
 			board.ball.reverseX();
 		}

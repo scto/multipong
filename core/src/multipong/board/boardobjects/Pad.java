@@ -1,15 +1,14 @@
 package multipong.board.boardobjects;
 
+import multipong.settings.Settings;
+
 import com.badlogic.gdx.math.Vector2;
 
 public class Pad extends BoundedRectangle {
 
-	static final float ACCELERATION = 1000f;
-	static final float MAX_VEL = 500f;
-
-	Vector2 start = new Vector2();
-	Vector2 accel = new Vector2();
-	Vector2 vel = new Vector2();
+	private Vector2 start = new Vector2();
+	private Vector2 accel = new Vector2();
+	private Vector2 vel = new Vector2();
 
 	float stateTime = 0;
 
@@ -25,11 +24,11 @@ public class Pad extends BoundedRectangle {
 	}
 
 	public void up() {
-		accel.y = ACCELERATION;
+		accel.y = Settings.padAcceleration;
 	}
 
 	public void down() {
-		accel.y = -ACCELERATION;
+		accel.y = -Settings.padAcceleration;
 	}
 
 	public float getVelocity() {
@@ -47,12 +46,11 @@ public class Pad extends BoundedRectangle {
 
 		vel.scl(1.0f / deltaTime);
 
-		if (vel.y > MAX_VEL) {
-			vel.y = MAX_VEL;
-		}
+		if (vel.y > Settings.padMaxVelocity) {
+			vel.y = Settings.padMaxVelocity;
 
-		if (vel.y < -MAX_VEL) {
-			vel.y = -MAX_VEL;
+		} else if (vel.y < -Settings.padMaxVelocity) {
+			vel.y = -Settings.padMaxVelocity;
 		}
 
 		stateTime += deltaTime;

@@ -4,6 +4,7 @@ import multipong.board.Board;
 import multipong.board.BoardUpdater;
 import multipong.board.boardobjects.Player;
 import multipong.screens.KeyMap;
+import multipong.settings.Settings;
 
 public class Match {
 

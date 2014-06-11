@@ -13,10 +13,14 @@ public class DropInMatchHandler {
 	private List<Match> hiddenMatches = new ArrayList<Match>();
 
 	int width, height;
+	String className = this.getClass().getSimpleName();
 
 	public DropInMatchHandler(int width, int height) {
 		this.width = width;
 		this.height = height;
+		Match firstMatch = new Match(0, 0, width, height);
+		addMatch(firstMatch);
+		Gdx.app.debug(className, "First board: " + firstMatch.toString());
 	}
 
 	public void addMatch(Match match) {
@@ -40,19 +44,21 @@ public class DropInMatchHandler {
 		if (boardWithoutChallanger != null) {
 
 			// There is a shown or hidden board without challanger
-			Gdx.app.debug("Found board without challanger",
-					boardWithoutChallanger.toString());
+			Gdx.app.debug(className, "Found board without challanger: "
+					+ boardWithoutChallanger.toString());
 			boardWithoutChallanger.addChallanger(newPlayerKeys);
 
 			// Unpause the board if it is visible, otherwise, set all boards to
 			// pause when current rounds are finished.
 			if (getVisibleMatches().contains(boardWithoutChallanger)) {
 				boardWithoutChallanger.resume();
-				Gdx.app.debug("Board without challanger is a shown board",
-						boardWithoutChallanger.toString());
+				Gdx.app.debug(className,
+						"Board without challanger is a shown board: "
+								+ boardWithoutChallanger.toString());
 			} else {
-				Gdx.app.debug("Board without challanger is a hidden board",
-						boardWithoutChallanger.toString());
+				Gdx.app.debug(className,
+						"Board without challanger is a hidden board: "
+								+ boardWithoutChallanger.toString());
 				pauseAllMatchesWhenRoundWon();
 			}
 			return;
@@ -61,7 +67,8 @@ public class DropInMatchHandler {
 		Match emptyBoard = getEmptyMatches();
 		if (emptyBoard != null) {
 			// There is a shown or hidden empty board
-			Gdx.app.debug("Found empty board", emptyBoard.toString());
+			Gdx.app.debug(className,
+					"Found empty board: " + emptyBoard.toString());
 			emptyBoard.addFirstPlayer(newPlayerKeys);
 
 			// Board still lacks challanger so do not unpause it
@@ -70,7 +77,8 @@ public class DropInMatchHandler {
 
 		// There are no boards left for new player, create a new hidden one
 		Match hiddenBoard = new Match();
-		Gdx.app.debug("Created new hidden board", hiddenBoard.toString());
+		Gdx.app.debug(className,
+				"Created new hidden board: " + hiddenBoard.toString());
 		hiddenBoard.addFirstPlayer(newPlayerKeys);
 		hiddenMatches.add(hiddenBoard);
 
@@ -79,7 +87,8 @@ public class DropInMatchHandler {
 				+ hiddenMatches.size();
 		if (totalAmountBoards > 1 && (totalAmountBoards % 2) != 0) {
 			hiddenMatches.add(new Match());
-			Gdx.app.debug("Added extra hidden board", hiddenBoard.toString());
+			Gdx.app.debug(className,
+					"Added extra hidden board: " + hiddenBoard.toString());
 		}
 
 	}
@@ -109,8 +118,8 @@ public class DropInMatchHandler {
 			columns = amountBoards / 2;
 		}
 
-		Gdx.app.debug("Amount shown boards" + amountBoards, "rows " + rows
-				+ " columns " + columns);
+		Gdx.app.debug(className, "Amount shown boards " + amountBoards
+				+ " rows " + rows + " columns " + columns);
 
 		float boardWidth = width / columns;
 		float boardHeight = height / rows;
@@ -128,9 +137,6 @@ public class DropInMatchHandler {
 
 				matchesWithRecalculatedBoards.add(matchWithBoardToRecalc);
 
-//				Gdx.app.debug("Setting board geometry ", String.format(
-//						"x=%s y=%s width=%s height=%s", x * boardWidth, y
-//								* boardHeight, boardWidth, boardHeight));
 			}
 		}
 		getVisibleMatches().addAll(matchesWithRecalculatedBoards);

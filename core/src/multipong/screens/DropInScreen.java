@@ -2,7 +2,6 @@ package multipong.screens;
 
 import java.util.List;
 
-import multipong.board.Board;
 import multipong.match.Match;
 import multipong.matchhandlers.DropInMatchHandler;
 import com.badlogic.gdx.Game;
@@ -19,15 +18,8 @@ public class DropInScreen extends AbstractScreen {
 
 	public DropInScreen(Game game, int width, int height) {
 		super(game, width, height);
-
 		availableKeyMaps = loadKeyMaps();
-
 		handler = new DropInMatchHandler(width, height);
-
-		Match firstBoard = new Match(0, 0, width, height);
-		handler.addMatch(firstBoard);
-
-		Gdx.app.debug("First board", firstBoard.toString());
 	}
 
 	private void update(float deltaTime) {
@@ -78,17 +70,19 @@ public class DropInScreen extends AbstractScreen {
 			if (!match.isPlayable()) {
 				continue;
 			}
-			Board state = match.board;
 
-			font.draw(batch, Integer.toString(state.leftPlayer.score),
-					state.leftPlayerScore.x, state.leftPlayerScore.y);
-			font.draw(batch, Integer.toString(state.rightPlayer.score),
-					state.rightPlayerScore.x, state.rightPlayerScore.y);
+			font.draw(batch, Integer.toString(match.board.leftPlayer.score),
+					match.board.leftPlayerScore.x,
+					match.board.leftPlayerScore.y);
+			font.draw(batch, Integer.toString(match.board.rightPlayer.score),
+					match.board.rightPlayerScore.x,
+					match.board.rightPlayerScore.y);
 
-			font.draw(batch, state.leftPlayer.name, state.leftPlayerName.x,
-					state.leftPlayerName.y);
-			font.draw(batch, state.rightPlayer.name, state.rightPlayerName.x,
-					state.rightPlayerName.y);
+			font.draw(batch, match.board.leftPlayer.name,
+					match.board.leftPlayerName.x, match.board.leftPlayerName.y);
+			font.draw(batch, match.board.rightPlayer.name,
+					match.board.rightPlayerName.x,
+					match.board.rightPlayerName.y);
 		}
 		batch.end();
 
@@ -97,16 +91,17 @@ public class DropInScreen extends AbstractScreen {
 			if (!match.isPlayable()) {
 				continue;
 			}
-			Board state = match.board;
 
 			renderer.setColor(Color.WHITE);
-			renderer.rect(state.field.bounds.x+1, state.field.bounds.y,
-					state.field.bounds.width-1, state.field.bounds.height-1);
+			renderer.rect(match.board.field.bounds.x + 1,
+					match.board.field.bounds.y,
+					match.board.field.bounds.width - 1,
+					match.board.field.bounds.height - 1);
 
 			renderer.setColor(Color.GRAY);
-			for (Vector2 separator : state.separatorPos) {
+			for (Vector2 separator : match.board.separatorPos) {
 				renderer.rect(separator.x, separator.y, 0,
-						state.separatorLength);
+						match.board.separatorLength);
 			}
 		}
 		renderer.end();
@@ -117,19 +112,19 @@ public class DropInScreen extends AbstractScreen {
 			if (!match.isPlayable()) {
 				continue;
 			}
-			Board state = match.board;
 
-			renderer.rect(state.leftPlayerPad.bounds.x,
-					state.leftPlayerPad.bounds.y,
-					state.leftPlayerPad.bounds.width,
-					state.leftPlayerPad.bounds.height);
-			renderer.rect(state.rightPlayerPad.bounds.x,
-					state.rightPlayerPad.bounds.y,
-					state.rightPlayerPad.bounds.width,
-					state.rightPlayerPad.bounds.height);
+			renderer.rect(match.board.leftPlayerPad.bounds.x,
+					match.board.leftPlayerPad.bounds.y,
+					match.board.leftPlayerPad.bounds.width,
+					match.board.leftPlayerPad.bounds.height);
+			renderer.rect(match.board.rightPlayerPad.bounds.x,
+					match.board.rightPlayerPad.bounds.y,
+					match.board.rightPlayerPad.bounds.width,
+					match.board.rightPlayerPad.bounds.height);
 
-			renderer.rect(state.ball.bounds.x, state.ball.bounds.y,
-					state.ball.bounds.width, state.ball.bounds.height);
+			renderer.rect(match.board.ball.bounds.x, match.board.ball.bounds.y,
+					match.board.ball.bounds.width,
+					match.board.ball.bounds.height);
 
 		}
 		renderer.end();
