@@ -128,9 +128,9 @@ public class DropInMatchHandler {
 
 				matchesWithRecalculatedBoards.add(matchWithBoardToRecalc);
 
-				Gdx.app.debug("Setting board geometry ", String.format(
-						"x=%s y=%s width=%s height=%s", x * boardWidth, y
-								* boardHeight, boardWidth, boardHeight));
+//				Gdx.app.debug("Setting board geometry ", String.format(
+//						"x=%s y=%s width=%s height=%s", x * boardWidth, y
+//								* boardHeight, boardWidth, boardHeight));
 			}
 		}
 		getVisibleMatches().addAll(matchesWithRecalculatedBoards);
