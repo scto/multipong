@@ -53,6 +53,14 @@ public class Match {
 		return rightPlayer != null;
 	}
 
+	public Player getRightPlayer() {
+		return rightPlayer;
+	}
+
+	public Player getLeftPlayer() {
+		return leftPlayer;
+	}
+
 	public boolean isCountingDown() {
 		return stateTime <= Settings.matchStartCountDownFrom;
 	}

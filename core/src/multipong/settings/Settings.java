@@ -102,10 +102,13 @@ public class Settings {
 	 * How long to show the message "player is the winner!" after a match is
 	 * finished, in drop-in mode.
 	 */
-	public static float secondsToShowMatchWinner = 3;
+//	public static float secondsToShowMatchWinner = 3;
 
 	/**
 	 * Set which type of ball to use.
 	 */
 	public static int ballTypeNum = 2;
+	
+	
+	public static float timeUntilDropOutAfterAllMatchesFinished = 3;
 }
