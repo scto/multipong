@@ -78,8 +78,10 @@ public class DropInScreen extends AbstractScreen {
 				renderLeftPad(match);
 				renderRightPad(match);
 
-				if (match.isCountingDown()) {
-					renderCountDown(match);
+				if (match.hasStartCountDown()) {
+					renderStartCountDown(match);
+				} else if (match.hasRedrawCountDown()) {
+					renderRedrawCountDown(match);
 				} else {
 					renderBall(match);
 				}
@@ -100,12 +102,26 @@ public class DropInScreen extends AbstractScreen {
 		}
 	}
 
-	private void renderCountDown(Match match) {
+	private void renderRedrawCountDown(Match match) {
+		batch.begin();
+		font.setScale(5f);
+
+		String str = Integer.toString((int) (match.redrawCountDown + 1));
+		float xOffset = match.board.midPointX - (font.getBounds(str).width / 2);
+		float yOffset = match.board.midPointY
+				- (font.getBounds(str).height / 2);
+
+		font.draw(batch, str, xOffset, yOffset);
+		font.setScale(1);
+		batch.end();
+	}
+
+	private void renderStartCountDown(Match match) {
 		batch.begin();
 		font.setScale(5f);
 
 		String str = Integer
-				.toString((int) (Settings.matchStartCountDownFrom + 1 - match.stateTime));
+				.toString((int) (Settings.timeMatchStartCountDownFrom + 1 - match.stateTime));
 		float xOffset = match.board.midPointX - (font.getBounds(str).width / 2);
 		float yOffset = match.board.midPointY
 				- (font.getBounds(str).height / 2);

@@ -188,7 +188,7 @@ public class DropInMatchHandler {
 		getVisibleMatches().addAll(hiddenMatches);
 		hiddenMatches.clear();
 
-		List<Match> matchesWithRecalculatedBoards = new ArrayList<Match>();
+		List<Match> recalcMatches = new ArrayList<Match>();
 
 		int amountBoards = getVisibleMatches().size();
 
@@ -208,30 +208,50 @@ public class DropInMatchHandler {
 		float boardWidth = width / columns;
 		float boardHeight = height / rows;
 
-		recalculationLoop: for (int y = 0; y < rows; y++) {
+		recalcLoop: for (int y = 0; y < rows; y++) {
 			for (int x = 0; x < columns; x++) {
 				if (getVisibleMatches().isEmpty()) {
-					break recalculationLoop;
+					break recalcLoop;
 				}
 
-				Match matchWithBoardToRecalc = getVisibleMatches().get(0);
+				Match matchToRecalc = getVisibleMatches().get(0);
 				getVisibleMatches().remove(0);
-				matchWithBoardToRecalc.recalculateBoardGeometry(x * boardWidth,
-						y * boardHeight, boardWidth, boardHeight);
 
-				matchesWithRecalculatedBoards.add(matchWithBoardToRecalc);
+				matchToRecalc.recalculateBoardGeometry(x * boardWidth, y
+						* boardHeight, boardWidth, boardHeight);
+
+				recalcMatches.add(matchToRecalc);
 
 			}
 		}
-		getVisibleMatches().addAll(matchesWithRecalculatedBoards);
+		getVisibleMatches().addAll(recalcMatches);
 	}
 
 	private void resumeAllPlayableMatches() {
 		for (Match match : getVisibleMatches()) {
 			if (match.isPlayable()) {
 				match.resume();
+				if (match.roundHasBeenPlayed()) {
+					match.setRedrawCountDown();
+				}
 			}
 		}
+	}
+
+	public int numberOfWaitingPlayers() {
+		if (hiddenMatches.isEmpty()) {
+			return 0;
+		}
+		int players = 0;
+		for (Match match : hiddenMatches) {
+			if (match.hasLeftPlayer()) {
+				players++;
+			}
+			if (match.hasRightPlayer()) {
+				players++;
+			}
+		}
+		return players;
 	}
 
 	public void showBoardsInHiddenMatches() {
