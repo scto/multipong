@@ -43,6 +43,10 @@ public class DropInScreen extends AbstractScreen {
 
 		renderBoards(deltaTime);
 		stateTime += deltaTime;
+		
+		if (handler.allVisibleMatchesAreFinished()) {
+			
+		}
 	}
 
 	private void renderBall(Match match) {
@@ -59,7 +63,10 @@ public class DropInScreen extends AbstractScreen {
 
 			renderFields(match);
 
-			if (match.isPlayable()) {
+			if (match.isFinished()) {
+				renderRoundWinner(match);
+				
+			} else if (match.isPlayable()) {
 				renderLeftName(match);
 				renderRightName(match);
 				renderScores(match);
@@ -82,11 +89,25 @@ public class DropInScreen extends AbstractScreen {
 				// Show "waiting for player" on both sides.
 				renderLeftSideWaiting(match);
 				renderRightSideWaiting(match);
-				
-			} else if (match.isFinished()) {
-				
+
 			}
+
 		}
+	}
+
+	private void renderRoundWinner(Match match) {
+		batch.begin();
+		font.setScale(2f);
+
+		String str = match.getMatchWinner().name + " is the winner!";
+		float xOffset = match.board.midPointX - (font.getBounds(str).width / 2);
+		float yOffset = match.board.midPointY
+				- (font.getBounds(str).height / 2);
+
+		font.draw(batch, str, xOffset, yOffset);
+		font.setScale(1);
+		batch.end();
+
 	}
 
 	private void renderCountDown(Match match) {

@@ -58,7 +58,7 @@ public class BoardUpdater {
 		}
 	}
 
-	public static Player getWinner(Board board) {
+	public static Player getRoundWinner(Board board) {
 		if (board.ball.getRight() >= board.field.getRight()) {
 
 			board.ball.setX(board.field.getRight() - board.ball.getWidth());

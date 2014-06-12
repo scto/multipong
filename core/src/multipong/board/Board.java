@@ -81,8 +81,13 @@ public class Board {
 		float ballSize = height * Settings.ballSizePercentOfBoardHeight / 100;
 		float ballStartingXDirection = (MathUtils.random(0, 1) != 1) ? -1f : 1f;
 
-		ball = new BallType1(midPointX, midPointY, ballSize, width, height,
-				ballStartingXDirection);
+		if (Settings.ballTypeNum == 1) {
+			ball = new BallType1(midPointX, midPointY, ballSize, width, height,
+					ballStartingXDirection);
+		} else {
+			ball = new BallType1(midPointX, midPointY, ballSize, width, height,
+					ballStartingXDirection);
+		}
 	}
 
 	private void createField() {
@@ -130,10 +135,10 @@ public class Board {
 		}
 	}
 
-	public Rectangle getBounds(){
+	public Rectangle getBounds() {
 		return field.getBounds();
 	}
-	
+
 	public void setPlayers(Player leftPlayer, Player rightPlayer) {
 		this.leftPlayer = leftPlayer;
 		this.rightPlayer = rightPlayer;

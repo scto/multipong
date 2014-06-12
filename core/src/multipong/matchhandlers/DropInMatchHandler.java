@@ -30,6 +30,15 @@ public class DropInMatchHandler {
 			hiddenMatches.add(match);
 		}
 	}
+	
+	public boolean allVisibleMatchesAreFinished() {
+		for (Match match : visibleMatches) {
+			if (!match.isFinished()) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	public void addNewPlayer(KeyMap newPlayerKeys) {
 

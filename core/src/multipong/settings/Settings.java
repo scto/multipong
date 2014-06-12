@@ -92,10 +92,20 @@ public class Settings {
 	 * pad.
 	 */
 	public static float addSpeedToBallEveryHit = 1f;
-	
+
 	/**
 	 * The score needed to win a match.
 	 */
-	public static int scoreToWinMatch = 10;
+	public static int scoreToWinMatch = 3;
 
+	/**
+	 * How long to show the message "player is the winner!" after a match is
+	 * finished, in drop-in mode.
+	 */
+	public static float secondsToShowMatchWinner = 3;
+
+	/**
+	 * Set which type of ball to use.
+	 */
+	public static int ballTypeNum = 2;
 }
