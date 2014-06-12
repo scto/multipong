@@ -1,17 +1,16 @@
 package multipong;
 
 import multipong.screens.MainScreen;
+import multipong.settings.Settings;
 
 import com.badlogic.gdx.Game;
 
 public class Multipong extends Game {
 
-	static final int APP_WIDTH = 800;
-	static final int APP_HEIGHT = 480;
-
 	@Override
 	public void create() {
-		setScreen(new MainScreen(this, APP_WIDTH, APP_HEIGHT));
+		setScreen(new MainScreen(this, (int) Settings.appWidth,
+				(int) Settings.appHeight));
 	}
 
 	@Override

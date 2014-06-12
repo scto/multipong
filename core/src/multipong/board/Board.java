@@ -79,7 +79,8 @@ public class Board {
 		float ballSize = height * Settings.ballSizePercentOfBoardHeight / 100;
 		float ballStartingXDirection = (MathUtils.random(0, 1) != 1) ? -1f : 1f;
 
-		ball = new Ball(midPointX, midPointY, ballSize, ballStartingXDirection);
+		ball = new Ball(midPointX, midPointY, ballSize, width, height,
+				ballStartingXDirection);
 	}
 
 	private void createField() {
@@ -93,9 +94,9 @@ public class Board {
 		float padYoffset = (height - padHeight) / 2f;
 
 		leftPlayerPad = new Pad(x + padXoffset, y + padYoffset, padWidth,
-				padHeight);
+				padHeight, width, height);
 		rightPlayerPad = new Pad(x + width - padXoffset - padWidth, y
-				+ padYoffset, padWidth, padHeight);
+				+ padYoffset, padWidth, padHeight, width, height);
 	}
 
 	private void createPlayerNamePositions() {

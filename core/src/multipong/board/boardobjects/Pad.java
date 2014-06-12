@@ -10,12 +10,16 @@ public class Pad extends BoundedRectangle {
 	private Vector2 accel = new Vector2();
 	private Vector2 vel = new Vector2();
 
+	float boardWidth, boardHeight;
 	float stateTime = 0;
 
-	public Pad(float x, float y, float width, float height) {
-		super(x, y, width, height);
+	public Pad(float x, float y, float padWidth, float padHeight,
+			float boardWidth, float boardHeight) {
+		super(x, y, padWidth, padHeight);
 		start.x = x;
 		start.y = y;
+		this.boardHeight = boardHeight;
+		this.boardWidth = boardWidth;
 	}
 
 	public void stop() {
@@ -24,11 +28,12 @@ public class Pad extends BoundedRectangle {
 	}
 
 	public void up() {
-		accel.y = Settings.padAcceleration;
+		accel.y = Settings.padAcceleration * (boardHeight / Settings.appHeight);
 	}
 
 	public void down() {
-		accel.y = -Settings.padAcceleration;
+		accel.y = -Settings.padAcceleration
+				* (boardHeight / Settings.appHeight);
 	}
 
 	public float getVelocity() {
@@ -46,11 +51,14 @@ public class Pad extends BoundedRectangle {
 
 		vel.scl(1.0f / deltaTime);
 
-		if (vel.y > Settings.padMaxVelocity) {
-			vel.y = Settings.padMaxVelocity;
+		float padMaxVelocity = Settings.padMaxVelocity
+				* (boardHeight / Settings.appHeight);
 
-		} else if (vel.y < -Settings.padMaxVelocity) {
-			vel.y = -Settings.padMaxVelocity;
+		if (vel.y > padMaxVelocity) {
+			vel.y = padMaxVelocity;
+
+		} else if (vel.y < -padMaxVelocity) {
+			vel.y = -padMaxVelocity;
 		}
 
 		stateTime += deltaTime;

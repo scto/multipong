@@ -11,7 +11,12 @@ public class Ball extends BoundedRectangle {
 	private Vector2 start = new Vector2();
 	private Vector2 vel = new Vector2();
 
+	float boardWidth, boardHeight;
 	String className = this.getClass().getSimpleName();
+
+	float ballMaxVel;
+	float ballMinVel;
+	float ballStartVel;
 
 	/**
 	 * 
@@ -19,7 +24,7 @@ public class Ball extends BoundedRectangle {
 	 *            Starting coordinate on x-axis,
 	 * @param y
 	 *            Starting coordinate on y-axis.
-	 * @param size
+	 * @param ballSize
 	 *            Size of ball in pixels.
 	 * @param startingXDirection
 	 *            1 or -1 depending on starting direction.
@@ -30,13 +35,30 @@ public class Ball extends BoundedRectangle {
 	 * @param rightPadBounds
 	 *            Bounds of right player pad.
 	 */
-	public Ball(float x, float y, float size, float startingXDirection) {
-		super(x, y, size, size);
+	public Ball(float x, float y, float ballSize, float boardWidth,
+			float boardHeight, float startingXDirection) {
+		super(x, y, ballSize, ballSize);
 
 		start.x = x;
 		start.y = y;
 
+		this.boardHeight = boardHeight;
+		this.boardWidth = boardWidth;
+
 		reset(startingXDirection);
+
+		float aw = Settings.appWidth;
+		float ah = Settings.appHeight;
+		float bw = boardWidth;
+		float bh = boardHeight;
+
+		float boardSizeVelScale = (float) Math.sqrt((bw * bw + bh * bh)
+				/ (aw * aw + ah * ah));
+
+		ballMaxVel = Settings.ballMaxVelocity * boardSizeVelScale;
+		ballMinVel = Settings.ballMinVelocity * boardSizeVelScale;
+		ballStartVel = Settings.ballStartingVelocity
+				* (boardWidth / Settings.appWidth);
 	}
 
 	public void addYVelocity(float padYVelocity) {
@@ -65,9 +87,6 @@ public class Ball extends BoundedRectangle {
 		}
 
 		Gdx.app.debug(className, "Velocity is " + vel.len());
-
-		if (vel.len() > Settings.ballMaxVelocity) {
-		}
 
 	}
 
@@ -100,23 +119,25 @@ public class Ball extends BoundedRectangle {
 
 		float dy = MathUtils.random(-1f, 1f);
 
-		vel.x = Settings.ballStartingVelocity * startingXDirection;
-		vel.y = Settings.ballStartingVelocity * dy;
+		// TODO: this is not right...
+		vel.x = ballStartVel * startingXDirection;
+		vel.y = ballStartVel * dy;
 	}
 
 	private void checkVelocity() {
+
 		float velTot = vel.len();
 
-		if (velTot > Settings.ballMaxVelocity) {
-			float downScale = Settings.ballMaxVelocity / velTot;
+		if (velTot > ballMaxVel) {
+			float downScale = ballMaxVel / velTot;
 			vel.scl(downScale);
-			
+
 			Gdx.app.debug(className, "Reached max velocity.");
 
-		} else if (velTot < Settings.ballMinVelocity) {
-			float upScale = Settings.ballMinVelocity / velTot;
+		} else if (velTot < ballMinVel) {
+			float upScale = ballMinVel / velTot;
 			vel.scl(upScale);
-			
+
 			Gdx.app.debug(className, "Reached min velocity.");
 		}
 	}

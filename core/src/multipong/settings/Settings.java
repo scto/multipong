@@ -1,6 +1,9 @@
 package multipong.settings;
 
 public class Settings {
+	
+	public static float appWidth = 800;
+	public static float appHeight = 480;
 
 	/**
 	 * Max velocity of the ball.
