@@ -64,5 +64,11 @@ public class Settings {
 	 * width.
 	 */
 	public static float padXOffsetPercentOfBoardWidth = 5f;
+	
+	/**
+	 * Countdown before match, in seconds.
+	 */
+	public static float matchStartCountDownFrom = 3f;
+	
 
 }

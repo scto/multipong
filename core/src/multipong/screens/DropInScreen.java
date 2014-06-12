@@ -4,6 +4,8 @@ import java.util.List;
 
 import multipong.match.Match;
 import multipong.matchhandlers.DropInMatchHandler;
+import multipong.settings.Settings;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -22,14 +24,15 @@ public class DropInScreen extends AbstractScreen {
 		handler = new DropInMatchHandler(width, height);
 	}
 
-	private void update(float deltaTime) {
-		KeyMap newPlayerKeys = getPressedKeyMap();
-
-		if (newPlayerKeys != null) {
-			handler.addNewPlayer(newPlayerKeys);
+	private KeyMap getPressedKeyMap() {
+		for (KeyMap keys : availableKeyMaps) {
+			if (Gdx.input.isKeyPressed(keys.enterKey) && stateTime > keyDelay) {
+				// TODO: simultaneous press possible, use a list probably
+				availableKeyMaps.remove(keys);
+				return keys;
+			}
 		}
-		handler.showBoardsInHiddenMatches();
-		handler.updateBoardsInVisibleMatches(deltaTime);
+		return null;
 	}
 
 	@Override
@@ -42,15 +45,12 @@ public class DropInScreen extends AbstractScreen {
 		stateTime += deltaTime;
 	}
 
-	private KeyMap getPressedKeyMap() {
-		for (KeyMap keys : availableKeyMaps) {
-			if (Gdx.input.isKeyPressed(keys.enterKey) && stateTime > keyDelay) {
-				// TODO: simultaneous press possible, use a list probably
-				availableKeyMaps.remove(keys);
-				return keys;
-			}
-		}
-		return null;
+	private void renderBall(Match match) {
+		renderer.begin(ShapeType.Filled);
+		renderer.setColor(Color.WHITE);
+		renderer.rect(match.board.ball.bounds.x, match.board.ball.bounds.y,
+				match.board.ball.bounds.width, match.board.ball.bounds.height);
+		renderer.end();
 	}
 
 	private void renderBoards(float deltaTime) {
@@ -65,7 +65,12 @@ public class DropInScreen extends AbstractScreen {
 				renderScores(match);
 				renderLeftPad(match);
 				renderRightPad(match);
-				renderBall(match);
+
+				if (match.isCountingDown()) {
+					renderCountDown(match);
+				} else {
+					renderBall(match);
+				}
 
 			} else if (match.hasLeftPlayer() && !match.hasRightPlayer()) {
 				// Show "waiting for other player" on right side.
@@ -79,7 +84,21 @@ public class DropInScreen extends AbstractScreen {
 				renderRightSideWaiting(match);
 			}
 		}
+	}
 
+	private void renderCountDown(Match match) {
+		batch.begin();
+		font.setScale(5f);
+
+		String str = Integer
+				.toString((int) (Settings.matchStartCountDownFrom + 1 - match.stateTime));
+		float xOffset = match.board.midPointX - (font.getBounds(str).width / 2);
+		float yOffset = match.board.midPointY
+				- (font.getBounds(str).height / 2);
+
+		font.draw(batch, str, xOffset, yOffset);
+		font.setScale(1);
+		batch.end();
 	}
 
 	private void renderFields(Match match) {
@@ -98,23 +117,11 @@ public class DropInScreen extends AbstractScreen {
 		renderer.end();
 	}
 
-	private void renderLeftSideWaiting(Match match) {
-		String str = "Waiting for player...";
-		float xOffset = match.board.leftMidPointX
-				- (font.getBounds(str).width / 2);
-		float yOffset = match.board.midPointY;
+	private void renderLeftName(Match match) {
 		batch.begin();
-		font.draw(batch, str, xOffset, yOffset);
-		batch.end();
-	}
-
-	private void renderRightSideWaiting(Match match) {
-		String str = "Waiting for player...";
-		float xOffset = match.board.rightMidPointX
-				- (font.getBounds(str).width / 2);
-		float yOffset = match.board.midPointY;
-		batch.begin();
-		font.draw(batch, str, xOffset, yOffset);
+		font.draw(batch, match.board.leftPlayer.name,
+				match.board.leftPlayerNamePos.x,
+				match.board.leftPlayerNamePos.y);
 		batch.end();
 	}
 
@@ -129,6 +136,24 @@ public class DropInScreen extends AbstractScreen {
 		renderer.end();
 	}
 
+	private void renderLeftSideWaiting(Match match) {
+		String str = "Waiting for player...";
+		float xOffset = match.board.leftMidPointX
+				- (font.getBounds(str).width / 2);
+		float yOffset = match.board.midPointY;
+		batch.begin();
+		font.draw(batch, str, xOffset, yOffset);
+		batch.end();
+	}
+
+	private void renderRightName(Match match) {
+		batch.begin();
+		font.draw(batch, match.board.rightPlayer.name,
+				match.board.rightPlayerNamePos.x,
+				match.board.rightPlayerNamePos.y);
+		batch.end();
+	}
+
 	private void renderRightPad(Match match) {
 		renderer.begin(ShapeType.Filled);
 		renderer.setColor(Color.WHITE);
@@ -140,19 +165,13 @@ public class DropInScreen extends AbstractScreen {
 		renderer.end();
 	}
 
-	private void renderLeftName(Match match) {
+	private void renderRightSideWaiting(Match match) {
+		String str = "Waiting for player...";
+		float xOffset = match.board.rightMidPointX
+				- (font.getBounds(str).width / 2);
+		float yOffset = match.board.midPointY;
 		batch.begin();
-		font.draw(batch, match.board.leftPlayer.name,
-				match.board.leftPlayerNamePos.x,
-				match.board.leftPlayerNamePos.y);
-		batch.end();
-	}
-
-	private void renderRightName(Match match) {
-		batch.begin();
-		font.draw(batch, match.board.rightPlayer.name,
-				match.board.rightPlayerNamePos.x,
-				match.board.rightPlayerNamePos.y);
+		font.draw(batch, str, xOffset, yOffset);
 		batch.end();
 	}
 
@@ -167,12 +186,14 @@ public class DropInScreen extends AbstractScreen {
 		batch.end();
 	}
 
-	private void renderBall(Match match) {
-		renderer.begin(ShapeType.Filled);
-		renderer.setColor(Color.WHITE);
-		renderer.rect(match.board.ball.bounds.x, match.board.ball.bounds.y,
-				match.board.ball.bounds.width, match.board.ball.bounds.height);
-		renderer.end();
+	private void update(float deltaTime) {
+		KeyMap newPlayerKeys = getPressedKeyMap();
+
+		if (newPlayerKeys != null) {
+			handler.addNewPlayer(newPlayerKeys);
+		}
+		handler.showBoardsInHiddenMatches();
+		handler.updateBoardsInVisibleMatches(deltaTime);
 	}
 
 }

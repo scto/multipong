@@ -4,6 +4,7 @@ import multipong.board.Board;
 import multipong.board.BoardUpdater;
 import multipong.board.boardobjects.Player;
 import multipong.screens.KeyMap;
+import multipong.settings.Settings;
 
 public class Match {
 
@@ -16,6 +17,7 @@ public class Match {
 	boolean pauseWhenRoundWon = false;
 
 	int winScore = 5000;
+	public float stateTime = 0;
 
 	public Match() {
 		board = new Board();
@@ -75,8 +77,18 @@ public class Match {
 		return paused;
 	}
 
+	public boolean isCountingDown() {
+		return stateTime <= Settings.matchStartCountDownFrom;
+	}
+
 	public void update(float deltaTime) {
 		if (!paused) {
+			
+			stateTime += deltaTime;
+			
+			if (isCountingDown()) {
+				return;
+			}
 
 			BoardUpdater.update(board, deltaTime);
 			Player winner = BoardUpdater.getWinner(board);
