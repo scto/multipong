@@ -41,6 +41,14 @@ public class Match {
 		paused = true;
 	}
 
+	public Player getLeftPlayer() {
+		return leftPlayer;
+	}
+
+	public Player getRightPlayer() {
+		return rightPlayer;
+	}
+
 	public Player getMatchWinner() {
 		return matchWinner;
 	}

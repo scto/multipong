@@ -43,10 +43,20 @@ public class DropInScreen extends AbstractScreen {
 
 		renderBoards(deltaTime);
 		stateTime += deltaTime;
-		
-		if (handler.allVisibleMatchesAreFinished()) {
-			
+
+		if (handler.matchHasBeenStartedSinceCreation()
+				&& handler.allVisibleMatchesAreFinished()
+				&& !handler.matchesArePending()) {
+			if (handler.timeSinceLastFinishedMatchEnded() >= Settings.timeUntilDropOutAfterAllMatchesFinished) {
+				Gdx.app.debug(className, "Restarting");
+				resetScreen();
+			}
 		}
+	}
+
+	private void resetScreen() {
+		availableKeyMaps = loadKeyMaps();
+		handler = new DropInMatchHandler(width, height);
 	}
 
 	private void renderBall(Match match) {
@@ -65,7 +75,7 @@ public class DropInScreen extends AbstractScreen {
 
 			if (match.isFinished()) {
 				renderRoundWinner(match);
-				
+
 			} else if (match.isPlayable()) {
 				renderLeftName(match);
 				renderRightName(match);
