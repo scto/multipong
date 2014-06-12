@@ -32,7 +32,7 @@ public class Settings {
 	/**
 	 * Starting velocity of ball.
 	 */
-	public static float ballStartingVelocity = 200f;
+	public static float ballStartingVelocity = 300f;
 
 	/**
 	 * Maximum angle the ball can travel in after being hit by a pad. Angle is
@@ -91,22 +91,21 @@ public class Settings {
 	 * Adds a speed value to the ball for every time the ball is hitted by a
 	 * pad.
 	 */
-	public static float addSpeedToBallEveryHit = 25f;
+	public static float addSpeedToBallEveryHit = 1f;
 
 	/**
 	 * The score needed to win a match.
 	 */
-	public static int scoreToWinMatch = 10;
+	public static int scoreToWinMatch = 3;
 
 	/**
-	 * How long to show the message "player is the winner!" after all matches
-	 * are finished, in drop-in mode. After this time, boards are reset.
+	 * How long to show the message "player is the winner!" after a match is
+	 * finished, in drop-in mode.
 	 */
-	public static float timeUntilDropOutAfterAllMatchesFinished = 3;
+	public static float secondsToShowMatchWinner = 3;
 
 	/**
 	 * Set which type of ball to use.
 	 */
 	public static int ballTypeNum = 2;
-
 }
