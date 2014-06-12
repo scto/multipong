@@ -3,6 +3,7 @@ package multipong.matchhandlers;
 import java.util.ArrayList;
 import java.util.List;
 
+import multipong.board.boardobjects.Player;
 import multipong.match.Match;
 import multipong.screens.KeyMap;
 
@@ -23,6 +24,36 @@ public class DropInMatchHandler {
 		Gdx.app.debug(className, "First board: " + firstMatch.toString());
 	}
 
+	public boolean matchesArePending() {
+		for (Match hiddenMatch : hiddenMatches) {
+			if (hiddenMatch.hasLeftPlayer()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * TODO
+	 * 
+	 * @return The finished players
+	 */
+	public List<Player> closeFinishedMatches() {
+		List<Player> finishedPlayers = new ArrayList<Player>();
+		List<Match> finishedMatches = new ArrayList<Match>();
+		for (Match match : visibleMatches) {
+			if (match.isFinished()) {
+				finishedMatches.add(match);
+				finishedPlayers.add(match.getLeftPlayer());
+				finishedPlayers.add(match.getRightPlayer());
+			}
+		}
+		for (Match finishedMatch : finishedMatches) {
+			visibleMatches.remove(finishedMatch);
+		}
+		return finishedPlayers;
+	}
+
 	public void addMatch(Match match) {
 		if (getVisibleMatches().isEmpty()) {
 			getVisibleMatches().add(match);
@@ -30,14 +61,34 @@ public class DropInMatchHandler {
 			hiddenMatches.add(match);
 		}
 	}
-	
-	public boolean allVisibleMatchesAreFinished() {
+
+	public boolean matchHasBeenStartedSinceCreation() {
 		for (Match match : visibleMatches) {
-			if (!match.isFinished()) {
+			if (match.hasLeftPlayer()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean allVisibleMatchesAreFinished() {
+
+		for (Match match : visibleMatches) {
+			if (!match.isFinished() && match.hasLeftPlayer()) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	public float timeSinceLastFinishedMatchEnded() {
+		float minTime = Float.MAX_VALUE;
+		for (Match match : visibleMatches) {
+			if (match.isFinished() && match.timeSinceMatchFinished < minTime) {
+				minTime = match.timeSinceMatchFinished;
+			}
+		}
+		return minTime;
 	}
 
 	public void addNewPlayer(KeyMap newPlayerKeys) {

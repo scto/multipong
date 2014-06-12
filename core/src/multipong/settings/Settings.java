@@ -85,18 +85,18 @@ public class Settings {
 	/**
 	 * Countdown before match, in seconds.
 	 */
-	public static float matchStartCountDownFrom = 1f;
+	public static float matchStartCountDownFrom = 3f;
 
 	/**
 	 * Adds a speed value to the ball for every time the ball is hitted by a
 	 * pad.
 	 */
-	public static float addSpeedToBallEveryHit = 25f;
+	public static float addSpeedToBallEveryHit = 1f;
 
 	/**
 	 * The score needed to win a match.
 	 */
-	public static int scoreToWinMatch = 10;
+	public static int scoreToWinMatch = 3;
 
 	/**
 	 * How long to show the message "player is the winner!" after a match is
