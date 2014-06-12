@@ -19,10 +19,10 @@ public class Settings {
 	public static float ballAddedVelocityPercentOfPadVelocity = 100f;
 
 	/**
-	 * Adds a speed value to the ball for every time the ball is hitted by a
+	 * Adds a velocity value to the ball for every time the ball is hitted by a
 	 * pad.
 	 */
-	public static float ballAddSpeedToEveryHit = 25f;
+	public static float ballAddVelocityToEveryHit = 25f;
 
 	/**
 	 * Maximum angle the ball can travel in after being hit by a pad. Angle is

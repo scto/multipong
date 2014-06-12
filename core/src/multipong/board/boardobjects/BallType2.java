@@ -18,7 +18,8 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 	float ballMaxVel;
 	float ballMinVel;
 	float ballStartVel;
-	float ballVelIncr;
+	float ballVelIncrease;
+	float ballVelIncrement;
 	float boardSizeVelScale;
 
 	float ballMaxXVel;
@@ -45,7 +46,9 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 		ballMaxVel = Settings.ballMaxVelocity * boardSizeVelScale;
 		ballMinVel = Settings.ballMinVelocity * boardSizeVelScale;
 		ballStartVel = Settings.ballStartingVelocity * boardSizeVelScale;
-		ballVelIncr = Settings.ballAddSpeedToEveryHit * boardSizeVelScale;
+		ballVelIncrease = Settings.ballAddVelocityToEveryHit
+				* boardSizeVelScale;
+		ballVelIncrement = boardSizeVelScale;
 
 		ballMaxXVel = Settings.ballMaxXVelocity * boardSizeVelScale;
 		ballMaxYVel = Settings.ballMaxYVelocity * boardSizeVelScale;
@@ -90,8 +93,8 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 	@Override
 	public void addXVelocityFromPad(float padYVelocity) {
 
-		ballVelIncr++;
-		vel.x = (vel.x + (ballVelIncr * Settings.ballAddSpeedToEveryHit));
+		ballVelIncrease += ballVelIncrement;
+		vel.x = (vel.x + (ballVelIncrease * Settings.ballAddVelocityToEveryHit));
 
 	}
 
@@ -147,7 +150,7 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 		vel.y = 0;
 		bounds.x = start.x;
 		bounds.y = start.y;
-		ballVelIncr = 0;
+		ballVelIncrease = 0;
 
 		float dy = MathUtils.random(-1f, 1f);
 
