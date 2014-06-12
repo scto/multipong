@@ -64,8 +64,8 @@ public class Board {
 		midPointX = x + width / 2;
 		midPointY = y + height / 2;
 
-		leftMidPointX = midPointX / 2;
-		rightMidPointX = midPointX / 2 * 3;
+		leftMidPointX = x + width / 4;
+		rightMidPointX = x + width / 4 * 3;
 
 		createPads();
 		createSeparator();
