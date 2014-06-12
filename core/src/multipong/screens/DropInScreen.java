@@ -79,9 +79,13 @@ public class DropInScreen extends AbstractScreen {
 				renderRightPad(match);
 
 				if (match.hasStartCountDown()) {
-					renderStartCountDown(match);
+					float number = (Settings.timeMatchStartCountDownFrom + 1 - match.stateTime);
+					renderCountDown(number, match.board.midPointX,
+							match.board.midPointY);
 				} else if (match.hasRedrawCountDown()) {
-					renderRedrawCountDown(match);
+					float number = (match.redrawCountDown + 1);
+					renderCountDown(number, match.board.midPointX,
+							match.board.midPointY);
 				} else {
 					renderBall(match);
 				}
@@ -102,32 +106,19 @@ public class DropInScreen extends AbstractScreen {
 		}
 	}
 
-	private void renderRedrawCountDown(Match match) {
+	private void renderCountDown(float number, float midPointX, float midPointY) {
 		batch.begin();
 		font.setScale(5f);
+		Color c = Color.WHITE;
+		font.setColor(c.r, c.g, c.b, number - (int) number);
 
-		String str = Integer.toString((int) (match.redrawCountDown + 1));
-		float xOffset = match.board.midPointX - (font.getBounds(str).width / 2);
-		float yOffset = match.board.midPointY
-				- (font.getBounds(str).height / 2);
+		String str = Integer.toString((int) number);
+		float xOffset = midPointX - (font.getBounds(str).width / 2);
+		float yOffset = midPointY - (font.getBounds(str).height / 2);
 
 		font.draw(batch, str, xOffset, yOffset);
 		font.setScale(1);
-		batch.end();
-	}
-
-	private void renderStartCountDown(Match match) {
-		batch.begin();
-		font.setScale(5f);
-
-		String str = Integer
-				.toString((int) (Settings.timeMatchStartCountDownFrom + 1 - match.stateTime));
-		float xOffset = match.board.midPointX - (font.getBounds(str).width / 2);
-		float yOffset = match.board.midPointY
-				- (font.getBounds(str).height / 2);
-
-		font.draw(batch, str, xOffset, yOffset);
-		font.setScale(1);
+		font.setColor(Color.WHITE);
 		batch.end();
 	}
 
@@ -149,8 +140,9 @@ public class DropInScreen extends AbstractScreen {
 
 	private void renderLeftName(Match match) {
 		batch.begin();
-		font.draw(batch, match.board.leftPlayer.name,
-				match.board.leftPlayerNamePos.x,
+		float xOffset = match.board.leftMidPointX
+				- (font.getBounds(match.board.leftPlayer.name).width / 2);
+		font.draw(batch, match.board.leftPlayer.name, xOffset,
 				match.board.leftPlayerNamePos.y);
 		batch.end();
 	}
@@ -178,8 +170,9 @@ public class DropInScreen extends AbstractScreen {
 
 	private void renderRightName(Match match) {
 		batch.begin();
-		font.draw(batch, match.board.rightPlayer.name,
-				match.board.rightPlayerNamePos.x,
+		float xOffset = match.board.rightMidPointX
+				- (font.getBounds(match.board.rightPlayer.name).width / 2);
+		font.draw(batch, match.board.rightPlayer.name, xOffset,
 				match.board.rightPlayerNamePos.y);
 		batch.end();
 	}
