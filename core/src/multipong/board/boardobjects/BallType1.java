@@ -4,9 +4,10 @@ import multipong.settings.Settings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Ball extends BoundedRectangle {
+public class BallType1 extends BoundedRectangle implements BallInterface {
 
 	private Vector2 start = new Vector2();
 	private Vector2 vel = new Vector2();
@@ -17,25 +18,12 @@ public class Ball extends BoundedRectangle {
 	float ballMaxVel;
 	float ballMinVel;
 	float ballStartVel;
+	float ballVelIncr;
 
-	/**
-	 * 
-	 * @param x
-	 *            Starting coordinate on x-axis,
-	 * @param y
-	 *            Starting coordinate on y-axis.
-	 * @param ballSize
-	 *            Size of ball in pixels.
-	 * @param startingXDirection
-	 *            1 or -1 depending on starting direction.
-	 * @param fieldBounds
-	 *            Bounds of the playing field.
-	 * @param leftPadBounds
-	 *            Bounds of left player pad.
-	 * @param rightPadBounds
-	 *            Bounds of right player pad.
-	 */
-	public Ball(float x, float y, float ballSize, float boardWidth,
+	float ballMaxXVel;
+	float ballMaxYVel;
+
+	public BallType1(float x, float y, float ballSize, float boardWidth,
 			float boardHeight, float startingXDirection) {
 		super(x, y, ballSize, ballSize);
 
@@ -55,63 +43,43 @@ public class Ball extends BoundedRectangle {
 
 		ballMaxVel = Settings.ballMaxVelocity * boardSizeVelScale;
 		ballMinVel = Settings.ballMinVelocity * boardSizeVelScale;
-		ballStartVel = Settings.ballStartingVelocity
-				* (boardWidth / Settings.appWidth);
+		ballStartVel = Settings.ballStartingVelocity * boardSizeVelScale;
+		ballVelIncr = Settings.addSpeedToBallEveryHit * boardSizeVelScale;
+
+		ballMaxXVel = Settings.ballMaxXVelocity * boardSizeVelScale;
+		ballMaxYVel = Settings.ballMaxYVelocity * boardSizeVelScale;
 
 		reset(startingXDirection);
 	}
 
-	public void addYVelocity(float padYVelocity) {
-		float velocity = padYVelocity
-				* Settings.ballAddedVelocityPercentOfPadVelocity / 100;
-
-		float addY = Math.abs(vel.y + velocity);
-		float addX = Math.abs(vel.x);
-
-		float resultAngle = (float) Math.toDegrees(Math.atan(addY / addX));
-
-		Gdx.app.debug(className, "Adding y vel would give angle " + resultAngle);
-
-		if (resultAngle <= Settings.ballMaxAngle) {
-			vel.y += velocity;
-			Gdx.app.debug(className, "Angle after y added " + resultAngle);
-		} else {
-			float dirY = (vel.y + velocity) / addY;
-			float dirX = vel.x / addX;
-			float resultVel = (float) Math.sqrt(addX * addX + addY * addY);
-			float newAngle = (float) Math.toRadians(Settings.ballMaxAngle);
-
-			vel.y = (float) (Math.sin(newAngle) * resultVel) * dirY;
-			vel.x = (float) (Math.cos(newAngle) * resultVel) * dirX;
-			Gdx.app.debug(className, "Using max angle " + Settings.ballMaxAngle);
-		}
-
-		Gdx.app.debug(className, "Velocity is " + vel.len());
-
-	}
-
+	@Override
 	public void reverseX() {
 		vel.x = -vel.x;
 	}
 
+	@Override
 	public void reverseY() {
 		vel.y = -vel.y;
 	}
 
+	@Override
 	public void dampen() {
 		vel.y -= vel.y * Settings.ballWallDampeningPercentOfVelocity / 100;
 		vel.x -= vel.x * Settings.ballWallDampeningPercentOfVelocity / 100;
 	}
 
+	@Override
 	public void resetWithLeftPlayerDirection() {
 		reset(-1);
 	}
 
+	@Override
 	public void resetWithRightPlayerDirection() {
 		reset(1);
 	}
 
-	private void reset(float startingXDirection) {
+	@Override
+	public void reset(float startingXDirection) {
 		vel.x = 0;
 		vel.y = 0;
 		bounds.x = start.x;
@@ -150,6 +118,7 @@ public class Ball extends BoundedRectangle {
 		}
 	}
 
+	@Override
 	public void update(float deltaTime) {
 		vel.scl(deltaTime);
 
@@ -159,6 +128,68 @@ public class Ball extends BoundedRectangle {
 		vel.scl(1.0f / deltaTime);
 
 		checkVelocity();
+	}
+
+	@Override
+	public void addYVelocityFromPad(float padYVelocity) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addXVelocityFromPad(float padYVelocity) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addTotalVelocityFromPad(float padYVelocity) {
+		float velocity = padYVelocity
+				* Settings.ballAddedVelocityPercentOfPadVelocity / 100;
+
+		float addY = Math.abs(vel.y + velocity);
+		float addX = Math.abs(vel.x);
+
+		float resultAngle = (float) Math.toDegrees(Math.atan(addY / addX));
+
+		Gdx.app.debug(className, "Adding y vel would give angle " + resultAngle);
+
+		if (resultAngle <= Settings.ballMaxAngle) {
+			vel.y += velocity;
+			Gdx.app.debug(className, "Angle (cal)" + resultAngle);
+		} else {
+			float dirY = (vel.y + velocity) / addY;
+			float dirX = vel.x / addX;
+			float resultVel = (float) Math.sqrt(addX * addX + addY * addY);
+			float newAngle = (float) Math.toRadians(Settings.ballMaxAngle);
+
+			vel.y = (float) (Math.sin(newAngle) * resultVel) * dirY;
+			vel.x = (float) (Math.cos(newAngle) * resultVel) * dirX;
+			Gdx.app.debug(className, "Angle (max)" + Settings.ballMaxAngle);
+		}
+
+		Gdx.app.debug(className, "x Velocity " + vel.x);
+		Gdx.app.debug(className, "y Velocity " + vel.y);
+		Gdx.app.debug(className, "r Velocity  " + vel.len());
+
+		Gdx.app.debug("Pad", "Velocity " + padYVelocity);
+
+	}
+
+	@Override
+	public void increaseXVelocity(float velocity) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void increaseYVelocity(float velocity) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public boolean overlaps(Rectangle r) {
+		return bounds.overlaps(r);
 	}
 
 }

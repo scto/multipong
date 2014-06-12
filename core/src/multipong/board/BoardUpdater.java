@@ -19,13 +19,13 @@ public class BoardUpdater {
 	private static void checkBallBounce(Board board) {
 		if (board.ball.getTop() > board.field.getTop()) {
 
-			board.ball.bounds.y = board.field.getTop() - board.ball.getHeight();
+			board.ball.setY(board.field.getTop() - board.ball.getHeight());
 			board.ball.reverseY();
 			board.ball.dampen();
 
 		} else if (board.ball.getBottom() < board.field.getBottom()) {
 
-			board.ball.bounds.y = board.field.getBottom();
+			board.ball.setY(board.field.getBottom());
 			board.ball.reverseY();
 			board.ball.dampen();
 		}
@@ -33,17 +33,17 @@ public class BoardUpdater {
 
 	private static void checkBallHit(Board board) {
 
-		if (board.ball.bounds.overlaps(board.rightPlayerPad.bounds)) {
+		if (board.ball.overlaps(board.rightPlayerPad.getBounds())) {
 
-			board.ball.addYVelocity(board.rightPlayerPad.getVelocity());
-			board.ball.bounds.x = board.rightPlayerPad.getLeft()
-					- board.ball.bounds.getWidth();
+			board.ball.addYVelocityFromPad(board.rightPlayerPad.getVelocity());
+			board.ball.setX(board.rightPlayerPad.getLeft()
+					- board.ball.getWidth());
 			board.ball.reverseX();
 
-		} else if (board.ball.bounds.overlaps(board.leftPlayerPad.bounds)) {
+		} else if (board.ball.overlaps(board.leftPlayerPad.getBounds())) {
 
-			board.ball.addYVelocity(board.leftPlayerPad.getVelocity());
-			board.ball.bounds.x = board.leftPlayerPad.getRight();
+			board.ball.addYVelocityFromPad(board.leftPlayerPad.getVelocity());
+			board.ball.setX(board.leftPlayerPad.getRight());
 			board.ball.reverseX();
 		}
 
@@ -52,13 +52,12 @@ public class BoardUpdater {
 	public static Player getWinner(Board board) {
 		if (board.ball.getRight() >= board.field.getRight()) {
 
-			board.ball.bounds.x = board.field.getRight()
-					- board.ball.bounds.getWidth();
+			board.ball.setX(board.field.getRight() - board.ball.getWidth());
 			return board.leftPlayer;
 
 		} else if (board.ball.getLeft() <= board.field.getLeft()) {
 
-			board.ball.bounds.x = board.field.getLeft();
+			board.ball.setX(board.field.getLeft());
 			return board.rightPlayer;
 		}
 		return null;
@@ -72,13 +71,12 @@ public class BoardUpdater {
 	private static void checkPadBounds(Pad pad, Board board) {
 		if (pad.getBottom() < board.field.getBottom()) {
 
-			pad.bounds.y = board.field.getBottom();
+			pad.setY(board.field.getBottom());
 			pad.stop();
 
 		} else if (pad.getTop() > board.field.getTop()) {
 
-			pad.bounds.y = board.field.getTop()
-					- board.leftPlayerPad.getHeight();
+			pad.setY(board.field.getTop() - board.leftPlayerPad.getHeight());
 			pad.stop();
 		}
 	}
@@ -92,10 +90,21 @@ public class BoardUpdater {
 	}
 
 	private static void parseInput(int downKey, int upKey, Pad pad) {
-		if (Gdx.input.isKeyPressed(downKey)) {
+		if (Gdx.input.isKeyPressed(downKey) && Gdx.input.isKeyPressed(upKey)) {
+			pad.stop();
+
+		} else if (Gdx.input.isKeyPressed(downKey)) {
+			if (pad.movingUp()) {
+				pad.stop();
+			}
 			pad.up();
+
 		} else if (Gdx.input.isKeyPressed(upKey)) {
+			if (pad.movingDown()) {
+				pad.stop();
+			}
 			pad.down();
+
 		} else {
 			pad.stop();
 		}

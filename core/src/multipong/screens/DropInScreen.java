@@ -48,8 +48,9 @@ public class DropInScreen extends AbstractScreen {
 	private void renderBall(Match match) {
 		renderer.begin(ShapeType.Filled);
 		renderer.setColor(Color.WHITE);
-		renderer.rect(match.board.ball.bounds.x, match.board.ball.bounds.y,
-				match.board.ball.bounds.width, match.board.ball.bounds.height);
+		renderer.rect(match.board.ball.getX(),
+				match.board.ball.getY(), match.board.ball.getWidth(),
+				match.board.ball.getHeight());
 		renderer.end();
 	}
 
@@ -105,9 +106,9 @@ public class DropInScreen extends AbstractScreen {
 		renderer.begin(ShapeType.Line);
 		renderer.setColor(Color.WHITE);
 		// Draw field
-		renderer.rect(match.board.field.bounds.x + 1,
-				match.board.field.bounds.y, match.board.field.bounds.width - 1,
-				match.board.field.bounds.height - 1);
+		renderer.rect(match.board.field.getX() + 1, match.board.field.getY(),
+				match.board.field.getWidth() - 1,
+				match.board.field.getHeight() - 1);
 
 		renderer.setColor(Color.GRAY);
 		for (Vector2 separator : match.board.separatorPos) {
@@ -129,10 +130,10 @@ public class DropInScreen extends AbstractScreen {
 		renderer.begin(ShapeType.Filled);
 		renderer.setColor(Color.WHITE);
 		// Draw pad
-		renderer.rect(match.board.leftPlayerPad.bounds.x,
-				match.board.leftPlayerPad.bounds.y,
-				match.board.leftPlayerPad.bounds.width,
-				match.board.leftPlayerPad.bounds.height);
+		renderer.rect(match.board.leftPlayerPad.getX(),
+				match.board.leftPlayerPad.getY(),
+				match.board.leftPlayerPad.getWidth(),
+				match.board.leftPlayerPad.getHeight());
 		renderer.end();
 	}
 
@@ -158,10 +159,10 @@ public class DropInScreen extends AbstractScreen {
 		renderer.begin(ShapeType.Filled);
 		renderer.setColor(Color.WHITE);
 		// Draw pad
-		renderer.rect(match.board.rightPlayerPad.bounds.x,
-				match.board.rightPlayerPad.bounds.y,
-				match.board.rightPlayerPad.bounds.width,
-				match.board.rightPlayerPad.bounds.height);
+		renderer.rect(match.board.rightPlayerPad.getX(),
+				match.board.rightPlayerPad.getY(),
+				match.board.rightPlayerPad.getWidth(),
+				match.board.rightPlayerPad.getHeight());
 		renderer.end();
 	}
 

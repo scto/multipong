@@ -4,10 +4,14 @@ import com.badlogic.gdx.math.Rectangle;
 
 public abstract class BoundedRectangle {
 
-	public Rectangle bounds;
+	protected Rectangle bounds;
 
 	public BoundedRectangle(float x, float y, float width, float height) {
 		bounds = new Rectangle(x, y, width, height);
+	}
+	
+	public Rectangle getBounds() {
+		return bounds;
 	}
 
 	public float getX() {

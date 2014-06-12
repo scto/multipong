@@ -2,6 +2,7 @@ package multipong.board.boardobjects;
 
 import multipong.settings.Settings;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Pad extends BoundedRectangle {
@@ -27,6 +28,14 @@ public class Pad extends BoundedRectangle {
 		vel.y = 0;
 	}
 
+	public boolean movingUp() {
+		return (vel.y < 0);
+	}
+	
+	public boolean movingDown() {
+		return (vel.y > 0);
+	}
+	
 	public void up() {
 		accel.y = Settings.padAcceleration * (boardHeight / Settings.appHeight);
 	}
@@ -63,5 +72,9 @@ public class Pad extends BoundedRectangle {
 
 		stateTime += deltaTime;
 
+	}
+	
+	public boolean overlaps(Rectangle r) {
+		return bounds.overlaps(r);
 	}
 }

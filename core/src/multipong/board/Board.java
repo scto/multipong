@@ -1,12 +1,14 @@
 package multipong.board;
 
-import multipong.board.boardobjects.Ball;
+import multipong.board.boardobjects.BallInterface;
+import multipong.board.boardobjects.BallType1;
 import multipong.board.boardobjects.Field;
 import multipong.board.boardobjects.Pad;
 import multipong.board.boardobjects.Player;
 import multipong.settings.Settings;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Board {
@@ -25,7 +27,7 @@ public class Board {
 	public Vector2 rightPlayerNamePos;
 
 	public Field field;
-	public Ball ball;
+	public BallInterface ball;
 
 	public int stateTime = 0;
 	public float x, y, width, height;
@@ -79,7 +81,7 @@ public class Board {
 		float ballSize = height * Settings.ballSizePercentOfBoardHeight / 100;
 		float ballStartingXDirection = (MathUtils.random(0, 1) != 1) ? -1f : 1f;
 
-		ball = new Ball(midPointX, midPointY, ballSize, width, height,
+		ball = new BallType1(midPointX, midPointY, ballSize, width, height,
 				ballStartingXDirection);
 	}
 
@@ -131,5 +133,9 @@ public class Board {
 	public void setPlayers(Player leftPlayer, Player rightPlayer) {
 		this.leftPlayer = leftPlayer;
 		this.rightPlayer = rightPlayer;
+	}
+	
+	public Rectangle getBounds(){
+		return field.getBounds();
 	}
 }
