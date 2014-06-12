@@ -53,96 +53,6 @@ public class BallType1 extends BoundedRectangle implements BallInterface {
 	}
 
 	@Override
-	public void reverseX() {
-		vel.x = -vel.x;
-	}
-
-	@Override
-	public void reverseY() {
-		vel.y = -vel.y;
-	}
-
-	@Override
-	public void dampen() {
-		vel.y -= vel.y * Settings.ballWallDampeningPercentOfVelocity / 100;
-		vel.x -= vel.x * Settings.ballWallDampeningPercentOfVelocity / 100;
-	}
-
-	@Override
-	public void resetWithLeftPlayerDirection() {
-		reset(-1);
-	}
-
-	@Override
-	public void resetWithRightPlayerDirection() {
-		reset(1);
-	}
-
-	@Override
-	public void reset(float startingXDirection) {
-		vel.x = 0;
-		vel.y = 0;
-		bounds.x = start.x;
-		bounds.y = start.y;
-
-		float dy = MathUtils.random(-1f, 1f);
-
-		float dlen = Math.abs(dy);
-		float angle = (float) Math.atan(dlen);
-
-		if (Math.toDegrees(angle) <= Settings.ballMaxAngle) {
-			vel.x = (float) (Math.cos(angle) * ballStartVel * startingXDirection);
-			vel.y = (float) (Math.sin(angle) * ballStartVel * dy / dlen);
-		} else {
-			float maxAngle = (float) Math.toRadians(Settings.ballMaxAngle);
-			vel.x = (float) (Math.cos(maxAngle) * ballStartVel * startingXDirection);
-			vel.y = (float) (Math.sin(maxAngle) * ballStartVel * dy / dlen);
-		}
-	}
-
-	private void checkVelocity() {
-
-		float velTot = vel.len();
-
-		if (velTot > ballMaxVel) {
-			float downScale = ballMaxVel / velTot;
-			vel.scl(downScale);
-
-			Gdx.app.debug(className, "Reached max velocity.");
-
-		} else if (velTot < ballMinVel) {
-			float upScale = ballMinVel / velTot;
-			vel.scl(upScale);
-
-			Gdx.app.debug(className, "Reached min velocity.");
-		}
-	}
-
-	@Override
-	public void update(float deltaTime) {
-		vel.scl(deltaTime);
-
-		bounds.x += vel.x;
-		bounds.y += vel.y;
-
-		vel.scl(1.0f / deltaTime);
-
-		checkVelocity();
-	}
-
-	@Override
-	public void addYVelocityFromPad(float padYVelocity) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void addXVelocityFromPad(float padYVelocity) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void addTotalVelocityFromPad(float padYVelocity) {
 		float velocity = padYVelocity
 				* Settings.ballAddedVelocityPercentOfPadVelocity / 100;
@@ -177,6 +87,42 @@ public class BallType1 extends BoundedRectangle implements BallInterface {
 	}
 
 	@Override
+	public void addXVelocityFromPad(float padYVelocity) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addYVelocityFromPad(float padYVelocity) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void checkVelocity() {
+
+		float velTot = vel.len();
+
+		if (velTot > ballMaxVel) {
+			float downScale = ballMaxVel / velTot;
+			vel.scl(downScale);
+
+			Gdx.app.debug(className, "Reached max velocity.");
+
+		} else if (velTot < ballMinVel) {
+			float upScale = ballMinVel / velTot;
+			vel.scl(upScale);
+
+			Gdx.app.debug(className, "Reached min velocity.");
+		}
+	}
+
+	@Override
+	public void dampen() {
+		vel.y -= vel.y * Settings.ballWallDampeningPercentOfVelocity / 100;
+		vel.x -= vel.x * Settings.ballWallDampeningPercentOfVelocity / 100;
+	}
+
+	@Override
 	public void increaseXVelocity(float velocity) {
 		// TODO Auto-generated method stub
 
@@ -190,6 +136,60 @@ public class BallType1 extends BoundedRectangle implements BallInterface {
 	@Override
 	public boolean overlaps(Rectangle r) {
 		return bounds.overlaps(r);
+	}
+
+	@Override
+	public void reset(float startingXDirection) {
+		vel.x = 0;
+		vel.y = 0;
+		bounds.x = start.x;
+		bounds.y = start.y;
+
+		float dy = MathUtils.random(-1f, 1f);
+
+		float dlen = Math.abs(dy);
+		float angle = (float) Math.atan(dlen);
+
+		if (Math.toDegrees(angle) <= Settings.ballMaxAngle) {
+			vel.x = (float) (Math.cos(angle) * ballStartVel * startingXDirection);
+			vel.y = (float) (Math.sin(angle) * ballStartVel * dy / dlen);
+		} else {
+			float maxAngle = (float) Math.toRadians(Settings.ballMaxAngle);
+			vel.x = (float) (Math.cos(maxAngle) * ballStartVel * startingXDirection);
+			vel.y = (float) (Math.sin(maxAngle) * ballStartVel * dy / dlen);
+		}
+	}
+
+	@Override
+	public void resetWithLeftPlayerDirection() {
+		reset(-1);
+	}
+
+	@Override
+	public void resetWithRightPlayerDirection() {
+		reset(1);
+	}
+
+	@Override
+	public void reverseX() {
+		vel.x = -vel.x;
+	}
+
+	@Override
+	public void reverseY() {
+		vel.y = -vel.y;
+	}
+
+	@Override
+	public void update(float deltaTime) {
+		vel.scl(deltaTime);
+
+		bounds.x += vel.x;
+		bounds.y += vel.y;
+
+		vel.scl(1.0f / deltaTime);
+
+		checkVelocity();
 	}
 
 }

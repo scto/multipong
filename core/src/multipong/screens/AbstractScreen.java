@@ -17,53 +17,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class AbstractScreen implements Screen {
 
-	int width, height;
-	Game game;
-	private List<KeyMap> keyMaps;
-
-	float keyDelay = 0.3f;
-	float timeSinceKeyPressed = 0;
-
-	protected BitmapFont font = new BitmapFont(true);
-	protected SpriteBatch batch = new SpriteBatch();
-	protected ShapeRenderer renderer = new ShapeRenderer();
-	protected OrthographicCamera camera;
-	protected float stateTime = 0;
-	protected Viewport viewport;
-
-	public AbstractScreen(Game game, int width, int height) {
-		this.game = game;
-		this.height = height;
-		this.width = width;
-		keyMaps = loadKeyMaps();
-
-		camera = new OrthographicCamera(width, height);
-		camera.setToOrtho(true);
-		camera.position.set(width / 2, height / 2, 0);
-		camera.update();
-
-		viewport = new StretchViewport(width, height, camera);
-	}
-
-	@Override
-	public void render(float deltaTime) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		camera.update();
-		renderer.setProjectionMatrix(camera.combined);
-		batch.setProjectionMatrix(camera.combined);
-
-		updateKeyDelay(deltaTime);
-	}
-
-	private void updateKeyDelay(float deltaTime) {
-		if (timeSinceKeyPressed < 0) {
-			timeSinceKeyPressed = keyDelay;
-		}
-		timeSinceKeyPressed += deltaTime;
-	}
-
 	protected static List<KeyMap> loadKeyMaps() {
 		List<KeyMap> availableKeyMaps = new ArrayList<KeyMap>();
 
@@ -89,19 +42,58 @@ public class AbstractScreen implements Screen {
 
 		return availableKeyMaps;
 	}
+	int width, height;
+	Game game;
+
+	private List<KeyMap> keyMaps;
+	float keyDelay = 0.3f;
+
+	float timeSinceKeyPressed = 0;
+	protected BitmapFont font = new BitmapFont(true);
+	protected SpriteBatch batch = new SpriteBatch();
+	protected ShapeRenderer renderer = new ShapeRenderer();
+	protected OrthographicCamera camera;
+	protected float stateTime = 0;
+
+	protected Viewport viewport;
+
+	public AbstractScreen(Game game, int width, int height) {
+		this.game = game;
+		this.height = height;
+		this.width = width;
+		keyMaps = loadKeyMaps();
+
+		camera = new OrthographicCamera(width, height);
+		camera.setToOrtho(true);
+		camera.position.set(width / 2, height / 2, 0);
+		camera.update();
+
+		viewport = new StretchViewport(width, height, camera);
+	}
+
+	@Override
+	public void dispose() {
+		game.dispose();
+		batch.dispose();
+		font.dispose();
+		renderer.dispose();
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+
+	}
 
 	protected boolean playerHoldsKeyDown() {
 		for (KeyMap keys : keyMaps) {
 			if (Gdx.input.isKeyPressed(keys.downKey)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	protected boolean playerHoldsKeyUp() {
-		for (KeyMap keys : keyMaps) {
-			if (Gdx.input.isKeyPressed(keys.upKey)) {
 				return true;
 			}
 		}
@@ -117,16 +109,17 @@ public class AbstractScreen implements Screen {
 		return false;
 	}
 
-	protected boolean playerPressedDown() {
-		if (timeSinceKeyPressed > keyDelay && playerHoldsKeyDown()) {
-			timeSinceKeyPressed = 0;
-			return true;
+	protected boolean playerHoldsKeyUp() {
+		for (KeyMap keys : keyMaps) {
+			if (Gdx.input.isKeyPressed(keys.upKey)) {
+				return true;
+			}
 		}
 		return false;
 	}
 
-	protected boolean playerPressedUp() {
-		if (timeSinceKeyPressed > keyDelay && playerHoldsKeyUp()) {
+	protected boolean playerPressedDown() {
+		if (timeSinceKeyPressed > keyDelay && playerHoldsKeyDown()) {
 			timeSinceKeyPressed = 0;
 			return true;
 		}
@@ -141,27 +134,29 @@ public class AbstractScreen implements Screen {
 		return false;
 	}
 
+	protected boolean playerPressedUp() {
+		if (timeSinceKeyPressed > keyDelay && playerHoldsKeyUp()) {
+			timeSinceKeyPressed = 0;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void render(float deltaTime) {
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		camera.update();
+		renderer.setProjectionMatrix(camera.combined);
+		batch.setProjectionMatrix(camera.combined);
+
+		updateKeyDelay(deltaTime);
+	}
+
 	@Override
 	public void resize(int width, int height) {
 		viewport.update(width, height);
-	}
-
-	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -171,11 +166,16 @@ public class AbstractScreen implements Screen {
 	}
 
 	@Override
-	public void dispose() {
-		game.dispose();
-		batch.dispose();
-		font.dispose();
-		renderer.dispose();
+	public void show() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void updateKeyDelay(float deltaTime) {
+		if (timeSinceKeyPressed < 0) {
+			timeSinceKeyPressed = keyDelay;
+		}
+		timeSinceKeyPressed += deltaTime;
 	}
 
 }

@@ -11,6 +11,12 @@ public class LetterRoller {
 
 	private String letters;
 
+	public void delete() {
+		if (letters.length() != 0) {
+			letters.substring(0, letters.length() - 1);
+		}
+	}
+
 	public void down() {
 		if (selected == last) {
 			selected = 0;
@@ -19,25 +25,19 @@ public class LetterRoller {
 		}
 	}
 
+	public void enter() {
+		letters += letterList[selected];
+	}
+
+	public String getLetters() {
+		return letters;
+	}
+
 	public void up() {
 		if (selected == 0) {
 			selected = last;
 		} else {
 			selected--;
 		}
-	}
-
-	public void enter() {
-		letters += letterList[selected];
-	}
-
-	public void delete() {
-		if (letters.length() != 0) {
-			letters.substring(0, letters.length() - 1);
-		}
-	}
-
-	public String getLetters() {
-		return letters;
 	}
 }

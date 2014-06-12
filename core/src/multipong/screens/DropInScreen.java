@@ -48,9 +48,8 @@ public class DropInScreen extends AbstractScreen {
 	private void renderBall(Match match) {
 		renderer.begin(ShapeType.Filled);
 		renderer.setColor(Color.WHITE);
-		renderer.rect(match.board.ball.getX(),
-				match.board.ball.getY(), match.board.ball.getWidth(),
-				match.board.ball.getHeight());
+		renderer.rect(match.board.ball.getX(), match.board.ball.getY(),
+				match.board.ball.getWidth(), match.board.ball.getHeight());
 		renderer.end();
 	}
 
@@ -83,6 +82,9 @@ public class DropInScreen extends AbstractScreen {
 				// Show "waiting for player" on both sides.
 				renderLeftSideWaiting(match);
 				renderRightSideWaiting(match);
+				
+			} else if (match.isFinished()) {
+				
 			}
 		}
 	}

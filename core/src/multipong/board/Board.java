@@ -130,12 +130,12 @@ public class Board {
 		}
 	}
 
+	public Rectangle getBounds(){
+		return field.getBounds();
+	}
+	
 	public void setPlayers(Player leftPlayer, Player rightPlayer) {
 		this.leftPlayer = leftPlayer;
 		this.rightPlayer = rightPlayer;
-	}
-	
-	public Rectangle getBounds(){
-		return field.getBounds();
 	}
 }

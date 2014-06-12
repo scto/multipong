@@ -23,23 +23,6 @@ public class Pad extends BoundedRectangle {
 		this.boardWidth = boardWidth;
 	}
 
-	public void stop() {
-		accel.y = 0;
-		vel.y = 0;
-	}
-
-	public boolean movingUp() {
-		return (vel.y < 0);
-	}
-	
-	public boolean movingDown() {
-		return (vel.y > 0);
-	}
-	
-	public void up() {
-		accel.y = Settings.padAcceleration * (boardHeight / Settings.appHeight);
-	}
-
 	public void down() {
 		accel.y = -Settings.padAcceleration
 				* (boardHeight / Settings.appHeight);
@@ -48,7 +31,28 @@ public class Pad extends BoundedRectangle {
 	public float getVelocity() {
 		return vel.y;
 	}
+	
+	public boolean movingDown() {
+		return (vel.y > 0);
+	}
+	
+	public boolean movingUp() {
+		return (vel.y < 0);
+	}
 
+	public boolean overlaps(Rectangle r) {
+		return bounds.overlaps(r);
+	}
+
+	public void stop() {
+		accel.y = 0;
+		vel.y = 0;
+	}
+
+	public void up() {
+		accel.y = Settings.padAcceleration * (boardHeight / Settings.appHeight);
+	}
+	
 	public void update(float deltaTime) {
 
 		accel.scl(deltaTime);
@@ -72,9 +76,5 @@ public class Pad extends BoundedRectangle {
 
 		stateTime += deltaTime;
 
-	}
-	
-	public boolean overlaps(Rectangle r) {
-		return bounds.overlaps(r);
 	}
 }

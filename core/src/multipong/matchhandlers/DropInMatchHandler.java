@@ -31,12 +31,6 @@ public class DropInMatchHandler {
 		}
 	}
 
-	public void updateBoardsInVisibleMatches(float deltaTime) {
-		for (Match match : getVisibleMatches()) {
-			match.update(deltaTime);
-		}
-	}
-
 	public void addNewPlayer(KeyMap newPlayerKeys) {
 
 		Match boardWithoutChallanger = getMatchWithoutChallanger();
@@ -93,10 +87,50 @@ public class DropInMatchHandler {
 
 	}
 
-	public void showBoardsInHiddenMatches() {
-		if (!hiddenMatches.isEmpty() && allVisibleMatchesArePaused()) {
-			recalculateAndShowBoards();
-			resumeAllPlayableMatches();
+	private boolean allVisibleMatchesArePaused() {
+		for (Match match : getVisibleMatches()) {
+			if (!match.isPaused()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private Match getEmptyMatches() {
+		for (Match match : getVisibleMatches()) {
+			if (!match.hasLeftPlayer()) {
+				return match;
+			}
+		}
+		for (Match match : hiddenMatches) {
+			if (!match.hasLeftPlayer()) {
+				return match;
+			}
+		}
+		return null;
+	}
+
+	private Match getMatchWithoutChallanger() {
+		for (Match match : getVisibleMatches()) {
+			if (match.hasLeftPlayer() && !match.hasRightPlayer()) {
+				return match;
+			}
+		}
+		for (Match match : hiddenMatches) {
+			if (match.hasLeftPlayer() && !match.hasRightPlayer()) {
+				return match;
+			}
+		}
+		return null;
+	}
+
+	public List<Match> getVisibleMatches() {
+		return visibleMatches;
+	}
+
+	private void pauseAllMatchesWhenRoundWon() {
+		for (Match match : getVisibleMatches()) {
+			match.pauseWhenRoundWon();
 		}
 	}
 
@@ -142,49 +176,6 @@ public class DropInMatchHandler {
 		getVisibleMatches().addAll(matchesWithRecalculatedBoards);
 	}
 
-	private Match getEmptyMatches() {
-		for (Match match : getVisibleMatches()) {
-			if (!match.hasLeftPlayer()) {
-				return match;
-			}
-		}
-		for (Match match : hiddenMatches) {
-			if (!match.hasLeftPlayer()) {
-				return match;
-			}
-		}
-		return null;
-	}
-
-	private Match getMatchWithoutChallanger() {
-		for (Match match : getVisibleMatches()) {
-			if (match.hasLeftPlayer() && !match.hasRightPlayer()) {
-				return match;
-			}
-		}
-		for (Match match : hiddenMatches) {
-			if (match.hasLeftPlayer() && !match.hasRightPlayer()) {
-				return match;
-			}
-		}
-		return null;
-	}
-
-	private boolean allVisibleMatchesArePaused() {
-		for (Match match : getVisibleMatches()) {
-			if (!match.isPaused()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private void pauseAllMatchesWhenRoundWon() {
-		for (Match match : getVisibleMatches()) {
-			match.pauseWhenRoundWon();
-		}
-	}
-
 	private void resumeAllPlayableMatches() {
 		for (Match match : getVisibleMatches()) {
 			if (match.isPlayable()) {
@@ -193,8 +184,17 @@ public class DropInMatchHandler {
 		}
 	}
 
-	public List<Match> getVisibleMatches() {
-		return visibleMatches;
+	public void showBoardsInHiddenMatches() {
+		if (!hiddenMatches.isEmpty() && allVisibleMatchesArePaused()) {
+			recalculateAndShowBoards();
+			resumeAllPlayableMatches();
+		}
+	}
+
+	public void updateBoardsInVisibleMatches(float deltaTime) {
+		for (Match match : getVisibleMatches()) {
+			match.update(deltaTime);
+		}
 	}
 
 }

@@ -55,6 +55,31 @@ public class MainScreen extends AbstractScreen {
 		itemsYOffset = ((float) height / (itemsSize + 2));
 	}
 
+	@Override
+	public void render(float deltaTime) {
+		super.render(deltaTime);
+
+		update();
+
+		batch.begin();
+
+		for (int i = 0; i < itemsSize; i++) {
+
+			MainMenuItem item = MainMenuItem.values()[i];
+			if (item == selectedItem) {
+				font.setColor(Color.WHITE);
+			} else {
+				font.setColor(Color.GRAY);
+			}
+			float xOffset = itemsXOffset
+					- (font.getBounds(item.name()).width / 2);
+			float yOffset = (i + 1) * itemsYOffset;
+
+			font.draw(batch, item.name(), xOffset, yOffset);
+		}
+		batch.end();
+	}
+
 	private void update() {
 		if (playerPressedEnter()) {
 
@@ -87,30 +112,5 @@ public class MainScreen extends AbstractScreen {
 			selectedItem = selectedItem.getDown(selectedItem);
 		}
 
-	}
-
-	@Override
-	public void render(float deltaTime) {
-		super.render(deltaTime);
-
-		update();
-
-		batch.begin();
-
-		for (int i = 0; i < itemsSize; i++) {
-
-			MainMenuItem item = MainMenuItem.values()[i];
-			if (item == selectedItem) {
-				font.setColor(Color.WHITE);
-			} else {
-				font.setColor(Color.GRAY);
-			}
-			float xOffset = itemsXOffset
-					- (font.getBounds(item.name()).width / 2);
-			float yOffset = (i + 1) * itemsYOffset;
-
-			font.draw(batch, item.name(), xOffset, yOffset);
-		}
-		batch.end();
 	}
 }

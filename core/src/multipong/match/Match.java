@@ -16,7 +16,6 @@ public class Match {
 	boolean paused = true;
 	boolean pauseWhenRoundWon = false;
 
-	int winScore = 5000;
 	public float stateTime = 0;
 
 	public Match() {
@@ -25,30 +24,6 @@ public class Match {
 
 	public Match(float x, float y, float width, float height) {
 		recalculateBoardGeometry(x, y, width, height);
-	}
-
-	public void recalculateBoardGeometry(float x, float y, float width,
-			float height) {
-		// TODO: maybe set pads to previous place if applicable...
-		board = new Board(x, y, width, height);
-		board.setPlayers(leftPlayer, rightPlayer);
-
-	}
-
-	public boolean isPlayable() {
-		return board != null && leftPlayer != null && rightPlayer != null;
-	}
-
-	public boolean hasLeftPlayer() {
-		return leftPlayer != null;
-	}
-
-	public boolean hasRightPlayer() {
-		return rightPlayer != null;
-	}
-
-	public boolean isFinished() {
-		return (leftPlayer.score == winScore || rightPlayer.score == winScore);
 	}
 
 	public void addLeftPlayer(KeyMap firstPlayerKeyMap) {
@@ -64,8 +39,44 @@ public class Match {
 		paused = true;
 	}
 
+	public boolean hasLeftPlayer() {
+		return leftPlayer != null;
+	}
+
+	public boolean hasRightPlayer() {
+		return rightPlayer != null;
+	}
+
+	public boolean isCountingDown() {
+		return stateTime <= Settings.matchStartCountDownFrom;
+	}
+
+	public boolean isFinished() {
+		if (leftPlayer == null || rightPlayer == null) {
+			return false;
+		}
+		return leftPlayer.score == Settings.scoreToWinMatch
+				|| rightPlayer.score == Settings.scoreToWinMatch;
+	}
+
+	public boolean isPaused() {
+		return paused;
+	}
+
+	public boolean isPlayable() {
+		return board != null && leftPlayer != null && rightPlayer != null;
+	}
+
 	public void pauseWhenRoundWon() {
 		pauseWhenRoundWon = true;
+	}
+
+	public void recalculateBoardGeometry(float x, float y, float width,
+			float height) {
+		// TODO: maybe set pads to previous place if applicable...
+		board = new Board(x, y, width, height);
+		board.setPlayers(leftPlayer, rightPlayer);
+
 	}
 
 	public void resume() {
@@ -73,20 +84,16 @@ public class Match {
 		paused = false;
 	}
 
-	public boolean isPaused() {
-		return paused;
-	}
-
-	public boolean isCountingDown() {
-		return stateTime <= Settings.matchStartCountDownFrom;
-	}
-
 	public void update(float deltaTime) {
 		if (!paused) {
-			
+
 			stateTime += deltaTime;
-			
+
 			if (isCountingDown()) {
+				return;
+			}
+
+			if (isFinished()) {
 				return;
 			}
 

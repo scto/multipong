@@ -14,11 +14,11 @@ public class Multipong extends Game {
 	}
 
 	@Override
-	public void render() {
-		super.render();
+	public void dispose() {
 	}
 
 	@Override
-	public void dispose() {
+	public void render() {
+		super.render();
 	}
 }

@@ -7,15 +7,6 @@ import com.badlogic.gdx.Gdx;
 
 public class BoardUpdater {
 
-	public static void update(Board board, float deltaTime) {
-		parseInput(board);
-		updateState(board, deltaTime);
-
-		checkBallHit(board);
-		checkPadBounds(board);
-		checkBallBounce(board);
-	}
-
 	private static void checkBallBounce(Board board) {
 		if (board.ball.getTop() > board.field.getTop()) {
 
@@ -49,20 +40,6 @@ public class BoardUpdater {
 
 	}
 
-	public static Player getWinner(Board board) {
-		if (board.ball.getRight() >= board.field.getRight()) {
-
-			board.ball.setX(board.field.getRight() - board.ball.getWidth());
-			return board.leftPlayer;
-
-		} else if (board.ball.getLeft() <= board.field.getLeft()) {
-
-			board.ball.setX(board.field.getLeft());
-			return board.rightPlayer;
-		}
-		return null;
-	}
-
 	private static void checkPadBounds(Board board) {
 		checkPadBounds(board.leftPlayerPad, board);
 		checkPadBounds(board.rightPlayerPad, board);
@@ -79,6 +56,20 @@ public class BoardUpdater {
 			pad.setY(board.field.getTop() - board.leftPlayerPad.getHeight());
 			pad.stop();
 		}
+	}
+
+	public static Player getWinner(Board board) {
+		if (board.ball.getRight() >= board.field.getRight()) {
+
+			board.ball.setX(board.field.getRight() - board.ball.getWidth());
+			return board.leftPlayer;
+
+		} else if (board.ball.getLeft() <= board.field.getLeft()) {
+
+			board.ball.setX(board.field.getLeft());
+			return board.rightPlayer;
+		}
+		return null;
 	}
 
 	private static void parseInput(Board board) {
@@ -108,6 +99,15 @@ public class BoardUpdater {
 		} else {
 			pad.stop();
 		}
+	}
+
+	public static void update(Board board, float deltaTime) {
+		parseInput(board);
+		updateState(board, deltaTime);
+
+		checkBallHit(board);
+		checkPadBounds(board);
+		checkBallBounce(board);
 	}
 
 	public static void updateState(Board board, float deltaTime) {

@@ -92,5 +92,10 @@ public class Settings {
 	 * pad.
 	 */
 	public static float addSpeedToBallEveryHit = 1f;
+	
+	/**
+	 * The score needed to win a match.
+	 */
+	public static int scoreToWinMatch = 10;
 
 }
