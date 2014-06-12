@@ -45,8 +45,6 @@ public class Ball extends BoundedRectangle {
 		this.boardHeight = boardHeight;
 		this.boardWidth = boardWidth;
 
-		reset(startingXDirection);
-
 		float aw = Settings.appWidth;
 		float ah = Settings.appHeight;
 		float bw = boardWidth;
@@ -59,11 +57,14 @@ public class Ball extends BoundedRectangle {
 		ballMinVel = Settings.ballMinVelocity * boardSizeVelScale;
 		ballStartVel = Settings.ballStartingVelocity
 				* (boardWidth / Settings.appWidth);
+
+		reset(startingXDirection);
 	}
 
 	public void addYVelocity(float padYVelocity) {
 		float velocity = padYVelocity
 				* Settings.ballAddedVelocityPercentOfPadVelocity / 100;
+
 		float addY = Math.abs(vel.y + velocity);
 		float addX = Math.abs(vel.x);
 
@@ -71,18 +72,17 @@ public class Ball extends BoundedRectangle {
 
 		Gdx.app.debug(className, "Adding y vel would give angle " + resultAngle);
 
-		if (resultAngle < Settings.ballMaxAngle) {
+		if (resultAngle <= Settings.ballMaxAngle) {
 			vel.y += velocity;
 			Gdx.app.debug(className, "Angle after y added " + resultAngle);
 		} else {
 			float dirY = (vel.y + velocity) / addY;
 			float dirX = vel.x / addX;
 			float resultVel = (float) Math.sqrt(addX * addX + addY * addY);
+			float newAngle = (float) Math.toRadians(Settings.ballMaxAngle);
 
-			vel.y = (float) (Math.sin(Settings.ballMaxAngle) * resultVel)
-					* dirY;
-			vel.x = (float) (Math.cos(Settings.ballMaxAngle) * resultVel)
-					* dirX;
+			vel.y = (float) (Math.sin(newAngle) * resultVel) * dirY;
+			vel.x = (float) (Math.cos(newAngle) * resultVel) * dirX;
 			Gdx.app.debug(className, "Using max angle " + Settings.ballMaxAngle);
 		}
 
@@ -119,9 +119,17 @@ public class Ball extends BoundedRectangle {
 
 		float dy = MathUtils.random(-1f, 1f);
 
-		// TODO: this is not right...
-		vel.x = ballStartVel * startingXDirection;
-		vel.y = ballStartVel * dy;
+		float dlen = Math.abs(dy);
+		float angle = (float) Math.atan(dlen);
+
+		if (Math.toDegrees(angle) <= Settings.ballMaxAngle) {
+			vel.x = (float) (Math.cos(angle) * ballStartVel * startingXDirection);
+			vel.y = (float) (Math.sin(angle) * ballStartVel * dy / dlen);
+		} else {
+			float maxAngle = (float) Math.toRadians(Settings.ballMaxAngle);
+			vel.x = (float) (Math.cos(maxAngle) * ballStartVel * startingXDirection);
+			vel.y = (float) (Math.sin(maxAngle) * ballStartVel * dy / dlen);
+		}
 	}
 
 	private void checkVelocity() {
