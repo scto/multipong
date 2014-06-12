@@ -44,7 +44,7 @@ public class BallType1 extends BoundedRectangle implements BallInterface {
 		ballMaxVel = Settings.ballMaxVelocity * boardSizeVelScale;
 		ballMinVel = Settings.ballMinVelocity * boardSizeVelScale;
 		ballStartVel = Settings.ballStartingVelocity * boardSizeVelScale;
-		ballVelIncr = Settings.addSpeedToBallEveryHit * boardSizeVelScale;
+		ballVelIncr = Settings.ballAddSpeedToEveryHit * boardSizeVelScale;
 
 		ballMaxXVel = Settings.ballMaxXVelocity * boardSizeVelScale;
 		ballMaxYVel = Settings.ballMaxYVelocity * boardSizeVelScale;

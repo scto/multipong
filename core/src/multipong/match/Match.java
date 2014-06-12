@@ -18,6 +18,7 @@ public class Match {
 	boolean pauseWhenRoundWon = false;
 
 	public float stateTime = 0;
+	public float redrawCountDown = 0;
 	public float timeSinceMatchFinished = 0;
 
 	public Match() {
@@ -60,6 +61,10 @@ public class Match {
 
 	}
 
+	public void setRedrawCountDown() {
+		redrawCountDown = Settings.timeFromRedrawToRoundBegins;
+	}
+
 	public Player getLeftPlayer() {
 		return leftPlayer;
 	}
@@ -80,16 +85,20 @@ public class Match {
 		return rightPlayer != null;
 	}
 
-	public boolean isCountingDown() {
-		return stateTime <= Settings.matchStartCountDownFrom;
+	public boolean hasStartCountDown() {
+		return stateTime <= Settings.timeMatchStartCountDownFrom;
+	}
+
+	public boolean hasRedrawCountDown() {
+		return redrawCountDown > 0;
 	}
 
 	public boolean isFinished() {
 		if (leftPlayer == null || rightPlayer == null) {
 			return false;
 		}
-		return leftPlayer.score == Settings.scoreToWinMatch
-				|| rightPlayer.score == Settings.scoreToWinMatch;
+		return leftPlayer.score == Settings.matchScoreToWin
+				|| rightPlayer.score == Settings.matchScoreToWin;
 	}
 
 	public boolean isPaused() {
@@ -109,7 +118,10 @@ public class Match {
 		// TODO: maybe set pads to previous place if applicable...
 		board = new Board(x, y, width, height);
 		board.setPlayers(leftPlayer, rightPlayer);
+	}
 
+	public boolean roundHasBeenPlayed() {
+		return (leftPlayer.score + rightPlayer.score != 0);
 	}
 
 	public void resume() {
@@ -125,7 +137,12 @@ public class Match {
 
 			stateTime += deltaTime;
 
-			if (isCountingDown()) {
+			if (hasStartCountDown()) {
+				return;
+			}
+
+			if (hasRedrawCountDown()) {
+				redrawCountDown -= deltaTime;
 				return;
 			}
 
