@@ -90,7 +90,7 @@ public class MainScreen extends AbstractScreen {
 				break;
 
 			case OPTIONS:
-
+				game.setScreen(new OptionScreen(game, width, height));
 				break;
 
 			case CREDITS:

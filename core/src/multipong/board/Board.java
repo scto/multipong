@@ -2,6 +2,7 @@ package multipong.board;
 
 import multipong.board.boardobjects.BallInterface;
 import multipong.board.boardobjects.BallType1;
+import multipong.board.boardobjects.BallType2;
 import multipong.board.boardobjects.Field;
 import multipong.board.boardobjects.Pad;
 import multipong.board.boardobjects.Player;
@@ -85,7 +86,7 @@ public class Board {
 			ball = new BallType1(midPointX, midPointY, ballSize, width, height,
 					ballStartingXDirection);
 		} else {
-			ball = new BallType1(midPointX, midPointY, ballSize, width, height,
+			ball = new BallType2(midPointX, midPointY, ballSize, width, height,
 					ballStartingXDirection);
 		}
 	}

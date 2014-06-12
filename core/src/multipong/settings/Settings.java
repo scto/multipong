@@ -32,7 +32,7 @@ public class Settings {
 	/**
 	 * Starting velocity of ball.
 	 */
-	public static float ballStartingVelocity = 200f;
+	public static float ballStartingVelocity = 300f;
 
 	/**
 	 * Maximum angle the ball can travel in after being hit by a pad. Angle is
@@ -85,18 +85,18 @@ public class Settings {
 	/**
 	 * Countdown before match, in seconds.
 	 */
-	public static float matchStartCountDownFrom = 3f;
+	public static float matchStartCountDownFrom = 1f;
 
 	/**
 	 * Adds a speed value to the ball for every time the ball is hitted by a
 	 * pad.
 	 */
-	public static float addSpeedToBallEveryHit = 1f;
+	public static float addSpeedToBallEveryHit = 25f;
 
 	/**
 	 * The score needed to win a match.
 	 */
-	public static int scoreToWinMatch = 3;
+	public static int scoreToWinMatch = 10;
 
 	/**
 	 * How long to show the message "player is the winner!" after a match is
