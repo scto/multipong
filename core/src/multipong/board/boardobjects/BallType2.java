@@ -89,10 +89,10 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 
 	@Override
 	public void addXVelocityFromPad(float padYVelocity) {
-		
+
 		ballVelIncr++;
 		vel.x = (vel.x + (ballVelIncr * Settings.addSpeedToBallEveryHit));
-		
+
 	}
 
 	@Override

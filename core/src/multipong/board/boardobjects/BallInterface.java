@@ -7,7 +7,7 @@ public interface BallInterface {
 	public void addTotalVelocityFromPad(float padYVelocity);
 
 	public void addXVelocityFromPad(float padYVelocity);
-	
+
 	public void addYVelocityFromPad(float padYVelocity);
 
 	public void dampen();
@@ -27,7 +27,7 @@ public interface BallInterface {
 	public float getX();
 
 	public float getY();
-	
+
 	public void increaseXVelocity(float velocity);
 
 	public void increaseYVelocity(float velocity);
@@ -47,6 +47,6 @@ public interface BallInterface {
 	public void setX(float x);
 
 	public void setY(float y);
-	
+
 	public void update(float deltaTime);
 }

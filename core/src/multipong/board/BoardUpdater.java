@@ -28,16 +28,14 @@ public class BoardUpdater {
 
 			board.ball.addYVelocityFromPad(board.rightPlayerPad.getVelocity());
 			board.ball.addXVelocityFromPad(board.rightPlayerPad.getVelocity());
-			board.ball.setX(board.rightPlayerPad.getLeft()- board.ball.getWidth());
+			board.ball.setX(board.rightPlayerPad.getLeft()
+					- board.ball.getWidth());
 			board.ball.reverseX();
-			
 
 		} else if (board.ball.overlaps(board.leftPlayerPad.getBounds())) {
 
 			board.ball.addYVelocityFromPad(board.leftPlayerPad.getVelocity());
 
-			
-			
 			board.ball.setX(board.leftPlayerPad.getRight());
 			board.ball.reverseX();
 			board.ball.addXVelocityFromPad(board.leftPlayerPad.getVelocity());

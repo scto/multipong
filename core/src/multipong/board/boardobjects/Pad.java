@@ -31,11 +31,11 @@ public class Pad extends BoundedRectangle {
 	public float getVelocity() {
 		return vel.y;
 	}
-	
+
 	public boolean movingDown() {
 		return (vel.y > 0);
 	}
-	
+
 	public boolean movingUp() {
 		return (vel.y < 0);
 	}
@@ -52,7 +52,7 @@ public class Pad extends BoundedRectangle {
 	public void up() {
 		accel.y = Settings.padAcceleration * (boardHeight / Settings.appHeight);
 	}
-	
+
 	public void update(float deltaTime) {
 
 		accel.scl(deltaTime);

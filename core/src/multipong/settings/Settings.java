@@ -99,16 +99,14 @@ public class Settings {
 	public static int scoreToWinMatch = 3;
 
 	/**
-	 * How long to show the message "player is the winner!" after a match is
-	 * finished, in drop-in mode.
+	 * How long to show the message "player is the winner!" after all matches
+	 * are finished, in drop-in mode. After this time, boards are reset.
 	 */
-//	public static float secondsToShowMatchWinner = 3;
+	public static float timeUntilDropOutAfterAllMatchesFinished = 3;
 
 	/**
 	 * Set which type of ball to use.
 	 */
 	public static int ballTypeNum = 2;
-	
-	
-	public static float timeUntilDropOutAfterAllMatchesFinished = 3;
+
 }

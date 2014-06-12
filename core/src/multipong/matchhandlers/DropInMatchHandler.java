@@ -24,71 +24,12 @@ public class DropInMatchHandler {
 		Gdx.app.debug(className, "First board: " + firstMatch.toString());
 	}
 
-	public boolean matchesArePending() {
-		for (Match hiddenMatch : hiddenMatches) {
-			if (hiddenMatch.hasLeftPlayer()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * TODO
-	 * 
-	 * @return The finished players
-	 */
-	public List<Player> closeFinishedMatches() {
-		List<Player> finishedPlayers = new ArrayList<Player>();
-		List<Match> finishedMatches = new ArrayList<Match>();
-		for (Match match : visibleMatches) {
-			if (match.isFinished()) {
-				finishedMatches.add(match);
-				finishedPlayers.add(match.getLeftPlayer());
-				finishedPlayers.add(match.getRightPlayer());
-			}
-		}
-		for (Match finishedMatch : finishedMatches) {
-			visibleMatches.remove(finishedMatch);
-		}
-		return finishedPlayers;
-	}
-
 	public void addMatch(Match match) {
 		if (getVisibleMatches().isEmpty()) {
 			getVisibleMatches().add(match);
 		} else {
 			hiddenMatches.add(match);
 		}
-	}
-
-	public boolean matchHasBeenStartedSinceCreation() {
-		for (Match match : visibleMatches) {
-			if (match.hasLeftPlayer()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean allVisibleMatchesAreFinished() {
-
-		for (Match match : visibleMatches) {
-			if (!match.isFinished() && match.hasLeftPlayer()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public float timeSinceLastFinishedMatchEnded() {
-		float minTime = Float.MAX_VALUE;
-		for (Match match : visibleMatches) {
-			if (match.isFinished() && match.timeSinceMatchFinished < minTime) {
-				minTime = match.timeSinceMatchFinished;
-			}
-		}
-		return minTime;
 	}
 
 	public void addNewPlayer(KeyMap newPlayerKeys) {
@@ -147,6 +88,16 @@ public class DropInMatchHandler {
 
 	}
 
+	public boolean allVisibleMatchesAreFinished() {
+
+		for (Match match : visibleMatches) {
+			if (!match.isFinished() && match.hasLeftPlayer()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private boolean allVisibleMatchesArePaused() {
 		for (Match match : getVisibleMatches()) {
 			if (!match.isPaused()) {
@@ -154,6 +105,27 @@ public class DropInMatchHandler {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * TODO
+	 * 
+	 * @return The finished players
+	 */
+	public List<Player> closeFinishedMatches() {
+		List<Player> finishedPlayers = new ArrayList<Player>();
+		List<Match> finishedMatches = new ArrayList<Match>();
+		for (Match match : visibleMatches) {
+			if (match.isFinished()) {
+				finishedMatches.add(match);
+				finishedPlayers.add(match.getLeftPlayer());
+				finishedPlayers.add(match.getRightPlayer());
+			}
+		}
+		for (Match finishedMatch : finishedMatches) {
+			visibleMatches.remove(finishedMatch);
+		}
+		return finishedPlayers;
 	}
 
 	private Match getEmptyMatches() {
@@ -186,6 +158,24 @@ public class DropInMatchHandler {
 
 	public List<Match> getVisibleMatches() {
 		return visibleMatches;
+	}
+
+	public boolean matchesArePending() {
+		for (Match hiddenMatch : hiddenMatches) {
+			if (hiddenMatch.hasLeftPlayer()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean matchHasBeenStartedSinceCreation() {
+		for (Match match : visibleMatches) {
+			if (match.hasLeftPlayer()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void pauseAllMatchesWhenRoundWon() {
@@ -249,6 +239,16 @@ public class DropInMatchHandler {
 			recalculateAndShowBoards();
 			resumeAllPlayableMatches();
 		}
+	}
+
+	public float timeSinceLastFinishedMatchEnded() {
+		float minTime = Float.MAX_VALUE;
+		for (Match match : visibleMatches) {
+			if (match.isFinished() && match.timeSinceMatchFinished < minTime) {
+				minTime = match.timeSinceMatchFinished;
+			}
+		}
+		return minTime;
 	}
 
 	public void updateBoardsInVisibleMatches(float deltaTime) {

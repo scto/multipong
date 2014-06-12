@@ -54,11 +54,6 @@ public class DropInScreen extends AbstractScreen {
 		}
 	}
 
-	private void resetScreen() {
-		availableKeyMaps = loadKeyMaps();
-		handler = new DropInMatchHandler(width, height);
-	}
-
 	private void renderBall(Match match) {
 		renderer.begin(ShapeType.Filled);
 		renderer.setColor(Color.WHITE);
@@ -103,21 +98,6 @@ public class DropInScreen extends AbstractScreen {
 			}
 
 		}
-	}
-
-	private void renderRoundWinner(Match match) {
-		batch.begin();
-		font.setScale(2f);
-
-		String str = match.getMatchWinner().name + " is the winner!";
-		float xOffset = match.board.midPointX - (font.getBounds(str).width / 2);
-		float yOffset = match.board.midPointY
-				- (font.getBounds(str).height / 2);
-
-		font.draw(batch, str, xOffset, yOffset);
-		font.setScale(1);
-		batch.end();
-
 	}
 
 	private void renderCountDown(Match match) {
@@ -209,6 +189,21 @@ public class DropInScreen extends AbstractScreen {
 		batch.end();
 	}
 
+	private void renderRoundWinner(Match match) {
+		batch.begin();
+		font.setScale(2f);
+
+		String str = match.getMatchWinner().name + " is the winner!";
+		float xOffset = match.board.midPointX - (font.getBounds(str).width / 2);
+		float yOffset = match.board.midPointY
+				- (font.getBounds(str).height / 2);
+
+		font.draw(batch, str, xOffset, yOffset);
+		font.setScale(1);
+		batch.end();
+
+	}
+
 	private void renderScores(Match match) {
 
 		batch.begin();
@@ -218,6 +213,11 @@ public class DropInScreen extends AbstractScreen {
 		font.draw(batch, Integer.toString(match.board.rightPlayer.score),
 				match.board.rightPlayerScore.x, match.board.rightPlayerScore.y);
 		batch.end();
+	}
+
+	private void resetScreen() {
+		availableKeyMaps = loadKeyMaps();
+		handler = new DropInMatchHandler(width, height);
 	}
 
 	private void update(float deltaTime) {

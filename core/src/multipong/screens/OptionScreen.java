@@ -1,26 +1,13 @@
 package multipong.screens;
 
-import multipong.screens.MainScreen.MainMenuItem;
-
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 
 public class OptionScreen extends AbstractScreen {
-	
-	
-	private String name;
 
-	
-	public OptionScreen(Game game, int width, int height) {
-		super(game, width, height);
-		
-		itemsXOffset = ((float) width / 2);
-		itemsYOffset = ((float) height / (itemsSize + 2));
-	}
-	
 	public enum OptionItem {
-		OPTION1("Option 1 name"), OPTION2("Option 2"), OPTION3("option 3"), EXIT("Exit");
+		OPTION1("Option 1 name"), OPTION2("Option 2"), OPTION3("option 3"), EXIT(
+				"Exit");
 
 		private String name;
 
@@ -53,14 +40,25 @@ public class OptionScreen extends AbstractScreen {
 			return name;
 		}
 	}
+
+	private String name;
+
 	public OptionItem selectedItem = OptionItem.values()[0];
-
 	OptionItem[] items = OptionItem.values();
-	int itemsSize = OptionItem.values().length;
 
+	int itemsSize = OptionItem.values().length;
 	float itemsYOffset;
+
 	float itemsXOffset;
-	
+
+	public OptionScreen(Game game, int width, int height) {
+		super(game, width, height);
+
+		itemsXOffset = ((float) width / 2);
+		itemsYOffset = ((float) height / (itemsSize + 2));
+	}
+
+	@Override
 	public void render(float deltaTime) {
 		super.render(deltaTime);
 
@@ -68,35 +66,35 @@ public class OptionScreen extends AbstractScreen {
 
 		batch.begin();
 		for (int i = 0; i < itemsSize; i++) {
-		OptionItem item = OptionItem.values()[i];
-		if (item == selectedItem) {
-			font.setColor(Color.WHITE);
-		} else {
-			font.setColor(Color.GRAY);
-		}
-		float xOffset = itemsXOffset
-				- (font.getBounds(item.name()).width / 2);
-		float yOffset = (i + 1) * itemsYOffset;
+			OptionItem item = OptionItem.values()[i];
+			if (item == selectedItem) {
+				font.setColor(Color.WHITE);
+			} else {
+				font.setColor(Color.GRAY);
+			}
+			float xOffset = itemsXOffset
+					- (font.getBounds(item.name()).width / 2);
+			float yOffset = (i + 1) * itemsYOffset;
 
-		font.draw(batch, item.name(), xOffset, yOffset);
-	
-	
+			font.draw(batch, item.name(), xOffset, yOffset);
+
 		}
 		batch.end();
 	}
-	
+
+	@Override
 	public String toString() {
 		return name;
 	}
-	
+
 	private void update() {
 		if (playerPressedEnter()) {
 
 			switch (selectedItem) {
 
 			case OPTION1:
-				//game.setScreen(new DropInScreen(game, width, height));
-				
+				// game.setScreen(new DropInScreen(game, width, height));
+
 				break;
 
 			case OPTION2:

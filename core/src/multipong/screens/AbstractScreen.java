@@ -42,6 +42,7 @@ public class AbstractScreen implements Screen {
 
 		return availableKeyMaps;
 	}
+
 	int width, height;
 	Game game;
 

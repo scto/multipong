@@ -9,7 +9,7 @@ public abstract class BoundedRectangle {
 	public BoundedRectangle(float x, float y, float width, float height) {
 		bounds = new Rectangle(x, y, width, height);
 	}
-	
+
 	public float getBottom() {
 		return bounds.y;
 	}

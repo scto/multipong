@@ -41,8 +41,35 @@ public class Match {
 		paused = true;
 	}
 
+	private boolean checkForRoundWinner() {
+
+		boolean roundWon = false;
+		Player roundWinner = BoardUpdater.getRoundWinner(board);
+
+		if (roundWinner != null) {
+			if (roundWinner == leftPlayer) {
+				leftPlayer.incrementScore();
+				board.ball.resetWithRightPlayerDirection();
+			} else {
+				rightPlayer.incrementScore();
+				board.ball.resetWithLeftPlayerDirection();
+			}
+			roundWon = true;
+		}
+		return roundWon;
+
+	}
+
+	public Player getLeftPlayer() {
+		return leftPlayer;
+	}
+
 	public Player getMatchWinner() {
 		return matchWinner;
+	}
+
+	public Player getRightPlayer() {
+		return rightPlayer;
 	}
 
 	public boolean hasLeftPlayer() {
@@ -51,14 +78,6 @@ public class Match {
 
 	public boolean hasRightPlayer() {
 		return rightPlayer != null;
-	}
-
-	public Player getRightPlayer() {
-		return rightPlayer;
-	}
-
-	public Player getLeftPlayer() {
-		return leftPlayer;
 	}
 
 	public boolean isCountingDown() {
@@ -96,25 +115,6 @@ public class Match {
 	public void resume() {
 		pauseWhenRoundWon = false;
 		paused = false;
-	}
-
-	private boolean checkForRoundWinner() {
-
-		boolean roundWon = false;
-		Player roundWinner = BoardUpdater.getRoundWinner(board);
-
-		if (roundWinner != null) {
-			if (roundWinner == leftPlayer) {
-				leftPlayer.incrementScore();
-				board.ball.resetWithRightPlayerDirection();
-			} else {
-				rightPlayer.incrementScore();
-				board.ball.resetWithLeftPlayerDirection();
-			}
-			roundWon = true;
-		}
-		return roundWon;
-
 	}
 
 	public void update(float deltaTime) {
