@@ -54,12 +54,12 @@ public class Settings {
 	/**
 	 * Acceleration of a pad.
 	 */
-	public static float padAcceleration = 1000;
+	public static float padAcceleration = 700f;
 
 	/**
 	 * Max velocity of a pad.
 	 */
-	public static float padMaxVelocity = 1000f;
+	public static float padMaxVelocity = 1500f;
 
 	/**
 	 * Ball size in percent of board height.
