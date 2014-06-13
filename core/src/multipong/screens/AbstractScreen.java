@@ -59,6 +59,7 @@ public class AbstractScreen implements Screen {
 	protected BitmapFont font = Fonts.fontSmall;
 	protected Color foregroundObjectColor = Color.WHITE;
 	protected Color backgroundObjectColor = Color.GRAY;
+	protected Color backgroundColor = Color.BLACK;
 
 	protected Viewport viewport;
 
@@ -148,7 +149,7 @@ public class AbstractScreen implements Screen {
 
 	@Override
 	public void render(float deltaTime) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		camera.update();
