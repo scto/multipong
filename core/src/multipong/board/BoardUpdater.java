@@ -93,13 +93,13 @@ public class BoardUpdater {
 		if (Gdx.input.isKeyPressed(downKey) && Gdx.input.isKeyPressed(upKey)) {
 			pad.stop();
 
-		} else if (Gdx.input.isKeyPressed(downKey)) {
+		} else if (Gdx.input.isKeyPressed(upKey)) {
 			if (pad.movingUp()) {
 				pad.stop();
 			}
 			pad.up();
 
-		} else if (Gdx.input.isKeyPressed(upKey)) {
+		} else if (Gdx.input.isKeyPressed(downKey)) {
 			if (pad.movingDown()) {
 				pad.stop();
 			}

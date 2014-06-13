@@ -11,8 +11,8 @@ public class DesktopLauncher {
 	public static void main(String[] arg) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "Pong";
-		cfg.width = 800;
-		cfg.height = 480;
+		cfg.width = 1280;
+		cfg.height = 720;
 		new LwjglApplication(new Multipong(), cfg);
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 	}

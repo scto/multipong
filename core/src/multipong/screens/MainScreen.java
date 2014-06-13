@@ -67,13 +67,13 @@ public class MainScreen extends AbstractScreen {
 
 			MainMenuItem item = MainMenuItem.values()[i];
 			if (item == selectedItem) {
-				font.setColor(Color.WHITE);
+				font.setColor(foregroundObjectColor);
 			} else {
-				font.setColor(Color.GRAY);
+				font.setColor(backgroundObjectColor);
 			}
 			float xOffset = itemsXOffset
 					- (font.getBounds(item.name()).width / 2);
-			float yOffset = (i + 1) * itemsYOffset;
+			float yOffset = height - (i + 1) * itemsYOffset;
 
 			font.draw(batch, item.name(), xOffset, yOffset);
 		}

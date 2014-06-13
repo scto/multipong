@@ -5,12 +5,12 @@ public class Settings {
 	/**
 	 * Application height.
 	 */
-	public static float appHeight = 480;
+	public static float appHeight = 720;
 
 	/**
 	 * Application width.
 	 */
-	public static float appWidth = 800;
+	public static float appWidth = 1280;
 
 	/**
 	 * Percent of pad velocity to transfer to ball velocity on when ball hits
@@ -83,7 +83,7 @@ public class Settings {
 	/**
 	 * The score needed to win a match.
 	 */
-	public static int matchScoreToWin = 10;
+	public static int matchScoreToWin = 1;
 
 	/**
 	 * Acceleration of a pad.

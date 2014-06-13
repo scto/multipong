@@ -108,23 +108,22 @@ public class DropInScreen extends AbstractScreen {
 
 	private void renderCountDown(float number, float midPointX, float midPointY) {
 		batch.begin();
-		font.setScale(5f);
-		Color c = Color.WHITE;
+		font = Fonts.fontLarge;
+		Color c = foregroundObjectColor;
 		font.setColor(c.r, c.g, c.b, number - (int) number);
 
 		String str = Integer.toString((int) number);
 		float xOffset = midPointX - (font.getBounds(str).width / 2);
-		float yOffset = midPointY - (font.getBounds(str).height / 2);
+		float yOffset = midPointY + (font.getBounds(str).height / 2);
 
 		font.draw(batch, str, xOffset, yOffset);
-		font.setScale(1);
-		font.setColor(Color.WHITE);
+		font = Fonts.fontSmall;
 		batch.end();
 	}
 
 	private void renderFields(Match match) {
 		renderer.begin(ShapeType.Line);
-		renderer.setColor(Color.WHITE);
+		renderer.setColor(foregroundObjectColor);
 		// Draw field
 		renderer.rect(match.board.field.getX() + 1, match.board.field.getY(),
 				match.board.field.getWidth() - 1,
@@ -139,6 +138,9 @@ public class DropInScreen extends AbstractScreen {
 	}
 
 	private void renderLeftName(Match match) {
+		font.setColor(backgroundObjectColor);
+		font = Fonts.fontSmall;
+
 		batch.begin();
 		float xOffset = match.board.leftMidPointX
 				- (font.getBounds(match.board.leftPlayer.name).width / 2);
@@ -149,7 +151,7 @@ public class DropInScreen extends AbstractScreen {
 
 	private void renderLeftPad(Match match) {
 		renderer.begin(ShapeType.Filled);
-		renderer.setColor(Color.WHITE);
+		renderer.setColor(foregroundObjectColor);
 		// Draw pad
 		renderer.rect(match.board.leftPlayerPad.getX(),
 				match.board.leftPlayerPad.getY(),
@@ -159,6 +161,9 @@ public class DropInScreen extends AbstractScreen {
 	}
 
 	private void renderLeftSideWaiting(Match match) {
+		font.setColor(foregroundObjectColor);
+		font = Fonts.fontSmall;
+
 		String str = "Waiting for player...";
 		float xOffset = match.board.leftMidPointX
 				- (font.getBounds(str).width / 2);
@@ -169,6 +174,9 @@ public class DropInScreen extends AbstractScreen {
 	}
 
 	private void renderRightName(Match match) {
+		font.setColor(backgroundObjectColor);
+		font = Fonts.fontSmall;
+
 		batch.begin();
 		float xOffset = match.board.rightMidPointX
 				- (font.getBounds(match.board.rightPlayer.name).width / 2);
@@ -178,8 +186,8 @@ public class DropInScreen extends AbstractScreen {
 	}
 
 	private void renderRightPad(Match match) {
+		renderer.setColor(foregroundObjectColor);
 		renderer.begin(ShapeType.Filled);
-		renderer.setColor(Color.WHITE);
 		// Draw pad
 		renderer.rect(match.board.rightPlayerPad.getX(),
 				match.board.rightPlayerPad.getY(),
@@ -189,6 +197,9 @@ public class DropInScreen extends AbstractScreen {
 	}
 
 	private void renderRightSideWaiting(Match match) {
+		font.setColor(foregroundObjectColor);
+		font = Fonts.fontSmall;
+
 		String str = "Waiting for player...";
 		float xOffset = match.board.rightMidPointX
 				- (font.getBounds(str).width / 2);
@@ -199,8 +210,10 @@ public class DropInScreen extends AbstractScreen {
 	}
 
 	private void renderRoundWinner(Match match) {
+		font.setColor(foregroundObjectColor);
+		font = Fonts.fontSmall;
+
 		batch.begin();
-		font.setScale(2f);
 
 		String str = match.getMatchWinner().name + " is the winner!";
 		float xOffset = match.board.midPointX - (font.getBounds(str).width / 2);
@@ -208,12 +221,13 @@ public class DropInScreen extends AbstractScreen {
 				- (font.getBounds(str).height / 2);
 
 		font.draw(batch, str, xOffset, yOffset);
-		font.setScale(1);
 		batch.end();
 
 	}
 
 	private void renderScores(Match match) {
+		font = Fonts.fontSmall;
+		font.setColor(backgroundObjectColor);
 
 		batch.begin();
 		// Draw scores

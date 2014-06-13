@@ -7,6 +7,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -50,11 +51,14 @@ public class AbstractScreen implements Screen {
 	float keyDelay = 0.3f;
 
 	float timeSinceKeyPressed = 0;
-	protected BitmapFont font = new BitmapFont(true);
 	protected SpriteBatch batch = new SpriteBatch();
 	protected ShapeRenderer renderer = new ShapeRenderer();
 	protected OrthographicCamera camera;
 	protected float stateTime = 0;
+
+	protected BitmapFont font = Fonts.fontSmall;
+	protected Color foregroundObjectColor = Color.WHITE;
+	protected Color backgroundObjectColor = Color.GRAY;
 
 	protected Viewport viewport;
 
@@ -65,7 +69,6 @@ public class AbstractScreen implements Screen {
 		keyMaps = loadKeyMaps();
 
 		camera = new OrthographicCamera(width, height);
-		camera.setToOrtho(true);
 		camera.position.set(width / 2, height / 2, 0);
 		camera.update();
 

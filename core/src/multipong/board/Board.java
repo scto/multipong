@@ -108,13 +108,14 @@ public class Board {
 	}
 
 	private void createPlayerNamePositions() {
-		leftPlayerNamePos = new Vector2(x, y);
-		rightPlayerNamePos = new Vector2(x + width / 2, y);
+		float topOffset = height / 30;
+		leftPlayerNamePos = new Vector2(x, height + y - topOffset);
+		rightPlayerNamePos = new Vector2(x + width / 2, height + y - topOffset);
 	}
 
 	private void createScorePositions() {
 		float playerScoreXoffset = width / 4;
-		float playerScoreYoffset = height / 10;
+		float playerScoreYoffset = height - height / 10;
 
 		leftPlayerScore = new Vector2(x + playerScoreXoffset, y
 				+ playerScoreYoffset);
