@@ -3,6 +3,9 @@ package multipong.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MainScreen extends AbstractScreen {
 
@@ -46,6 +49,13 @@ public class MainScreen extends AbstractScreen {
 	MainMenuItem[] items = MainMenuItem.values();
 	int itemsSize = MainMenuItem.values().length;
 
+	// TODO: Should be moved to a renderer class
+	BitmapFont font = Fonts.fontSmall;
+	protected SpriteBatch batch = new SpriteBatch();
+	protected Color foregroundObjectColor = Color.WHITE;
+	protected Color backgroundObjectColor = Color.GRAY;
+	protected Color backgroundColor = Color.BLACK;
+
 	float itemsYOffset;
 	float itemsXOffset;
 
@@ -58,6 +68,12 @@ public class MainScreen extends AbstractScreen {
 	@Override
 	public void render(float deltaTime) {
 		super.render(deltaTime);
+
+		batch.setProjectionMatrix(camera.combined);
+
+		Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g,
+				backgroundColor.b, backgroundColor.a);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		update();
 
@@ -90,7 +106,7 @@ public class MainScreen extends AbstractScreen {
 				break;
 
 			case OPTIONS:
-				game.setScreen(new OptionScreen(game, width, height));
+				// game.setScreen(new OptionScreen(game, width, height));
 				break;
 
 			case CREDITS:

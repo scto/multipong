@@ -7,12 +7,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -51,15 +46,8 @@ public class AbstractScreen implements Screen {
 	float keyDelay = 0.3f;
 
 	float timeSinceKeyPressed = 0;
-	protected SpriteBatch batch = new SpriteBatch();
-	protected ShapeRenderer renderer = new ShapeRenderer();
 	protected OrthographicCamera camera;
 	protected float stateTime = 0;
-
-	protected BitmapFont font = Fonts.fontSmall;
-	protected Color foregroundObjectColor = Color.WHITE;
-	protected Color backgroundObjectColor = Color.GRAY;
-	protected Color backgroundColor = Color.BLACK;
 
 	protected Viewport viewport;
 
@@ -74,14 +62,13 @@ public class AbstractScreen implements Screen {
 		camera.update();
 
 		viewport = new StretchViewport(width, height, camera);
+
 	}
 
 	@Override
 	public void dispose() {
 		game.dispose();
-		batch.dispose();
-		font.dispose();
-		renderer.dispose();
+
 	}
 
 	@Override
@@ -149,12 +136,7 @@ public class AbstractScreen implements Screen {
 
 	@Override
 	public void render(float deltaTime) {
-		Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 		camera.update();
-		renderer.setProjectionMatrix(camera.combined);
-		batch.setProjectionMatrix(camera.combined);
 
 		updateKeyDelay(deltaTime);
 	}
