@@ -92,7 +92,7 @@ public class Board {
 	}
 
 	private void createField() {
-		field = new Field(x, y, width, height);
+		field = new Field(x, y+1, width, height);
 	}
 
 	private void createPads() {
