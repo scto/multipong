@@ -28,7 +28,7 @@ void main() {
 
 	float vignette = smoothstep(RADIUS, RADIUS-SOFTNESS, len);
 	
-	float v = sin(1-vignette*2);
+	float v = sin(1.0-vignette*2.0);
 	float c = 0.0;
 	gl_FragColor = vec4(c, c, c, v);
 

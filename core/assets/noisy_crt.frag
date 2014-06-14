@@ -17,7 +17,7 @@ float rand(vec2 co) {
 }
 
 float smooth(float n) {
-	return n/2.0 + (n-1)/4.0 + (n+1)/4.0;
+	return n*0.5 + (n-1.0)*0.25 + (n+1.0)*0.25;
 }
 
 float decimals(float n) {
@@ -48,7 +48,7 @@ void main() {
 	// Intervals //
 	
 	bool grid = (mod(x, 6.0) < 1.0) || (mod(y, 4.0) < 1.0);
-	bool highlight = ((mod(x, 6.0) < 2.0) || (mod(y, 4.0) < 2.0)) &! ((mod(x, 6.0) < 2.0) && (mod(y, 4.0) < 2.0));
+	bool highlight = ((mod(x, 6.0) < 2.0) || (mod(y, 4.0) < 2.0)) && ((mod(x, 6.0) > 2.0) || (mod(y, 4.0) > 2.0));
 	bool shadows = (mod(x, 6.0) > 4.0) || (mod(y, 4.0) > 2.0);
 
 	
@@ -58,7 +58,7 @@ void main() {
 		
 	} else if (highlight) {
 		float c = 1.0;
-		gl_FragColor = vec4(c, c, c, vignette*0.1);
+		gl_FragColor = vec4(c, c, c, vignette*0.05);
 		
 	} else if (shadows) {
 		float c = 0.0;

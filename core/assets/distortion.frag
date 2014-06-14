@@ -26,7 +26,7 @@ void main() {
 	float r = rand(vec2(x,y));
 
 	float t = decimals(time);
-	float rt = rand(t);
+	float rt = rand(vec2(t,0));
 	float v = decimals(rand(vec2(rt*x, rt*y)));
 		  
 	// Rolling effect 2 sec for every 10
