@@ -27,15 +27,21 @@ void main() {
 	float v = rand(vec2(rt*x, rt*y));
 	v = float(v-int(v));
 	
-	bool noise = (mod(x, 6.0) < 1.0) || (mod(y, 4.0) < 1.0);
-	bool less_noise = (mod(x, 6.0) > 4.0) || (mod(y, 4.0) < 2.0);
+	bool grid = (mod(x, 6.0) < 1.0) || (mod(y, 4.0) < 1.0);
+	bool highlight = (mod(x, 6.0) < 2.0) && (mod(y, 4.0) < 2.0);
+	bool shadows = (mod(x, 6.0) > 4.0) || (mod(y, 4.0) > 2.0);
 	
 	float n = smooth(smooth(v));
 	
-	if (noise) {
-		gl_FragColor = vec4(0.0, 0.0, 0.0, 0.6-n*0.5);
-	} else if (less_noise) {
-		gl_FragColor = vec4(0.0, 0.0, 0.0, n*0.3);
+	if (grid) {
+		float c = 0.0;
+		gl_FragColor = vec4(c, c, c, 0.6-n*0.5);
+	} else if (highlight) {
+		float c = 1.0;
+		gl_FragColor = vec4(c, c, c, n*0.075);
+	} else if (shadows) {
+		float c = 0.0;
+		gl_FragColor = vec4(c, c, c, 0.2);
 	} else {
 		gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
 	}
