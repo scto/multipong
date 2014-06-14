@@ -25,11 +25,9 @@ void main() {
 	vec2 position = vec2(vTexCoord.y , vTexCoord.x) - vec2(0.5, 0.5);
 	vec2 position1 = vec2(position.x, position.y*0.8);
 	float len = length(position1);
-	
 
 	float vignette = smoothstep(RADIUS, RADIUS-SOFTNESS, len);
 	
-
 	float v = sin(1-vignette*2);
 	float c = 0.0;
 	gl_FragColor = vec4(c, c, c, v);

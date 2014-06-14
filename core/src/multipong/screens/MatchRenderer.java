@@ -16,7 +16,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class MatchRenderer {
@@ -110,7 +109,6 @@ public class MatchRenderer {
 		distortionShader.end();
 		batch.setShader(distortionShader);
 		batch.draw(bkgTex, 0, 0);
-		batch.setShader(null);
 		batch.end();
 
 		batch.begin();
@@ -119,7 +117,6 @@ public class MatchRenderer {
 		vignetteShader.end();
 		batch.setShader(vignetteShader);
 		batch.draw(bkgTex, 0, 0);
-		batch.setShader(null);
 		batch.end();
 
 		batch.begin();
@@ -129,6 +126,9 @@ public class MatchRenderer {
 		noiseShader.end();
 		batch.setShader(noiseShader);
 		batch.draw(bkgTex, 0, 0);
+		batch.end();
+
+		batch.begin();
 		batch.setShader(null);
 		batch.end();
 

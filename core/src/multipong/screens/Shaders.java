@@ -19,7 +19,7 @@ public class Shaders {
 		}
 		return shader;
 	}
-	
+
 	public static ShaderProgram loadVignetteShader() {
 		String vert = Gdx.files.local("vignette.vert").readString();
 		String frag = Gdx.files.local("vignette.frag").readString();
@@ -34,7 +34,7 @@ public class Shaders {
 		}
 		return shader;
 	}
-	
+
 	public static ShaderProgram loadDistortionShader() {
 		String vert = Gdx.files.local("distortion.vert").readString();
 		String frag = Gdx.files.local("distortion.frag").readString();
@@ -49,4 +49,5 @@ public class Shaders {
 		}
 		return shader;
 	}
+
 }
