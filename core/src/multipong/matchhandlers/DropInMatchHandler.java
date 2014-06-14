@@ -208,7 +208,7 @@ public class DropInMatchHandler {
 		float boardWidth = width / columns;
 		float boardHeight = height / rows;
 
-		recalcLoop: for (int y = 0; y < rows; y++) {
+		recalcLoop: for (int y = rows - 1; y >= 0; y--) {
 			for (int x = 0; x < columns; x++) {
 				if (getVisibleMatches().isEmpty()) {
 					break recalcLoop;
@@ -217,11 +217,16 @@ public class DropInMatchHandler {
 				Match matchToRecalc = getVisibleMatches().get(0);
 				getVisibleMatches().remove(0);
 
-				matchToRecalc.recalculateBoardGeometry(x * boardWidth, y
-						* boardHeight, boardWidth, boardHeight);
+				float nx = x * boardWidth;
+				float ny = y * boardHeight;
+				matchToRecalc.recalculateBoardGeometry(nx, ny, boardWidth,
+						boardHeight);
 
 				recalcMatches.add(matchToRecalc);
 
+				Gdx.app.debug(className, matchToRecalc.toString() + " x=" + nx
+						+ " y=" + ny + " width=" + boardWidth + " height="
+						+ boardHeight);
 			}
 		}
 		getVisibleMatches().addAll(recalcMatches);

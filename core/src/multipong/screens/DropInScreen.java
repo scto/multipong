@@ -40,7 +40,7 @@ public class DropInScreen extends AbstractScreen {
 
 		update(deltaTime);
 
-		matchRenderer.renderBoards(deltaTime);
+		matchRenderer.render(deltaTime);
 		stateTime += deltaTime;
 
 		if (handler.matchHasBeenStartedSinceCreation()

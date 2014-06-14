@@ -92,7 +92,7 @@ public class Board {
 	}
 
 	private void createField() {
-		field = new Field(x, y+1, width, height);
+		field = new Field(x, y, width, height);
 	}
 
 	private void createPads() {
@@ -115,7 +115,7 @@ public class Board {
 
 	private void createScorePositions() {
 		float playerScoreXoffset = width / 4;
-		float playerScoreYoffset = height - height / 10;
+		float playerScoreYoffset = height - height / 12;
 
 		leftPlayerScore = new Vector2(x + playerScoreXoffset, y
 				+ playerScoreYoffset);
