@@ -34,4 +34,19 @@ public class Shaders {
 		}
 		return shader;
 	}
+	
+	public static ShaderProgram loadDistortionShader() {
+		String vert = Gdx.files.local("distortion.vert").readString();
+		String frag = Gdx.files.local("distortion.frag").readString();
+		ShaderProgram shader = new ShaderProgram(vert, frag);
+		ShaderProgram.pedantic = false;
+		if (!shader.isCompiled()) {
+			Gdx.app.debug("DistortionShader", "\n" + shader.getLog());
+			Gdx.app.exit();
+		}
+		if (shader.getLog().length() != 0) {
+			Gdx.app.debug("DistortionShader", "\n" + shader.getLog());
+		}
+		return shader;
+	}
 }

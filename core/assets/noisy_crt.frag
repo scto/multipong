@@ -25,7 +25,6 @@ void main() {
 	float t = float(time - int(time))*2567.0;
 	float rt = float(t-int(t));
 	float v = rand(vec2(rt*x, rt*y));
-
 	v = float(v-int(v));
 	
 	bool noise = (mod(x, 6.0) < 1.0) || (mod(y, 4.0) < 1.0);

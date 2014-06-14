@@ -31,6 +31,7 @@ public class MatchRenderer {
 	Texture bkgTex;
 	ShaderProgram noiseShader;
 	ShaderProgram vignetteShader;
+	ShaderProgram distortionShader;
 
 	List<Match> visibleMatches;
 
@@ -50,6 +51,7 @@ public class MatchRenderer {
 		ShaderProgram.pedantic = false;
 		noiseShader = Shaders.loadNoiseShader();
 		vignetteShader = Shaders.loadVignetteShader();
+		distortionShader = Shaders.loadDistortionShader();
 	}
 
 	public void dispose() {
@@ -58,6 +60,7 @@ public class MatchRenderer {
 		font.dispose();
 		noiseShader.dispose();
 		vignetteShader.dispose();
+		distortionShader.dispose();
 	}
 
 	Vector2 o = new Vector2(0, 0);
@@ -67,6 +70,9 @@ public class MatchRenderer {
 
 		renderer.setProjectionMatrix(camera.combined);
 		batch.setProjectionMatrix(camera.combined);
+
+		backgroundColor = Color.BLACK;
+		// backgroundColor = Color.GRAY;
 
 		Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g,
 				backgroundColor.b, backgroundColor.a);
@@ -98,6 +104,16 @@ public class MatchRenderer {
 		renderBoards(deltaTime);
 
 		batch.begin();
+		distortionShader.begin();
+		distortionShader.setUniformf("time", stateTime);
+		distortionShader.setUniformf("resolution", width, height);
+		distortionShader.end();
+		batch.setShader(distortionShader);
+		batch.draw(bkgTex, 0, 0);
+		batch.setShader(null);
+		batch.end();
+
+		batch.begin();
 		vignetteShader.begin();
 		vignetteShader.setUniformf("resolution", width, height);
 		vignetteShader.end();
@@ -105,7 +121,7 @@ public class MatchRenderer {
 		batch.draw(bkgTex, 0, 0);
 		batch.setShader(null);
 		batch.end();
-		
+
 		batch.begin();
 		noiseShader.begin();
 		noiseShader.setUniformf("time", stateTime);
@@ -115,7 +131,6 @@ public class MatchRenderer {
 		batch.draw(bkgTex, 0, 0);
 		batch.setShader(null);
 		batch.end();
-		
 
 	}
 

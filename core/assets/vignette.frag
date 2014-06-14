@@ -26,13 +26,12 @@ void main() {
 	vec2 position1 = vec2(position.x, position.y*0.8);
 	float len = length(position1);
 	
-	float m = mod(len, 0.01);
+
 	float vignette = smoothstep(RADIUS, RADIUS-SOFTNESS, len);
 	
- 	if (m < 0.005) {
-		float v = (0.8-vignette)*m*100;
-		gl_FragColor = vec4(0.0, 0.0, 0.0, v);
-	} else {
-		gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-	}
+
+	float v = sin(1-vignette*2);
+	float c = 0.0;
+	gl_FragColor = vec4(c, c, c, v);
+
 }
