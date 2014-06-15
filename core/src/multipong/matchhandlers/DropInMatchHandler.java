@@ -5,7 +5,7 @@ import java.util.List;
 
 import multipong.board.boardobjects.Player;
 import multipong.match.Match;
-import multipong.screens.KeyMap;
+import multipong.utils.KeyMap;
 
 import com.badlogic.gdx.Gdx;
 
@@ -269,8 +269,9 @@ public class DropInMatchHandler {
 	public float timeSinceLastFinishedMatchEnded() {
 		float minTime = Float.MAX_VALUE;
 		for (Match match : visibleMatches) {
-			if (match.isFinished() && match.timeSinceMatchFinished < minTime) {
-				minTime = match.timeSinceMatchFinished;
+			if (match.isFinished()
+					&& match.getTimeSinceMatchFinished() < minTime) {
+				minTime = match.getTimeSinceMatchFinished();
 			}
 		}
 		return minTime;

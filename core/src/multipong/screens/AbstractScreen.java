@@ -3,6 +3,8 @@ package multipong.screens;
 import java.util.ArrayList;
 import java.util.List;
 
+import multipong.utils.KeyMap;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;

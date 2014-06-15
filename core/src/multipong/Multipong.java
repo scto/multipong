@@ -1,6 +1,6 @@
 package multipong;
 
-import multipong.screens.Fonts;
+import multipong.font.Fonts;
 import multipong.screens.MainScreen;
 import multipong.settings.Settings;
 
