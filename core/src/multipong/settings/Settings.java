@@ -3,12 +3,12 @@ package multipong.settings;
 public class Settings {
 
 	/**
-	 * Application height.
+	 * Application height. If changed, launcher classes must also be updated.
 	 */
 	public static float appHeight = 720;
 
 	/**
-	 * Application width.
+	 * Application width. If changed, launcher classes must also be updated.
 	 */
 	public static float appWidth = 1280;
 
@@ -127,5 +127,13 @@ public class Settings {
 	 * are finished, in drop-in mode. After this time, boards are reset.
 	 */
 	public static float timeUntilDropOutAfterAllMatchesFinished = 3f;
+
+	/**
+	 * Use shaders.
+	 */
+	public static boolean shadersUseDistortion = true;
+	public static boolean shadersUseNoisyPixels = true;
+	public static boolean shadersUseVignette = true;
+	public static boolean shadersUseColorBleed = true;
 
 }

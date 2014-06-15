@@ -5,6 +5,7 @@ import java.util.List;
 
 import multipong.font.Fonts;
 import multipong.match.Match;
+import multipong.settings.Settings;
 import multipong.utils.Shaders;
 
 import com.badlogic.gdx.Gdx;
@@ -33,7 +34,7 @@ public class MatchRenderer {
 	ShaderProgram distortionShader;
 	BitmapFont font = Fonts.fontSmall;
 	ShaderProgram glowShader;
-	ShaderProgram noiseShader;
+	ShaderProgram noisyPixelsShader;
 
 	ShapeRenderer renderer = new ShapeRenderer();
 	float stateTime = 0;
@@ -47,12 +48,15 @@ public class MatchRenderer {
 		this.camera = camera;
 		this.visibleMatches = visibleMatches;
 
+		renderer.setProjectionMatrix(camera.combined);
+		batch.setProjectionMatrix(camera.combined);
+
 		width = (int) camera.viewportWidth;
 		height = (int) camera.viewportHeight;
 
 		bkgTex = new Texture(width, height, Format.RGBA8888);
 		ShaderProgram.pedantic = false;
-		noiseShader = Shaders.loadNoiseShader();
+		noisyPixelsShader = Shaders.loadNoisyPixelsShader();
 		vignetteShader = Shaders.loadVignetteShader();
 		distortionShader = Shaders.loadDistortionShader();
 		glowShader = Shaders.loadGlowShader();
@@ -66,7 +70,7 @@ public class MatchRenderer {
 		renderer.dispose();
 		batch.dispose();
 		font.dispose();
-		noiseShader.dispose();
+		noisyPixelsShader.dispose();
 		vignetteShader.dispose();
 		distortionShader.dispose();
 		glowShader.dispose();
@@ -80,22 +84,147 @@ public class MatchRenderer {
 	public void render(float deltaTime) {
 		stateTime += deltaTime;
 
-		renderer.setProjectionMatrix(camera.combined);
-		batch.setProjectionMatrix(camera.combined);
-
 		Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g,
 				backgroundColor.b, backgroundColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		allBoardsRenderableRectangles.clear();
-		allBoardsRenderableStrings.clear();
-		for (Match match : visibleMatches) {
-			allBoardsRenderableRectangles.addAll(match.renderableRectangles);
-			allBoardsRenderableStrings.addAll(match.renderableStrings);
+		updateRenderables();
+		if (!Settings.shadersUseColorBleed) {
+			renderStrings(allBoardsRenderableStrings);
+			renderRectangles(allBoardsRenderableRectangles);
+		} else {
+			renderColorBleed();
 		}
-		renderStrings(allBoardsRenderableStrings);
-		renderRectangles(allBoardsRenderableRectangles);
-		renderShaderOverlays();
+		renderOverlayShaders();
+	}
+
+	private void renderColorBleed() {
+		Color color1 = Color.GREEN;
+		Color color2 = Color.CYAN;
+		Color color3 = Color.RED;
+
+		float color1Xoffset = -1;
+		float color1Yoffset = 0;
+		float color2Xoffset = 0;
+		float color2Yoffset = 1;
+		float color3Xoffset = 0;
+		float color3Yoffset = -1;
+
+		batch.begin();
+		for (RenderableString r : allBoardsRenderableStrings) {
+			font = r.font;
+			Color topColor = r.color;
+			float topColorAlpha = r.color.a;
+
+			r.color = color1;
+			font.setColor(r.color.r, r.color.g, r.color.b, topColorAlpha);
+			font.draw(batch, r.text, r.pos.x + color1Xoffset, r.pos.y
+					+ color1Yoffset);
+
+			r.color = color2;
+			font.setColor(r.color.r, r.color.g, r.color.b, topColorAlpha);
+			font.draw(batch, r.text, r.pos.x + color2Xoffset, r.pos.y
+					+ color2Yoffset);
+
+			r.color = color3;
+			font.setColor(r.color.r, r.color.g, r.color.b, topColorAlpha);
+			font.draw(batch, r.text, r.pos.x + color3Xoffset, r.pos.y
+					+ color3Yoffset);
+
+			r.color = topColor;
+			font.setColor(r.color);
+			font.draw(batch, r.text, r.pos.x, r.pos.y);
+		}
+		batch.end();
+
+		enableBlend();
+		renderer.begin(ShapeType.Filled);
+		for (RenderableRectangle r : allBoardsRenderableRectangles) {
+			Color topColor = r.color;
+			float topColorAlpha = r.color.a;
+
+			r.color = color1;
+			renderer.setColor(r.color.r, r.color.g, r.color.b, topColorAlpha);
+			for (Rectangle rectangle : r.rects) {
+				renderer.rect(rectangle.x + color1Xoffset, rectangle.y
+						+ color1Yoffset, rectangle.width, rectangle.height);
+			}
+
+			r.color = color2;
+			renderer.setColor(r.color.r, r.color.g, r.color.b, topColorAlpha);
+			for (Rectangle rectangle : r.rects) {
+				renderer.rect(rectangle.x + color2Xoffset, rectangle.y
+						+ color2Yoffset, rectangle.width, rectangle.height);
+			}
+
+			r.color = color3;
+			renderer.setColor(r.color.r, r.color.g, r.color.b, topColorAlpha);
+			for (Rectangle rectangle : r.rects) {
+				renderer.rect(rectangle.x + color3Xoffset, rectangle.y
+						+ color3Yoffset, rectangle.width, rectangle.height);
+			}
+
+			r.color = topColor;
+			renderer.setColor(r.color);
+			for (Rectangle rectangle : r.rects) {
+				renderer.rect(rectangle.x, rectangle.y, rectangle.width,
+						rectangle.height);
+			}
+		}
+		renderer.end();
+		disableBlend();
+	}
+
+	private void renderOverlayShaders() {
+		if (Settings.shadersUseDistortion) {
+			batch.begin();
+			distortionShader.begin();
+			distortionShader.setUniformf("time", stateTime);
+			distortionShader.setUniformf("resolution", width, height);
+			distortionShader.end();
+			batch.setShader(distortionShader);
+			batch.draw(bkgTex, 0, 0);
+			batch.end();
+		}
+		if (Settings.shadersUseVignette) {
+			batch.begin();
+			vignetteShader.begin();
+			vignetteShader.setUniformf("resolution", width, height);
+			vignetteShader.end();
+			batch.setShader(vignetteShader);
+			batch.draw(bkgTex, 0, 0);
+			batch.end();
+		}
+		if (Settings.shadersUseNoisyPixels) {
+			batch.begin();
+			noisyPixelsShader.begin();
+			noisyPixelsShader.setUniformf("time", stateTime);
+			noisyPixelsShader.setUniformf("resolution", width, height);
+			noisyPixelsShader.end();
+			batch.setShader(noisyPixelsShader);
+			batch.draw(bkgTex, 0, 0);
+			batch.end();
+		}
+
+		// batch.begin();
+		// glowShader.begin();
+		// glowShader.setUniformf("time", stateTime);
+		// for (Match match : visibleMatches) {
+		// glowShader.setUniformf("resolution", width, height);
+		// float[] coords = { match.board.leftPlayerPad.getX(),
+		// match.board.leftPlayerPad.getY(),
+		// match.board.leftPlayerPad.getRight(),
+		// match.board.leftPlayerPad.getTop() };
+		// glowShader.setUniform4fv("rect", coords, 0, 4);
+		// }
+		// glowShader.end();
+		// batch.setShader(glowShader);
+		// batch.draw(bkgTex, 0, 0);
+		// batch.end();
+
+		batch.begin();
+		batch.setShader(null);
+		batch.end();
 	}
 
 	private void renderRectangles(List<RenderableRectangle> renderableRectangles) {
@@ -112,48 +241,6 @@ public class MatchRenderer {
 		disableBlend();
 	}
 
-	private void renderShaderOverlays() {
-
-		batch.begin();
-		distortionShader.begin();
-		distortionShader.setUniformf("time", stateTime);
-		distortionShader.setUniformf("resolution", width, height);
-		distortionShader.end();
-		batch.setShader(distortionShader);
-		batch.draw(bkgTex, 0, 0);
-		batch.end();
-
-		batch.begin();
-		vignetteShader.begin();
-		vignetteShader.setUniformf("resolution", width, height);
-		vignetteShader.end();
-		batch.setShader(vignetteShader);
-		batch.draw(bkgTex, 0, 0);
-		batch.end();
-
-		batch.begin();
-		noiseShader.begin();
-		noiseShader.setUniformf("time", stateTime);
-		noiseShader.setUniformf("resolution", width, height);
-		noiseShader.end();
-		batch.setShader(noiseShader);
-		batch.draw(bkgTex, 0, 0);
-		batch.end();
-
-		batch.begin();
-		glowShader.begin();
-		glowShader.setUniformf("time", stateTime);
-		glowShader.setUniformf("resolution", width, height);
-		glowShader.end();
-		batch.setShader(glowShader);
-		batch.draw(bkgTex, 0, 0);
-		batch.end();
-
-		batch.begin();
-		batch.setShader(null);
-		batch.end();
-	}
-
 	private void renderStrings(List<RenderableString> renderableStrings) {
 		batch.begin();
 		for (RenderableString renderableString : renderableStrings) {
@@ -163,6 +250,15 @@ public class MatchRenderer {
 					renderableString.pos.y);
 		}
 		batch.end();
+	}
+
+	public void updateRenderables() {
+		allBoardsRenderableRectangles.clear();
+		allBoardsRenderableStrings.clear();
+		for (Match match : visibleMatches) {
+			allBoardsRenderableRectangles.addAll(match.renderableRectangles);
+			allBoardsRenderableStrings.addAll(match.renderableStrings);
+		}
 	}
 
 }

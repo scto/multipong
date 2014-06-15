@@ -5,17 +5,17 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 public class Shaders {
 
-	public static ShaderProgram loadNoiseShader() {
+	public static ShaderProgram loadNoisyPixelsShader() {
 		String vert = Gdx.files.local("shaders/common.vert").readString();
-		String frag = Gdx.files.local("shaders/noisy_crt.frag").readString();
+		String frag = Gdx.files.local("shaders/noisy_pixels.frag").readString();
 		ShaderProgram shader = new ShaderProgram(vert, frag);
 		ShaderProgram.pedantic = false;
 		if (!shader.isCompiled()) {
-			Gdx.app.debug("NoiseShader", "\n" + shader.getLog());
+			Gdx.app.debug("NoisyPixelsShader", "\n" + shader.getLog());
 			Gdx.app.exit();
 		}
 		if (shader.getLog().length() != 0) {
-			Gdx.app.debug("NoiseShader", "\n" + shader.getLog());
+			Gdx.app.debug("NoisyPixelsShader", "\n" + shader.getLog());
 		}
 		return shader;
 	}
