@@ -49,5 +49,20 @@ public class Shaders {
 		}
 		return shader;
 	}
+	
+	public static ShaderProgram loadGlowShader() {
+		String vert = Gdx.files.local("shaders/common.vert").readString();
+		String frag = Gdx.files.local("shaders/glow.frag").readString();
+		ShaderProgram shader = new ShaderProgram(vert, frag);
+		ShaderProgram.pedantic = false;
+		if (!shader.isCompiled()) {
+			Gdx.app.debug("GlowShader", "\n" + shader.getLog());
+			Gdx.app.exit();
+		}
+		if (shader.getLog().length() != 0) {
+			Gdx.app.debug("GlowShader", "\n" + shader.getLog());
+		}
+		return shader;
+	}
 
 }
