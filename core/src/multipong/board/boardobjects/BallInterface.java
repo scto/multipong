@@ -49,4 +49,6 @@ public interface BallInterface {
 	public void setY(float y);
 
 	public void update(float deltaTime);
+
+	public Rectangle getBounds();
 }

@@ -1,25 +1,39 @@
 package multipong.match;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
+
 import multipong.board.Board;
 import multipong.board.BoardUpdater;
 import multipong.board.boardobjects.Player;
-import multipong.screens.KeyMap;
+import multipong.rendering.RenderableMatchObjects;
+import multipong.rendering.RenderableRectangle;
+import multipong.rendering.RenderableString;
 import multipong.settings.Settings;
+import multipong.utils.KeyMap;
 
 public class Match {
 
-	Player leftPlayer;
-	Player rightPlayer;
-	Player matchWinner;
-
 	public Board board;
+	private Player leftPlayer;
+	private Player matchWinner;
 
-	boolean paused = true;
-	boolean pauseWhenRoundWon = false;
+	private boolean paused = true;
 
-	public float stateTime = 0;
+	private boolean pauseWhenRoundWon = false;
 	public float redrawCountDown = 0;
-	public float timeSinceMatchFinished = 0;
+
+	public List<RenderableRectangle> renderableRectangles = new ArrayList<RenderableRectangle>();
+	public List<RenderableString> renderableStrings = new ArrayList<RenderableString>();
+	private RenderableString countDownMsg;
+
+	private Player rightPlayer;
+	private float stateTime = 0;
+	private float timeSinceMatchFinished = 0;
+
+	String className = this.getClass().getSimpleName();
 
 	public Match() {
 		board = new Board();
@@ -33,13 +47,19 @@ public class Match {
 		leftPlayer = new Player("leftPlayer", 0, firstPlayerKeyMap.upKey,
 				firstPlayerKeyMap.downKey);
 		board.leftPlayer = leftPlayer;
+		refreshRenderables();
 	}
 
 	public void addRightPlayer(KeyMap secondPlayerKeyMap) {
 		rightPlayer = new Player("rightPlayer", 0, secondPlayerKeyMap.upKey,
 				secondPlayerKeyMap.downKey);
 		board.setPlayers(leftPlayer, rightPlayer);
+		refreshRenderables();
 		paused = true;
+	}
+
+	public float getTimeSinceMatchFinished() {
+		return timeSinceMatchFinished;
 	}
 
 	private boolean checkForRoundWinner() {
@@ -55,14 +75,11 @@ public class Match {
 				rightPlayer.incrementScore();
 				board.ball.resetWithLeftPlayerDirection();
 			}
+			refreshRenderables();
 			roundWon = true;
 		}
 		return roundWon;
 
-	}
-
-	public void setRedrawCountDown() {
-		redrawCountDown = Settings.timeFromRedrawToRoundBegins;
 	}
 
 	public Player getLeftPlayer() {
@@ -73,6 +90,86 @@ public class Match {
 		return matchWinner;
 	}
 
+	private void refreshRenderables() {
+		if (board.field == null) {
+			Gdx.app.debug(className,
+					"Not refreshing renderables for " + this.toString());
+			return;
+		}
+		Gdx.app.debug(className,
+				"Refreshing renderables for " + this.toString());
+
+		renderableRectangles.clear();
+		renderableStrings.clear();
+
+		renderableRectangles.add(RenderableMatchObjects.field(board.field
+				.getBounds()));
+
+		if (isFinished()) {
+			Gdx.app.debug(
+					className,
+					"Refreshing with state: Match if finished "
+							+ this.toString());
+			if (board == null || board.field == null) {
+				Gdx.app.debug(className, "board");
+			}
+			if (matchWinner == null) {
+				Gdx.app.debug(className, "winner");
+			}
+			renderableStrings.add(RenderableMatchObjects.matchWinnerMsg(
+					board.getBounds(), getMatchWinner().name));
+
+		} else if (!hasLeftPlayer() && !hasRightPlayer()) {
+			Gdx.app.debug(className, "Refreshing with state: No players "
+					+ this.toString());
+			renderableStrings.add(RenderableMatchObjects
+					.leftSideWaitingMsg(board.getBounds()));
+			renderableStrings.add(RenderableMatchObjects
+					.rightSideWaitingMsg(board.getBounds()));
+
+		} else if (hasLeftPlayer() && !hasRightPlayer()) {
+			Gdx.app.debug(className, "Refreshing with state: No right player "
+					+ this.toString());
+			renderableStrings.add(RenderableMatchObjects
+					.rightSideWaitingMsg(board.getBounds()));
+			renderableStrings.add(RenderableMatchObjects.leftPlayerName(
+					board.getBounds(), leftPlayer.name));
+			renderableRectangles.add(RenderableMatchObjects
+					.leftPad(board.leftPlayerPad.getBounds()));
+
+		} else if (isPlayable()) {
+			Gdx.app.debug(className, "Refreshing with state: Is playable "
+					+ this.toString());
+			renderableStrings.add(RenderableMatchObjects.leftPlayerName(
+					board.getBounds(), leftPlayer.name));
+			renderableStrings.add(RenderableMatchObjects.rightPlayerName(
+					board.getBounds(), rightPlayer.name));
+			renderableStrings.add(RenderableMatchObjects.leftPlayerScore(
+					board.getBounds(), leftPlayer));
+			renderableStrings.add(RenderableMatchObjects.rightPlayerScore(
+					board.getBounds(), rightPlayer));
+			renderableRectangles.add(RenderableMatchObjects
+					.leftPad(board.leftPlayerPad.getBounds()));
+			renderableRectangles.add(RenderableMatchObjects
+					.rightPad(board.rightPlayerPad.getBounds()));
+
+			if (hasStartCountDown()) {
+				countDownMsg = RenderableMatchObjects.countDownMsg(
+						board.getBounds(), 0);
+				renderableStrings.add(countDownMsg);
+
+			} else if (hasRedrawCountDown()) {
+				countDownMsg = RenderableMatchObjects.countDownMsg(
+						board.getBounds(), redrawCountDown);
+				renderableStrings.add(countDownMsg);
+
+			} else {
+				renderableRectangles.add(RenderableMatchObjects.ball(board.ball
+						.getBounds()));
+			}
+		}
+	}
+
 	public Player getRightPlayer() {
 		return rightPlayer;
 	}
@@ -81,16 +178,16 @@ public class Match {
 		return leftPlayer != null;
 	}
 
+	public boolean hasRedrawCountDown() {
+		return redrawCountDown > 0;
+	}
+
 	public boolean hasRightPlayer() {
 		return rightPlayer != null;
 	}
 
 	public boolean hasStartCountDown() {
 		return stateTime <= Settings.timeMatchStartCountDownFrom;
-	}
-
-	public boolean hasRedrawCountDown() {
-		return redrawCountDown > 0;
 	}
 
 	public boolean isFinished() {
@@ -118,16 +215,26 @@ public class Match {
 		// TODO: maybe set pads to previous place if applicable...
 		board = new Board(x, y, width, height);
 		board.setPlayers(leftPlayer, rightPlayer);
+		refreshRenderables();
+	}
+
+	public void resume() {
+		pauseWhenRoundWon = false;
+		paused = false;
+		refreshRenderables();
 	}
 
 	public boolean roundHasBeenPlayed() {
 		return (leftPlayer.score + rightPlayer.score != 0);
 	}
 
-	public void resume() {
-		pauseWhenRoundWon = false;
-		paused = false;
+	public void setRedrawCountDown() {
+		redrawCountDown = Settings.timeFromRedrawToRoundBegins;
+		refreshRenderables();
 	}
+
+	private boolean needsRefreshAfterStartCountdown = true;
+	private boolean needsRefreshAfterRedrawCountdown = true;
 
 	public void update(float deltaTime) {
 		if (isFinished()) {
@@ -138,26 +245,48 @@ public class Match {
 			stateTime += deltaTime;
 
 			if (hasStartCountDown()) {
+				needsRefreshAfterStartCountdown = true;
+				RenderableMatchObjects.updateCountDownMsg(countDownMsg,
+						Settings.timeMatchStartCountDownFrom - stateTime);
 				return;
+			}
+
+			if (needsRefreshAfterStartCountdown) {
+				refreshRenderables();
+				needsRefreshAfterStartCountdown = false;
 			}
 
 			if (hasRedrawCountDown()) {
 				redrawCountDown -= deltaTime;
+				needsRefreshAfterRedrawCountdown = true;
+				RenderableMatchObjects.updateCountDownMsg(countDownMsg,
+						redrawCountDown);
 				return;
+			}
+
+			if (needsRefreshAfterRedrawCountdown) {
+				refreshRenderables();
+				needsRefreshAfterRedrawCountdown = false;
 			}
 
 			BoardUpdater.update(board, deltaTime);
 
 			boolean roundWon = checkForRoundWinner();
 
+			if (roundWon) {
+				// Always set match winner even if match is not finished yet.
+				matchWinner = (leftPlayer.score > rightPlayer.score) ? leftPlayer
+						: rightPlayer;
+			}
+
 			if (roundWon && pauseWhenRoundWon) {
 				paused = true;
+				refreshRenderables();
 			}
 
 			if (isFinished()) {
-				matchWinner = (leftPlayer.score > rightPlayer.score) ? leftPlayer
-						: rightPlayer;
 				paused = true;
+				refreshRenderables();
 				return;
 			}
 		}

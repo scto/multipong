@@ -3,7 +3,9 @@ package multipong.screens;
 import java.util.List;
 
 import multipong.matchhandlers.DropInMatchHandler;
+import multipong.rendering.MatchRenderer;
 import multipong.settings.Settings;
+import multipong.utils.KeyMap;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -32,6 +34,12 @@ public class DropInScreen extends AbstractScreen {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		matchRenderer.dispose();
 	}
 
 	@Override

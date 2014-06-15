@@ -10,40 +10,28 @@ import multipong.settings.Settings;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 
 public class Board {
 
-	public Vector2[] separatorPos;
-	public float separatorLength;
+	public BallInterface ball;
+	public Field field;
 
 	public Player leftPlayer;
 	public Pad leftPlayerPad;
-	public Vector2 leftPlayerScore;
-	public Vector2 leftPlayerNamePos;
+
+	private float midPointX;
+	private float midPointY;
 
 	public Player rightPlayer;
 	public Pad rightPlayerPad;
-	public Vector2 rightPlayerScore;
-	public Vector2 rightPlayerNamePos;
 
-	public Field field;
-	public BallInterface ball;
-
-	public int stateTime = 0;
-	public float x, y, width, height;
-
-	public float midPointX;
-	public float midPointY;
-
-	public float leftMidPointX;
-	public float rightMidPointX;
+	public float x, y, width, height, stateTime;
 
 	/**
 	 * An empty board.
 	 */
 	public Board() {
-
+		
 	}
 
 	/**
@@ -67,18 +55,16 @@ public class Board {
 		midPointX = x + width / 2;
 		midPointY = y + height / 2;
 
-		leftMidPointX = x + width / 4;
-		rightMidPointX = x + width / 4 * 3;
-
-		createPads();
-		createSeparator();
-		createScorePositions();
-		createPlayerNamePositions();
-		createField();
-		createBall();
+		setPads();
+		setField();
+		setBall();
 	}
 
-	private void createBall() {
+	public Rectangle getBounds() {
+		return field.getBounds();
+	}
+
+	private void setBall() {
 		float ballSize = height * Settings.ballSizePercentOfBoardHeight / 100;
 		float ballStartingXDirection = (MathUtils.random(0, 1) != 1) ? -1f : 1f;
 
@@ -91,11 +77,11 @@ public class Board {
 		}
 	}
 
-	private void createField() {
+	private void setField() {
 		field = new Field(x, y, width, height);
 	}
 
-	private void createPads() {
+	private void setPads() {
 		float padHeight = height * Settings.padHeightPercentOfBoardHeight / 100;
 		float padWidth = width * Settings.padWidthPercentOfBoardWidth / 100;
 		float padXoffset = width * Settings.padXOffsetPercentOfBoardWidth / 100;
@@ -105,40 +91,6 @@ public class Board {
 				padHeight, width, height);
 		rightPlayerPad = new Pad(x + width - padXoffset - padWidth, y
 				+ padYoffset, padWidth, padHeight, width, height);
-	}
-
-	private void createPlayerNamePositions() {
-		float topOffset = height / 30;
-		leftPlayerNamePos = new Vector2(x, height + y - topOffset);
-		rightPlayerNamePos = new Vector2(x + width / 2, height + y - topOffset);
-	}
-
-	private void createScorePositions() {
-		float playerScoreXoffset = width / 4;
-		float playerScoreYoffset = height - height / 12;
-
-		leftPlayerScore = new Vector2(x + playerScoreXoffset, y
-				+ playerScoreYoffset);
-		rightPlayerScore = new Vector2(x + playerScoreXoffset * 3, y
-				+ playerScoreYoffset);
-	}
-
-	private void createSeparator() {
-		float separatorAmount = 32;
-		separatorLength = height / (separatorAmount * 4);
-		separatorPos = new Vector2[(int) separatorAmount];
-
-		float xOffset = x + width / 2;
-		float yStep = (height - separatorLength) / (separatorAmount - 1);
-
-		for (int i = 0; i < separatorAmount; i++) {
-
-			separatorPos[i] = new Vector2(xOffset, y + i * yStep);
-		}
-	}
-
-	public Rectangle getBounds() {
-		return field.getBounds();
 	}
 
 	public void setPlayers(Player leftPlayer, Player rightPlayer) {
