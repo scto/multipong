@@ -31,6 +31,7 @@ public class MatchRenderer {
 	ShaderProgram noiseShader;
 	ShaderProgram vignetteShader;
 	ShaderProgram distortionShader;
+	ShaderProgram glowShader;
 
 	List<Match> visibleMatches;
 
@@ -51,6 +52,7 @@ public class MatchRenderer {
 		noiseShader = Shaders.loadNoiseShader();
 		vignetteShader = Shaders.loadVignetteShader();
 		distortionShader = Shaders.loadDistortionShader();
+		glowShader = Shaders.loadGlowShader();
 	}
 
 	public void dispose() {
@@ -60,12 +62,15 @@ public class MatchRenderer {
 		noiseShader.dispose();
 		vignetteShader.dispose();
 		distortionShader.dispose();
+		glowShader.dispose();
 	}
 
 	Vector2 o = new Vector2(0, 0);
 
 	public void render(float deltaTime) {
 		stateTime += deltaTime;
+		
+		
 
 		renderer.setProjectionMatrix(camera.combined);
 		batch.setProjectionMatrix(camera.combined);
@@ -77,31 +82,48 @@ public class MatchRenderer {
 				backgroundColor.b, backgroundColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		float colorBlurOpacity = 0.9f;
-
-		foregroundObjectColor = Color.GREEN;
-		foregroundObjectColor.a = colorBlurOpacity;
-		o.x = -1;
-		o.y = 0;
-		renderBoards(deltaTime);
-
-		foregroundObjectColor = Color.MAGENTA;
-		foregroundObjectColor.a = colorBlurOpacity;
-		o.x = 0;
-		o.y = 0.5f;
-		renderBoards(deltaTime);
-
-		foregroundObjectColor = Color.CYAN;
-		foregroundObjectColor.a = colorBlurOpacity;
-		o.x = 0;
-		o.y = -1;
-		renderBoards(deltaTime);
+		// float colorBlurOpacity = 0.9f;
+		//
+		// foregroundObjectColor = Color.GREEN;
+		// foregroundObjectColor.a = colorBlurOpacity;
+		// o.x = -1;
+		// o.y = 0;
+		// renderBoards(deltaTime);
+		//
+		// foregroundObjectColor = Color.MAGENTA;
+		// foregroundObjectColor.a = colorBlurOpacity;
+		// o.x = 0;
+		// o.y = 0.5f;
+		// renderBoards(deltaTime);
+		//
+		// foregroundObjectColor = Color.CYAN;
+		// foregroundObjectColor.a = colorBlurOpacity;
+		// o.x = 0;
+		// o.y = -1;
+		// renderBoards(deltaTime);
 
 		foregroundObjectColor = Color.WHITE;
 		o.x = 0;
 		o.y = 0;
 		renderBoards(deltaTime);
 
+		batch.begin();
+		glowShader.begin();
+		glowShader.setUniformf("time", stateTime);
+		for (Match match : visibleMatches) {
+			glowShader.setUniformf("resolution", width, height);
+			float[] coords = { match.board.leftPlayerPad.getX(),
+					match.board.leftPlayerPad.getY(),
+					match.board.leftPlayerPad.getRight(),
+					match.board.leftPlayerPad.getTop() };
+			glowShader.setUniform4fv("rect", coords, 0, 4);
+		}
+		glowShader.end();
+		batch.setShader(glowShader);
+		batch.draw(bkgTex, 0, 0);
+		batch.setShader(null);
+		batch.end();
+		
 		batch.begin();
 		distortionShader.begin();
 		distortionShader.setUniformf("time", stateTime);
@@ -127,6 +149,17 @@ public class MatchRenderer {
 		batch.setShader(noiseShader);
 		batch.draw(bkgTex, 0, 0);
 		batch.end();
+
+		batch.begin();
+		glowShader.begin();
+		glowShader.setUniformf("time", stateTime);
+		glowShader.setUniformf("resolution", width, height);
+		glowShader.end();
+		batch.setShader(glowShader);
+		batch.draw(bkgTex, 0, 0);
+		batch.end();
+
+
 
 		batch.begin();
 		batch.setShader(null);
@@ -163,10 +196,12 @@ public class MatchRenderer {
 					float number = (Settings.timeMatchStartCountDownFrom + 1 - match.stateTime);
 					renderCountDown(number, match.board.midPointX,
 							match.board.midPointY);
+					
 				} else if (match.hasRedrawCountDown()) {
 					float number = (match.redrawCountDown + 1);
 					renderCountDown(number, match.board.midPointX,
 							match.board.midPointY);
+					
 				} else {
 					renderBall(match);
 				}
@@ -265,6 +300,7 @@ public class MatchRenderer {
 				match.board.leftPlayerPad.getHeight() + o.y);
 		renderer.end();
 		disableBlend();
+
 	}
 
 	private void renderLeftSideWaiting(Match match) {
