@@ -1,4 +1,4 @@
-package multipong.screens;
+package multipong.utils;
 
 public class KeyMap {
 	public int upKey;

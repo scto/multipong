@@ -1,4 +1,4 @@
-package multipong.screens;
+package multipong.utils;
 
 public class LetterRoller {
 
