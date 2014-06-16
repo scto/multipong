@@ -58,11 +58,52 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 
 	@Override
 	public void addTotalVelocityFromPad(float padYVelocity) {
+		// float velocity = padYVelocity
+		// * Settings.ballAddedVelocityPercentOfPadVelocity / 100;
+		//
+		// float addY = Math.abs(vel.y + velocity);
+		// float addX = Math.abs(vel.x);
+		//
+		// float resultAngle = (float) Math.toDegrees(Math.atan(addY / addX));
+		//
+		// Gdx.app.debug(className, "Adding y vel would give angle " +
+		// resultAngle);
+		//
+		// if (resultAngle <= Settings.ballMaxAngle) {
+		// vel.y += velocity;
+		// Gdx.app.debug(className, "Angle (cal)" + resultAngle);
+		// } else {
+		// float dirY = (vel.y + velocity) / addY;
+		// float dirX = vel.x / addX;
+		// float resultVel = (float) Math.sqrt(addX * addX + addY * addY);
+		// float newAngle = (float) Math.toRadians(Settings.ballMaxAngle);
+		//
+		// vel.y = (float) (Math.sin(newAngle) * resultVel) * dirY;
+		// vel.x = (float) (Math.cos(newAngle) * resultVel) * dirX;
+		// Gdx.app.debug(className, "Angle (max)" + Settings.ballMaxAngle);
+		// }
+		//
+		// Gdx.app.debug(className, "x Velocity " + vel.x);
+		// Gdx.app.debug(className, "y Velocity " + vel.y);
+		// Gdx.app.debug(className, "r Velocity  " + vel.len());
+		//
+		// Gdx.app.debug("Pad", "Velocity " + padYVelocity);
+
+	}
+
+	@Override
+	public void addXVelocityFromPad(float padYVelocity) {
+
+	}
+
+	@Override
+	public void addYVelocityFromPad(float padYVelocity) {
 		float velocity = padYVelocity
 				* Settings.ballAddedVelocityPercentOfPadVelocity / 100;
 
 		float addY = Math.abs(vel.y + velocity);
 		float addX = Math.abs(vel.x);
+		float dirY = (vel.y + velocity) / addY;
 
 		float resultAngle = (float) Math.toDegrees(Math.atan(addY / addX));
 
@@ -71,14 +112,10 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 		if (resultAngle <= Settings.ballMaxAngle) {
 			vel.y += velocity;
 			Gdx.app.debug(className, "Angle (cal)" + resultAngle);
-		} else {
-			float dirY = (vel.y + velocity) / addY;
-			float dirX = vel.x / addX;
-			float resultVel = (float) Math.sqrt(addX * addX + addY * addY);
-			float newAngle = (float) Math.toRadians(Settings.ballMaxAngle);
 
-			vel.y = (float) (Math.sin(newAngle) * resultVel) * dirY;
-			vel.x = (float) (Math.cos(newAngle) * resultVel) * dirX;
+		} else {
+			vel.y = (float) (Math.tan(Math.toRadians(Settings.ballMaxAngle)) * Math
+					.abs(vel.x)) * dirY;
 			Gdx.app.debug(className, "Angle (max)" + Settings.ballMaxAngle);
 		}
 
@@ -87,21 +124,6 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 		Gdx.app.debug(className, "r Velocity  " + vel.len());
 
 		Gdx.app.debug("Pad", "Velocity " + padYVelocity);
-
-	}
-
-	@Override
-	public void addXVelocityFromPad(float padYVelocity) {
-
-		ballVelIncrease += ballVelIncrement;
-		vel.x = (vel.x + (ballVelIncrease * Settings.ballAddVelocityToEveryHit));
-
-	}
-
-	@Override
-	public void addYVelocityFromPad(float padYVelocity) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private void checkVelocity() {
@@ -123,19 +145,33 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 	}
 
 	@Override
+	public int currentXDirection() {
+		return (int) (vel.x / Math.abs(vel.x));
+	}
+
+	@Override
+	public int currentYDirection() {
+		return (int) (vel.y / Math.abs(vel.y));
+	}
+
+	@Override
 	public void dampen() {
 		vel.y -= vel.y * Settings.ballWallDampeningPercentOfVelocity / 100;
 		vel.x -= vel.x * Settings.ballWallDampeningPercentOfVelocity / 100;
 	}
 
 	@Override
-	public void increaseXVelocity(float velocity) {
-		// TODO Auto-generated method stub
-
+	public void increaseXVelocity() {
+		ballVelIncrease += ballVelIncrement
+				* Settings.ballAddVelocityToEveryHit;
+		float absVeclocity = Math.abs(vel.x);
+		float newAbsVelocity = absVeclocity + ballVelIncrease;
+		vel.x = newAbsVelocity * currentXDirection();
+		Gdx.app.debug(className, "Increasing velocity with " + ballVelIncrease);
 	}
 
 	@Override
-	public void increaseYVelocity(float velocity) {
+	public void increaseYVelocity() {
 		// TODO Auto-generated method stub
 	}
 

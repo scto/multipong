@@ -23,9 +23,9 @@ public class Pad extends BoundedRectangle {
 		this.boardWidth = boardWidth;
 	}
 
-	public void down() {
+	public void down(float multiple) {
 		accel.y = -Settings.padAcceleration
-				* (boardHeight / Settings.appHeight);
+				* (boardHeight / Settings.appHeight) * multiple;
 	}
 
 	public float getVelocity() {
@@ -48,9 +48,18 @@ public class Pad extends BoundedRectangle {
 		accel.y = 0;
 		vel.y = 0;
 	}
+	
+	public void setUp(float upVelocity) {
+		
+	}
+	
+	public void setDown(float downVelocity) {
+		
+	}
 
-	public void up() {
-		accel.y = Settings.padAcceleration * (boardHeight / Settings.appHeight);
+	public void up(float multiple) {
+		accel.y = Settings.padAcceleration * (boardHeight / Settings.appHeight)
+				* multiple;
 	}
 
 	public void update(float deltaTime) {

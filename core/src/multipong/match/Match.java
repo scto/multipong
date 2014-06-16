@@ -74,10 +74,18 @@ public class Match {
 		if (roundWinner != null) {
 			if (roundWinner == leftPlayer) {
 				leftPlayer.incrementScore();
-				board.ball.resetWithRightPlayerDirection();
+				if (Settings.ballResetsInRoundWinnerDirection) {
+					board.ball.resetWithLeftPlayerDirection();
+				} else {
+					board.ball.resetWithRightPlayerDirection();
+				}
 			} else {
 				rightPlayer.incrementScore();
-				board.ball.resetWithLeftPlayerDirection();
+				if (Settings.ballResetsInRoundWinnerDirection) {
+					board.ball.resetWithRightPlayerDirection();
+				} else {
+					board.ball.resetWithLeftPlayerDirection();
+				}
 			}
 			refreshRenderables();
 			roundWon = true;

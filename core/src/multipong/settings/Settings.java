@@ -16,13 +16,13 @@ public class Settings {
 	 * Percent of pad velocity to transfer to ball velocity on when ball hits
 	 * pad.
 	 */
-	public static float ballAddedVelocityPercentOfPadVelocity = 100f;
+	public static float ballAddedVelocityPercentOfPadVelocity = 150f;
 
 	/**
 	 * Adds a velocity value to the ball for every time the ball is hitted by a
 	 * pad.
 	 */
-	public static float ballAddVelocityToEveryHit = 25f;
+	public static float ballAddVelocityToEveryHit = 15f;
 
 	/**
 	 * Maximum angle the ball can travel in after being hit by a pad. Angle is
@@ -33,7 +33,7 @@ public class Settings {
 	/**
 	 * Total max velocity of the ball.
 	 */
-	public static float ballMaxVelocity = 700f;
+	public static float ballMaxVelocity = 1000f;
 
 	/**
 	 * Max velocity of the ball in x direction.
@@ -68,12 +68,17 @@ public class Settings {
 	/**
 	 * Starting velocity of ball.
 	 */
-	public static float ballStartingVelocity = 200f;
+	public static float ballStartingVelocity = 400f;
 
 	/**
 	 * Set which type of ball to use.
 	 */
 	public static int ballTypeNum = 2;
+
+	/**
+	 * The ball resets in the direction of the winner of the round.
+	 */
+	public static boolean ballResetsInRoundWinnerDirection = true;
 
 	/**
 	 * If the ball hits a wall, velocity will decrease with this percentage.
@@ -83,12 +88,12 @@ public class Settings {
 	/**
 	 * The score needed to win a match.
 	 */
-	public static int matchScoreToWin = 100;
+	public static int matchScoreToWin = 10;
 
 	/**
 	 * Acceleration of a pad.
 	 */
-	public static float padAcceleration = 700f;
+	public static float padAcceleration = 1500f;
 
 	/**
 	 * Pad height in percent of board height.
@@ -98,7 +103,7 @@ public class Settings {
 	/**
 	 * Max velocity of a pad.
 	 */
-	public static float padMaxVelocity = 1500f;
+	public static float padMaxVelocity = 2000f;
 
 	/**
 	 * Pad width in percent of board width.
@@ -120,7 +125,7 @@ public class Settings {
 	/**
 	 * Countdown before match, in seconds.
 	 */
-	public static float timeMatchStartCountDownFrom = 3f;
+	public static float timeMatchStartCountDownFrom = 0f;
 
 	/**
 	 * How long to show the message "player is the winner!" after all matches

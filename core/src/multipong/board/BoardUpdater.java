@@ -33,9 +33,9 @@ public class BoardUpdater {
 
 			board.ball.reverseX();
 
-			board.ball.addXVelocityFromPad(board.rightPad.getVelocity());
-
-			board.ball.addTotalVelocityFromPad(board.rightPad.getVelocity());
+			board.ball.increaseXVelocity();
+			// board.ball.addTotalVelocityFromPad(board.rightPad.getVelocity());
+			board.ball.addYVelocityFromPad(board.rightPad.getVelocity());
 
 		} else if (board.ball.overlaps(board.leftPad.getBounds())) {
 
@@ -43,9 +43,9 @@ public class BoardUpdater {
 
 			board.ball.reverseX();
 
-			board.ball.addXVelocityFromPad(board.leftPad.getVelocity());
-
-			board.ball.addTotalVelocityFromPad(board.leftPad.getVelocity());
+			board.ball.increaseXVelocity();
+			// board.ball.addTotalVelocityFromPad(board.leftPad.getVelocity());
+			board.ball.addYVelocityFromPad(board.leftPad.getVelocity());
 
 		}
 
@@ -95,20 +95,29 @@ public class BoardUpdater {
 		if (controller != null) {
 
 			int axis = (int) controller.getAxis(1);
+			boolean enterPressed = controller.getButton(ButtonMap.enterButton);
 
 			if (ButtonMap.upButton == -1 && axis < 0 || ButtonMap.upButton == 1
 					&& axis > 0) {
 				if (pad.movingUp()) {
 					pad.stop();
 				}
-				pad.up();
+				// if (enterPressed) {
+				// pad.up(0.1f);
+				// } else {
+				pad.up(1f);
+				// }
 
 			} else if (ButtonMap.downButton == -1 && axis < 0
 					|| ButtonMap.downButton == 1 && axis > 0) {
 				if (pad.movingDown()) {
 					pad.stop();
 				}
-				pad.down();
+				// if (enterPressed) {
+				// pad.down(0.1f);
+				// } else {
+				pad.down(1f);
+				// }
 
 			} else {
 				pad.stop();
@@ -122,13 +131,13 @@ public class BoardUpdater {
 			if (pad.movingUp()) {
 				pad.stop();
 			}
-			pad.up();
+			// pad.up();
 
 		} else if (Gdx.input.isKeyPressed(keyMap.downKey)) {
 			if (pad.movingDown()) {
 				pad.stop();
 			}
-			pad.down();
+			// pad.down();
 
 		} else {
 			pad.stop();

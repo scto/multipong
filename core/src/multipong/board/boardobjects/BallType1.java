@@ -117,20 +117,31 @@ public class BallType1 extends BoundedRectangle implements BallInterface {
 	}
 
 	@Override
+	public int currentXDirection() {
+		return (int) (vel.x / Math.abs(vel.x));
+	}
+
+	@Override
+	public int currentYDirection() {
+		return (int) (vel.y / Math.abs(vel.y));
+	}
+
+	@Override
 	public void dampen() {
 		vel.y -= vel.y * Settings.ballWallDampeningPercentOfVelocity / 100;
 		vel.x -= vel.x * Settings.ballWallDampeningPercentOfVelocity / 100;
 	}
 
 	@Override
-	public void increaseXVelocity(float velocity) {
+	public void increaseXVelocity() {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void increaseYVelocity(float velocity) {
+	public void increaseYVelocity() {
 		// TODO Auto-generated method stub
+
 	}
 
 	@Override

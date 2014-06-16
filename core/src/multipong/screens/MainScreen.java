@@ -126,6 +126,7 @@ public class MainScreen extends AbstractScreen {
 		if (!hasControllerFocus) {
 			return false;
 		}
+		// Gdx.app.debug(className + " axis", arg0 + " " + arg1 + " " + arg2);
 		if (arg2 == ButtonMap.upButton) {
 			selectedItem = selectedItem.getUp(selectedItem);
 			return true;
@@ -137,10 +138,20 @@ public class MainScreen extends AbstractScreen {
 	}
 
 	@Override
+	public boolean buttonUp(Controller arg0, int arg1) {
+		if (!hasControllerFocus) {
+			return false;
+		}
+		// Gdx.app.debug(className + " button up", arg0 + " " + arg1);
+		return false;
+	}
+
+	@Override
 	public boolean buttonDown(Controller arg0, int arg1) {
 		if (!hasControllerFocus) {
 			return false;
 		}
+		// Gdx.app.debug(className + " button down", arg0 + " " + arg1);
 		if (arg1 == ButtonMap.enterButton) {
 			enterSelected();
 			return true;

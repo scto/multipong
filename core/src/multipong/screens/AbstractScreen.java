@@ -99,18 +99,19 @@ public class AbstractScreen implements Screen, InputProcessor,
 
 	@Override
 	public boolean axisMoved(Controller arg0, int arg1, float arg2) {
-		// TODO Auto-generated method stub
+		// Gdx.app.debug(className + " axis", arg0 + " " + arg1 + " " + arg2);
 		return false;
 	}
 
 	@Override
 	public boolean buttonDown(Controller arg0, int arg1) {
-		// TODO Auto-generated method stub
+		// Gdx.app.debug(className + " button down", arg0 + " " + arg1);
 		return false;
 	}
 
 	@Override
 	public boolean buttonUp(Controller arg0, int arg1) {
+		// Gdx.app.debug(className + " button up", arg0 + " " + arg1);
 		return false;
 	}
 
