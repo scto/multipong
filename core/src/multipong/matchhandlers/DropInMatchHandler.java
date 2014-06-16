@@ -8,6 +8,7 @@ import multipong.match.Match;
 import multipong.utils.KeyMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controller;
 
 public class DropInMatchHandler {
 	private List<Match> visibleMatches = new ArrayList<Match>();
@@ -32,7 +33,8 @@ public class DropInMatchHandler {
 		}
 	}
 
-	public void addNewPlayer(KeyMap newPlayerKeys) {
+	public void addNewPlayer(KeyMap newPlayerKeys,
+			Controller newPlayerController) {
 
 		Match boardWithoutChallanger = getMatchWithoutChallanger();
 
@@ -41,7 +43,8 @@ public class DropInMatchHandler {
 			// There is a shown or hidden board without challanger
 			Gdx.app.debug(className, "Found board without challanger: "
 					+ boardWithoutChallanger.toString());
-			boardWithoutChallanger.addRightPlayer(newPlayerKeys);
+			boardWithoutChallanger.addRightPlayer(newPlayerKeys,
+					newPlayerController);
 
 			// Unpause the board if it is visible, otherwise, set all boards to
 			// pause when current rounds are finished.
@@ -64,7 +67,7 @@ public class DropInMatchHandler {
 			// There is a shown or hidden empty board
 			Gdx.app.debug(className,
 					"Found empty board: " + emptyBoard.toString());
-			emptyBoard.addLeftPlayer(newPlayerKeys);
+			emptyBoard.addLeftPlayer(newPlayerKeys, newPlayerController);
 
 			// Board still lacks challanger so do not unpause it
 			return;
@@ -74,7 +77,7 @@ public class DropInMatchHandler {
 		Match hiddenBoard = new Match();
 		Gdx.app.debug(className,
 				"Created new hidden board: " + hiddenBoard.toString());
-		hiddenBoard.addLeftPlayer(newPlayerKeys);
+		hiddenBoard.addLeftPlayer(newPlayerKeys, newPlayerController);
 		hiddenMatches.add(hiddenBoard);
 
 		// There must be an even number of boards.
@@ -89,7 +92,6 @@ public class DropInMatchHandler {
 	}
 
 	public boolean allVisibleMatchesAreFinished() {
-
 		for (Match match : visibleMatches) {
 			if (!match.isFinished() && match.hasLeftPlayer()) {
 				return false;

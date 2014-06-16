@@ -83,7 +83,7 @@ public class Settings {
 	/**
 	 * The score needed to win a match.
 	 */
-	public static int matchScoreToWin = 3;
+	public static int matchScoreToWin = 100;
 
 	/**
 	 * Acceleration of a pad.

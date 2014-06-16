@@ -17,13 +17,13 @@ public class Board {
 	public Field field;
 
 	public Player leftPlayer;
-	public Pad leftPlayerPad;
+	public Pad leftPad;
 
 	private float midPointX;
 	private float midPointY;
 
 	public Player rightPlayer;
-	public Pad rightPlayerPad;
+	public Pad rightPad;
 
 	public float x, y, width, height, stateTime;
 
@@ -31,7 +31,7 @@ public class Board {
 	 * An empty board.
 	 */
 	public Board() {
-		
+
 	}
 
 	/**
@@ -87,10 +87,10 @@ public class Board {
 		float padXoffset = width * Settings.padXOffsetPercentOfBoardWidth / 100;
 		float padYoffset = (height - padHeight) / 2f;
 
-		leftPlayerPad = new Pad(x + padXoffset, y + padYoffset, padWidth,
-				padHeight, width, height);
-		rightPlayerPad = new Pad(x + width - padXoffset - padWidth, y
-				+ padYoffset, padWidth, padHeight, width, height);
+		leftPad = new Pad(x + padXoffset, y + padYoffset, padWidth, padHeight,
+				width, height);
+		rightPad = new Pad(x + width - padXoffset - padWidth, y + padYoffset,
+				padWidth, padHeight, width, height);
 	}
 
 	public void setPlayers(Player leftPlayer, Player rightPlayer) {

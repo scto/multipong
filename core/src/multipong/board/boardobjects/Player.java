@@ -1,21 +1,23 @@
 package multipong.board.boardobjects;
 
+import multipong.utils.KeyMap;
+
+import com.badlogic.gdx.controllers.Controller;
+
 public class Player {
 
 	public String name;
 	int padGfx;
 	public int score = 0;
 
-	public int upKey;
-	public int downKey;
+	public KeyMap keyMap;
+	public Controller controller;
 
-	public Player(String name, int padGfx, int upKey, int downKey) {
-		super();
+	public Player(String name, int padGfx, KeyMap keyMap, Controller controller) {
 		this.name = name;
 		this.padGfx = padGfx;
-		this.upKey = upKey;
-		this.downKey = downKey;
-
+		this.keyMap = keyMap;
+		this.controller = controller;
 	}
 
 	public void incrementScore() {

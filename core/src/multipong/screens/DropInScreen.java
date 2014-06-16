@@ -5,35 +5,31 @@ import java.util.List;
 import multipong.matchhandlers.DropInMatchHandler;
 import multipong.rendering.MatchRenderer;
 import multipong.settings.Settings;
+import multipong.utils.ButtonMap;
 import multipong.utils.KeyMap;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controller;
 
 public class DropInScreen extends AbstractScreen {
 
 	List<KeyMap> availableKeyMaps;
+	List<Controller> availableControllers;
 	String className = this.getClass().getSimpleName();
 	DropInMatchHandler handler;
 	MatchRenderer matchRenderer;
 
+	boolean hasControllerFocus = true;
+
 	public DropInScreen(Game game, int width, int height) {
 		super(game, width, height);
+
 		availableKeyMaps = loadKeyMaps();
+		availableControllers = loadControllers();
+
 		handler = new DropInMatchHandler(width, height);
-
 		matchRenderer = new MatchRenderer(camera, handler.getVisibleMatches());
-	}
-
-	private KeyMap getPressedKeyMap() {
-		for (KeyMap keys : availableKeyMaps) {
-			if (Gdx.input.isKeyPressed(keys.enterKey) && stateTime > keyDelay) {
-				// TODO: simultaneous press possible, use a list probably
-				availableKeyMaps.remove(keys);
-				return keys;
-			}
-		}
-		return null;
 	}
 
 	@Override
@@ -43,13 +39,48 @@ public class DropInScreen extends AbstractScreen {
 	}
 
 	@Override
+	public boolean keyDown(int keycode) {
+		for (KeyMap keys : availableKeyMaps) {
+			if (keys.enterKey == keycode) {
+				availableKeyMaps.remove(keys);
+				handler.addNewPlayer(keys, null);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean buttonDown(Controller arg0, int arg1) {
+		if (!availableControllers.contains(arg0)) {
+			return true;
+		}
+		if (arg1 == ButtonMap.enterButton) {
+			availableControllers.remove(arg0);
+			handler.addNewPlayer(null, arg0);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
 	public void render(float deltaTime) {
 		super.render(deltaTime);
-
-		update(deltaTime);
-
 		matchRenderer.render(deltaTime);
+		update(deltaTime);
 		stateTime += deltaTime;
+	}
+
+	private void resetScreen() {
+		availableKeyMaps = loadKeyMaps();
+		availableControllers = loadControllers();
+		handler = new DropInMatchHandler(width, height);
+		matchRenderer = new MatchRenderer(camera, handler.getVisibleMatches());
+	}
+
+	private void update(float deltaTime) {
+		handler.showBoardsInHiddenMatches();
+		handler.updateBoardsInVisibleMatches(deltaTime);
 
 		if (handler.matchHasBeenStartedSinceCreation()
 				&& handler.allVisibleMatchesAreFinished()
@@ -59,22 +90,6 @@ public class DropInScreen extends AbstractScreen {
 				resetScreen();
 			}
 		}
-	}
-
-	private void resetScreen() {
-		availableKeyMaps = loadKeyMaps();
-		handler = new DropInMatchHandler(width, height);
-		matchRenderer = new MatchRenderer(camera, handler.getVisibleMatches());
-	}
-
-	private void update(float deltaTime) {
-		KeyMap newPlayerKeys = getPressedKeyMap();
-
-		if (newPlayerKeys != null) {
-			handler.addNewPlayer(newPlayerKeys);
-		}
-		handler.showBoardsInHiddenMatches();
-		handler.updateBoardsInVisibleMatches(deltaTime);
 	}
 
 }

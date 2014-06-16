@@ -2,8 +2,11 @@ package multipong.board;
 
 import multipong.board.boardobjects.Pad;
 import multipong.board.boardobjects.Player;
+import multipong.utils.ButtonMap;
+import multipong.utils.KeyMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controller;
 
 public class BoardUpdater {
 
@@ -24,34 +27,33 @@ public class BoardUpdater {
 
 	private static void checkBallHit(Board board) {
 
-		if (board.ball.overlaps(board.rightPlayerPad.getBounds())) {
+		if (board.ball.overlaps(board.rightPad.getBounds())) {
 
-			board.ball.setX(board.rightPlayerPad.getLeft()
-					- board.ball.getWidth());
-
-			board.ball.reverseX();
-
-			board.ball.addXVelocityFromPad(board.rightPlayerPad.getVelocity());
-
-			board.ball.addTotalVelocityFromPad(board.rightPlayerPad.getVelocity());
-
-		} else if (board.ball.overlaps(board.leftPlayerPad.getBounds())) {
-
-			board.ball.setX(board.leftPlayerPad.getRight());
+			board.ball.setX(board.rightPad.getLeft() - board.ball.getWidth());
 
 			board.ball.reverseX();
 
-			board.ball.addXVelocityFromPad(board.leftPlayerPad.getVelocity());
+			board.ball.addXVelocityFromPad(board.rightPad.getVelocity());
 
-			board.ball.addTotalVelocityFromPad(board.leftPlayerPad.getVelocity());
+			board.ball.addTotalVelocityFromPad(board.rightPad.getVelocity());
+
+		} else if (board.ball.overlaps(board.leftPad.getBounds())) {
+
+			board.ball.setX(board.leftPad.getRight());
+
+			board.ball.reverseX();
+
+			board.ball.addXVelocityFromPad(board.leftPad.getVelocity());
+
+			board.ball.addTotalVelocityFromPad(board.leftPad.getVelocity());
 
 		}
 
 	}
 
 	private static void checkPadBounds(Board board) {
-		checkPadBounds(board.leftPlayerPad, board);
-		checkPadBounds(board.rightPlayerPad, board);
+		checkPadBounds(board.leftPad, board);
+		checkPadBounds(board.rightPad, board);
 	}
 
 	private static void checkPadBounds(Pad pad, Board board) {
@@ -62,7 +64,7 @@ public class BoardUpdater {
 
 		} else if (pad.getTop() > board.field.getTop()) {
 
-			pad.setY(board.field.getTop() - board.leftPlayerPad.getHeight());
+			pad.setY(board.field.getTop() - board.leftPad.getHeight());
 			pad.stop();
 		}
 	}
@@ -82,24 +84,47 @@ public class BoardUpdater {
 	}
 
 	private static void parseInput(Board board) {
-		parseInput(board.leftPlayer.downKey, board.leftPlayer.upKey,
-				board.leftPlayerPad);
-		parseInput(board.rightPlayer.downKey, board.rightPlayer.upKey,
-				board.rightPlayerPad);
-
+		parseInput(board.leftPlayer.keyMap, board.leftPlayer.controller,
+				board.leftPad);
+		parseInput(board.rightPlayer.keyMap, board.rightPlayer.controller,
+				board.rightPad);
 	}
 
-	private static void parseInput(int downKey, int upKey, Pad pad) {
-		if (Gdx.input.isKeyPressed(downKey) && Gdx.input.isKeyPressed(upKey)) {
+	private static void parseInput(KeyMap keyMap, Controller controller, Pad pad) {
+
+		if (controller != null) {
+
+			int axis = (int) controller.getAxis(1);
+
+			if (ButtonMap.upButton == -1 && axis < 0 || ButtonMap.upButton == 1
+					&& axis > 0) {
+				if (pad.movingUp()) {
+					pad.stop();
+				}
+				pad.up();
+
+			} else if (ButtonMap.downButton == -1 && axis < 0
+					|| ButtonMap.downButton == 1 && axis > 0) {
+				if (pad.movingDown()) {
+					pad.stop();
+				}
+				pad.down();
+
+			} else {
+				pad.stop();
+			}
+
+		} else if (Gdx.input.isKeyPressed(keyMap.downKey)
+				&& Gdx.input.isKeyPressed(keyMap.upKey)) {
 			pad.stop();
 
-		} else if (Gdx.input.isKeyPressed(upKey)) {
+		} else if (Gdx.input.isKeyPressed(keyMap.upKey)) {
 			if (pad.movingUp()) {
 				pad.stop();
 			}
 			pad.up();
 
-		} else if (Gdx.input.isKeyPressed(downKey)) {
+		} else if (Gdx.input.isKeyPressed(keyMap.downKey)) {
 			if (pad.movingDown()) {
 				pad.stop();
 			}
@@ -121,8 +146,8 @@ public class BoardUpdater {
 
 	public static void updateState(Board board, float deltaTime) {
 		board.ball.update(deltaTime);
-		board.leftPlayerPad.update(deltaTime);
-		board.rightPlayerPad.update(deltaTime);
+		board.leftPad.update(deltaTime);
+		board.rightPad.update(deltaTime);
 
 		board.stateTime += deltaTime;
 	}

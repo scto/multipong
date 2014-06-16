@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controller;
 
 import multipong.board.Board;
 import multipong.board.BoardUpdater;
@@ -43,16 +44,19 @@ public class Match {
 		recalculateBoardGeometry(x, y, width, height);
 	}
 
-	public void addLeftPlayer(KeyMap firstPlayerKeyMap) {
-		leftPlayer = new Player("leftPlayer", 0, firstPlayerKeyMap.upKey,
-				firstPlayerKeyMap.downKey);
-		board.leftPlayer = leftPlayer;
+	public void addLeftPlayer(KeyMap leftPlayerKeyMap,
+			Controller leftPlayerController) {
+		leftPlayer = new Player("leftPlayer", 0, leftPlayerKeyMap,
+				leftPlayerController);
+		board.setPlayers(leftPlayer, rightPlayer);
 		refreshRenderables();
+		paused = true;
 	}
 
-	public void addRightPlayer(KeyMap secondPlayerKeyMap) {
-		rightPlayer = new Player("rightPlayer", 0, secondPlayerKeyMap.upKey,
-				secondPlayerKeyMap.downKey);
+	public void addRightPlayer(KeyMap rightPlayerKeyMap,
+			Controller rightPlayerController) {
+		rightPlayer = new Player("rightPlayer", 0, rightPlayerKeyMap,
+				rightPlayerController);
 		board.setPlayers(leftPlayer, rightPlayer);
 		refreshRenderables();
 		paused = true;
@@ -135,7 +139,7 @@ public class Match {
 			renderableStrings.add(RenderableMatchObjects.leftPlayerName(
 					board.getBounds(), leftPlayer.name));
 			renderableRectangles.add(RenderableMatchObjects
-					.leftPad(board.leftPlayerPad.getBounds()));
+					.leftPad(board.leftPad.getBounds()));
 
 		} else if (isPlayable()) {
 			Gdx.app.debug(className, "Refreshing with state: Is playable "
@@ -149,9 +153,9 @@ public class Match {
 			renderableStrings.add(RenderableMatchObjects.rightPlayerScore(
 					board.getBounds(), rightPlayer));
 			renderableRectangles.add(RenderableMatchObjects
-					.leftPad(board.leftPlayerPad.getBounds()));
+					.leftPad(board.leftPad.getBounds()));
 			renderableRectangles.add(RenderableMatchObjects
-					.rightPad(board.rightPlayerPad.getBounds()));
+					.rightPad(board.rightPad.getBounds()));
 
 			if (hasStartCountDown()) {
 				countDownMsg = RenderableMatchObjects.countDownMsg(
