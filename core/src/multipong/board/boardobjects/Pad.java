@@ -28,6 +28,12 @@ public class Pad extends BoundedRectangle {
 				* (boardHeight / Settings.appHeight) * multiple;
 	}
 
+	public Vector2 getMidPointFacingBoard() {
+		float mx = bounds.x + bounds.width;
+		float my = bounds.y + bounds.height / 2;
+		return new Vector2(mx, my);
+	}
+
 	public float getVelocity() {
 		return vel.y;
 	}
@@ -44,17 +50,23 @@ public class Pad extends BoundedRectangle {
 		return bounds.overlaps(r);
 	}
 
+	public void reset() {
+		stop();
+		bounds.x = start.x;
+		bounds.y = start.y;
+	}
+
+	public void setDown(float downVelocity) {
+
+	}
+
+	public void setUp(float upVelocity) {
+
+	}
+
 	public void stop() {
 		accel.y = 0;
 		vel.y = 0;
-	}
-	
-	public void setUp(float upVelocity) {
-		
-	}
-	
-	public void setDown(float downVelocity) {
-		
 	}
 
 	public void up(float multiple) {

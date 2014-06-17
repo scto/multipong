@@ -1,6 +1,7 @@
 package multipong.board.boardobjects;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 public interface BallInterface {
 
@@ -40,11 +41,11 @@ public interface BallInterface {
 
 	public boolean overlaps(Rectangle r);
 
-	public void reset(float startingXDirection);
+	public void reset(float startingXDirection, Vector2 ballStartPos);
 
-	public void resetWithLeftPlayerDirection();
+	public void resetWithLeftPlayerDirection(Vector2 ballStartPos);
 
-	public void resetWithRightPlayerDirection();
+	public void resetWithRightPlayerDirection(Vector2 ballStartPos);
 
 	public void reverseX();
 

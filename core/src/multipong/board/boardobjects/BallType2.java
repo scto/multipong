@@ -53,7 +53,7 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 		ballMaxXVel = Settings.ballMaxXVelocity * boardSizeVelScale;
 		ballMaxYVel = Settings.ballMaxYVelocity * boardSizeVelScale;
 
-		reset(startingXDirection);
+		reset(startingXDirection, new Vector2(x, y));
 	}
 
 	@Override
@@ -181,11 +181,11 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 	}
 
 	@Override
-	public void reset(float startingXDirection) {
+	public void reset(float startingXDirection, Vector2 ballStartPos) {
 		vel.x = 0;
 		vel.y = 0;
-		bounds.x = start.x;
-		bounds.y = start.y;
+		bounds.x = ballStartPos.x;
+		bounds.y = ballStartPos.y;
 		ballVelIncrease = 0;
 
 		float dy = MathUtils.random(-1f, 1f);
@@ -204,13 +204,13 @@ public class BallType2 extends BoundedRectangle implements BallInterface {
 	}
 
 	@Override
-	public void resetWithLeftPlayerDirection() {
-		reset(-1);
+	public void resetWithLeftPlayerDirection(Vector2 ballStartPos) {
+		reset(-1, ballStartPos);
 	}
 
 	@Override
-	public void resetWithRightPlayerDirection() {
-		reset(1);
+	public void resetWithRightPlayerDirection(Vector2 ballStartPos) {
+		reset(1, ballStartPos);
 	}
 
 	@Override

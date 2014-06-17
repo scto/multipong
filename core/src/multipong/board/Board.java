@@ -1,7 +1,6 @@
 package multipong.board;
 
 import multipong.board.boardobjects.BallInterface;
-import multipong.board.boardobjects.BallType1;
 import multipong.board.boardobjects.BallType2;
 import multipong.board.boardobjects.Field;
 import multipong.board.boardobjects.Pad;
@@ -68,13 +67,8 @@ public class Board {
 		float ballSize = height * Settings.ballSizePercentOfBoardHeight / 100;
 		float ballStartingXDirection = (MathUtils.random(0, 1) != 1) ? -1f : 1f;
 
-		if (Settings.ballTypeNum == 1) {
-			ball = new BallType1(midPointX, midPointY, ballSize, width, height,
-					ballStartingXDirection);
-		} else {
-			ball = new BallType2(midPointX, midPointY, ballSize, width, height,
-					ballStartingXDirection);
-		}
+		ball = new BallType2(midPointX, midPointY, ballSize, width, height,
+				ballStartingXDirection);
 	}
 
 	private void setField() {

@@ -35,6 +35,10 @@ public class Match {
 
 	String className = this.getClass().getSimpleName();
 
+	private boolean needsRefreshAfterStartCountdown = true;
+
+	private boolean needsRefreshAfterRedrawCountdown = true;
+
 	public Match() {
 		board = new Board();
 	}
@@ -61,38 +65,39 @@ public class Match {
 		paused = true;
 	}
 
-	public float getTimeSinceMatchFinished() {
-		return timeSinceMatchFinished;
-	}
-
 	private boolean checkForRoundWinner() {
 
 		boolean roundWon = false;
 		Player roundWinner = BoardUpdater.getRoundWinner(board);
 
 		if (roundWinner != null) {
-
+			
+			if (Settings.padResetsToCenterAfterRound) {
+				board.leftPad.reset();
+				board.rightPad.reset();
+			}
+			
 			if (roundWinner == leftPlayer) {
 
 				leftPlayer.incrementScore();
 
 				if (Settings.ballResetsInRoundWinnerDirection) {
-					board.ball.resetWithLeftPlayerDirection();
+					board.ball.resetWithLeftPlayerDirection(board.rightPad.getMidPointFacingBoard());
 				} else {
-					board.ball.resetWithRightPlayerDirection();
+					board.ball.resetWithRightPlayerDirection(board.leftPad.getMidPointFacingBoard());
 				}
-				
 
 			} else {
 
 				rightPlayer.incrementScore();
 
 				if (Settings.ballResetsInRoundWinnerDirection) {
-					board.ball.resetWithRightPlayerDirection();
+					board.ball.resetWithRightPlayerDirection(board.leftPad.getMidPointFacingBoard());
 				} else {
-					board.ball.resetWithLeftPlayerDirection();
+					board.ball.resetWithLeftPlayerDirection(board.rightPad.getMidPointFacingBoard());
 				}
 			}
+
 			roundWon = true;
 		}
 		return roundWon;
@@ -105,6 +110,58 @@ public class Match {
 
 	public Player getMatchWinner() {
 		return matchWinner;
+	}
+
+	public Player getRightPlayer() {
+		return rightPlayer;
+	}
+
+	public float getTimeSinceMatchFinished() {
+		return timeSinceMatchFinished;
+	}
+
+	public boolean hasLeftPlayer() {
+		return leftPlayer != null;
+	}
+
+	public boolean hasRedrawCountDown() {
+		return redrawCountDown > 0;
+	}
+
+	public boolean hasRightPlayer() {
+		return rightPlayer != null;
+	}
+
+	public boolean hasStartCountDown() {
+		return stateTime <= Settings.timeMatchStartCountDownFrom;
+	}
+
+	public boolean isFinished() {
+		if (leftPlayer == null || rightPlayer == null) {
+			return false;
+		}
+		return leftPlayer.score == Settings.matchScoreToWin
+				|| rightPlayer.score == Settings.matchScoreToWin;
+	}
+
+	public boolean isPaused() {
+		return paused;
+	}
+
+	public boolean isPlayable() {
+		return board != null && leftPlayer != null && rightPlayer != null;
+	}
+
+	public void pauseWhenRoundWon() {
+		pauseWhenRoundWon = true;
+	}
+
+	public void recalculateBoardGeometry(float x, float y, float width,
+			float height) {
+		// TODO: maybe set pads to previous place if applicable...
+		board = new Board(x, y, width, height);
+		board.setPlayers(leftPlayer, rightPlayer);
+		refreshRenderables();
 	}
 
 	private void refreshRenderables() {
@@ -185,54 +242,6 @@ public class Match {
 		}
 	}
 
-	public Player getRightPlayer() {
-		return rightPlayer;
-	}
-
-	public boolean hasLeftPlayer() {
-		return leftPlayer != null;
-	}
-
-	public boolean hasRedrawCountDown() {
-		return redrawCountDown > 0;
-	}
-
-	public boolean hasRightPlayer() {
-		return rightPlayer != null;
-	}
-
-	public boolean hasStartCountDown() {
-		return stateTime <= Settings.timeMatchStartCountDownFrom;
-	}
-
-	public boolean isFinished() {
-		if (leftPlayer == null || rightPlayer == null) {
-			return false;
-		}
-		return leftPlayer.score == Settings.matchScoreToWin
-				|| rightPlayer.score == Settings.matchScoreToWin;
-	}
-
-	public boolean isPaused() {
-		return paused;
-	}
-
-	public boolean isPlayable() {
-		return board != null && leftPlayer != null && rightPlayer != null;
-	}
-
-	public void pauseWhenRoundWon() {
-		pauseWhenRoundWon = true;
-	}
-
-	public void recalculateBoardGeometry(float x, float y, float width,
-			float height) {
-		// TODO: maybe set pads to previous place if applicable...
-		board = new Board(x, y, width, height);
-		board.setPlayers(leftPlayer, rightPlayer);
-		refreshRenderables();
-	}
-
 	public void resume() {
 		pauseWhenRoundWon = false;
 		paused = false;
@@ -242,14 +251,10 @@ public class Match {
 	public boolean roundHasBeenPlayed() {
 		return (leftPlayer.score + rightPlayer.score != 0);
 	}
-
 	public void setRedrawCountDown() {
 		redrawCountDown = Settings.timeFromRedrawToRoundBegins;
 		refreshRenderables();
 	}
-
-	private boolean needsRefreshAfterStartCountdown = true;
-	private boolean needsRefreshAfterRedrawCountdown = true;
 
 	public void update(float deltaTime) {
 		if (isFinished()) {
