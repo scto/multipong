@@ -5,8 +5,10 @@ import java.util.List;
 import multipong.matchhandlers.DropInMatchHandler;
 import multipong.rendering.MatchRenderer;
 import multipong.settings.Settings;
-import multipong.utils.ButtonMap;
+import multipong.utils.ControllerType;
 import multipong.utils.KeyMap;
+import multipong.utils.PS2Pad;
+import multipong.utils.Xbox360Pad;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -25,7 +27,7 @@ public class DropInScreen extends AbstractScreen {
 	public DropInScreen(Game game, int width, int height) {
 		super(game, width, height);
 
-		availableKeyMaps = loadKeyMaps();
+		availableKeyMaps = KeyMap.loadKeyMaps();
 		availableControllers = loadControllers();
 
 		handler = new DropInMatchHandler(width, height);
@@ -55,10 +57,31 @@ public class DropInScreen extends AbstractScreen {
 		if (!availableControllers.contains(arg0)) {
 			return true;
 		}
-		if (arg1 == ButtonMap.enterButton) {
-			availableControllers.remove(arg0);
-			handler.addNewPlayer(null, arg0);
+
+		ControllerType type = ControllerType.getControllerType(arg0);
+
+		switch (type) {
+		case PS2:
+			if (arg1 == PS2Pad.BUTTON_X) {
+				availableControllers.remove(arg0);
+				handler.addNewPlayer(null, arg0);
+			}
 			return true;
+
+		case XBOX360:
+			if (arg1 == Xbox360Pad.BUTTON_A) {
+				availableControllers.remove(arg0);
+				handler.addNewPlayer(null, arg0);
+			}
+			return true;
+
+		default:
+			// TODO: Use PS2 mapping for now...
+			if (arg1 == PS2Pad.BUTTON_X) {
+				availableControllers.remove(arg0);
+				handler.addNewPlayer(null, arg0);
+			}
+			break;
 		}
 		return false;
 	}
@@ -72,7 +95,7 @@ public class DropInScreen extends AbstractScreen {
 	}
 
 	private void resetScreen() {
-		availableKeyMaps = loadKeyMaps();
+		availableKeyMaps = KeyMap.loadKeyMaps();
 		availableControllers = loadControllers();
 		handler = new DropInMatchHandler(width, height);
 		matchRenderer = new MatchRenderer(camera, handler.getVisibleMatches());

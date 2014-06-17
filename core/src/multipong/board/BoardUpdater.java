@@ -2,11 +2,14 @@ package multipong.board;
 
 import multipong.board.boardobjects.Pad;
 import multipong.board.boardobjects.Player;
-import multipong.utils.ButtonMap;
+import multipong.utils.ControllerType;
 import multipong.utils.KeyMap;
+import multipong.utils.PS2Pad;
+import multipong.utils.Xbox360Pad;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.PovDirection;
 
 public class BoardUpdater {
 
@@ -34,7 +37,7 @@ public class BoardUpdater {
 			board.ball.reverseX();
 
 			board.ball.increaseXVelocity();
-			// board.ball.addTotalVelocityFromPad(board.rightPad.getVelocity());
+			
 			board.ball.addYVelocityFromPad(board.rightPad.getVelocity());
 
 		} else if (board.ball.overlaps(board.leftPad.getBounds())) {
@@ -44,7 +47,7 @@ public class BoardUpdater {
 			board.ball.reverseX();
 
 			board.ball.increaseXVelocity();
-			// board.ball.addTotalVelocityFromPad(board.leftPad.getVelocity());
+			
 			board.ball.addYVelocityFromPad(board.leftPad.getVelocity());
 
 		}
@@ -94,33 +97,86 @@ public class BoardUpdater {
 
 		if (controller != null) {
 
-			int axis = (int) controller.getAxis(1);
-			boolean enterPressed = controller.getButton(ButtonMap.enterButton);
+			ControllerType type = ControllerType.getControllerType(controller);
 
-			if (ButtonMap.upButton == -1 && axis < 0 || ButtonMap.upButton == 1
-					&& axis > 0) {
-				if (pad.movingUp()) {
+			switch (type) {
+			case PS2:
+				int axis = (int) controller.getAxis(PS2Pad.AXIS_ANALOG_LEFT_Y);
+
+				// Check if ANALOG deactivated
+				if (axis == -1) {
+					if (pad.movingDown()) {
+						pad.stop();
+					}
+					pad.up(1f);
+
+				} else if (axis == 1) {
+					if (pad.movingUp()) {
+						pad.stop();
+					}
+					pad.down(1f);
+
+				} else {
+					PovDirection ps2Pov = controller.getPov(PS2Pad.BUTTON_DPAD);
+					// Check if ANALOG activated
+					if (ps2Pov == PS2Pad.BUTTON_DPAD_UP) {
+						if (pad.movingDown()) {
+							pad.stop();
+						}
+						pad.up(1f);
+
+					} else if (ps2Pov == PS2Pad.BUTTON_DPAD_DOWN) {
+						if (pad.movingUp()) {
+							pad.stop();
+						}
+						pad.down(1f);
+
+					} else {
+						pad.stop();
+					}
+				}
+				break;
+
+			case XBOX360:
+				PovDirection xbox360Pov = controller
+						.getPov(Xbox360Pad.AXIS_LEFT_Y);
+				if (xbox360Pov == Xbox360Pad.BUTTON_DPAD_UP) {
+					if (pad.movingDown()) {
+						pad.stop();
+					}
+					pad.up(1f);
+
+				} else if (xbox360Pov == Xbox360Pad.BUTTON_DPAD_DOWN) {
+					if (pad.movingUp()) {
+						pad.stop();
+					}
+					pad.down(1f);
+
+				} else if (xbox360Pov == Xbox360Pad.BUTTON_DPAD_CENTER) {
 					pad.stop();
 				}
-				// if (enterPressed) {
-				// pad.up(0.1f);
-				// } else {
-				pad.up(1f);
-				// }
+				break;
 
-			} else if (ButtonMap.downButton == -1 && axis < 0
-					|| ButtonMap.downButton == 1 && axis > 0) {
-				if (pad.movingDown()) {
-					pad.stop();
+			default:
+				// TODO: Use PS2 mapping for now...
+				int axisUnknown = (int) controller
+						.getAxis(PS2Pad.AXIS_ANALOG_LEFT_Y);
+
+				if (axisUnknown == -1) {
+					if (pad.movingDown()) {
+						pad.stop();
+					}
+					pad.up(1f);
+
+				} else if (axisUnknown == 1) {
+					if (pad.movingUp()) {
+						pad.stop();
+					}
+					pad.down(1f);
+
+				} else {
 				}
-				// if (enterPressed) {
-				// pad.down(0.1f);
-				// } else {
-				pad.down(1f);
-				// }
-
-			} else {
-				pad.stop();
+				break;
 			}
 
 		} else if (Gdx.input.isKeyPressed(keyMap.downKey)
@@ -128,16 +184,16 @@ public class BoardUpdater {
 			pad.stop();
 
 		} else if (Gdx.input.isKeyPressed(keyMap.upKey)) {
-			if (pad.movingUp()) {
-				pad.stop();
-			}
-			// pad.up();
-
-		} else if (Gdx.input.isKeyPressed(keyMap.downKey)) {
 			if (pad.movingDown()) {
 				pad.stop();
 			}
-			// pad.down();
+			pad.up(1f);
+
+		} else if (Gdx.input.isKeyPressed(keyMap.downKey)) {
+			if (pad.movingUp()) {
+				pad.stop();
+			}
+			pad.down(1f);
 
 		} else {
 			pad.stop();

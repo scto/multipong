@@ -9,7 +9,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -21,32 +20,6 @@ import com.badlogic.gdx.controllers.PovDirection;
 
 public class AbstractScreen implements Screen, InputProcessor,
 		ControllerListener {
-
-	protected static List<KeyMap> loadKeyMaps() {
-		List<KeyMap> availableKeyMaps = new ArrayList<KeyMap>();
-
-		availableKeyMaps.add(new KeyMap(Keys.Q, Keys.A, Keys.NUM_1));
-		availableKeyMaps.add(new KeyMap(Keys.W, Keys.S, Keys.NUM_2));
-
-		availableKeyMaps.add(new KeyMap(Keys.E, Keys.D, Keys.NUM_3));
-		availableKeyMaps.add(new KeyMap(Keys.R, Keys.F, Keys.NUM_4));
-
-		availableKeyMaps.add(new KeyMap(Keys.T, Keys.G, Keys.NUM_5));
-		availableKeyMaps.add(new KeyMap(Keys.Y, Keys.H, Keys.NUM_6));
-
-		availableKeyMaps.add(new KeyMap(Keys.U, Keys.J, Keys.NUM_7));
-		availableKeyMaps.add(new KeyMap(Keys.I, Keys.K, Keys.NUM_8));
-
-		availableKeyMaps.add(new KeyMap(Keys.O, Keys.L, Keys.NUM_9));
-		availableKeyMaps.add(new KeyMap(Keys.P, Keys.COLON, Keys.NUM_0));
-
-		availableKeyMaps.add(new KeyMap(Keys.LEFT_BRACKET, Keys.APOSTROPHE,
-				Keys.MINUS));
-		availableKeyMaps.add(new KeyMap(Keys.RIGHT_BRACKET, Keys.ENTER,
-				Keys.EQUALS));
-
-		return availableKeyMaps;
-	}
 
 	protected static List<Controller> loadControllers() {
 		List<Controller> availableControllers = new ArrayList<Controller>();
@@ -77,7 +50,7 @@ public class AbstractScreen implements Screen, InputProcessor,
 		this.height = height;
 		this.width = width;
 
-		keyMaps = loadKeyMaps();
+		keyMaps = KeyMap.loadKeyMaps();
 		controllers = loadControllers();
 
 		camera = new OrthographicCamera(width, height);
@@ -172,6 +145,7 @@ public class AbstractScreen implements Screen, InputProcessor,
 	@Override
 	public boolean povMoved(Controller arg0, int arg1, PovDirection arg2) {
 		// TODO Auto-generated method stub
+		// Gdx.app.debug(className + " pov ", arg0 + " " + arg1 + " " + arg2);
 		return false;
 	}
 
@@ -224,12 +198,17 @@ public class AbstractScreen implements Screen, InputProcessor,
 	@Override
 	public boolean xSliderMoved(Controller arg0, int arg1, boolean arg2) {
 		// TODO Auto-generated method stub
+		// Gdx.app.debug(className + " xslider", arg0 + " " + arg1 + " " +
+		// arg2);
+
 		return false;
 	}
 
 	@Override
 	public boolean ySliderMoved(Controller arg0, int arg1, boolean arg2) {
 		// TODO Auto-generated method stub
+		// Gdx.app.debug(className + " yslider", arg0 + " " + arg1 + " " +
+		// arg2);
 		return false;
 	}
 

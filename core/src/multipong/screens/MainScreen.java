@@ -1,12 +1,15 @@
 package multipong.screens;
 
 import multipong.font.Fonts;
-import multipong.utils.ButtonMap;
+import multipong.utils.ControllerType;
 import multipong.utils.KeyMap;
+import multipong.utils.PS2Pad;
+import multipong.utils.Xbox360Pad;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -126,23 +129,71 @@ public class MainScreen extends AbstractScreen {
 		if (!hasControllerFocus) {
 			return false;
 		}
-		// Gdx.app.debug(className + " axis", arg0 + " " + arg1 + " " + arg2);
-		if (arg2 == ButtonMap.upButton) {
-			selectedItem = selectedItem.getUp(selectedItem);
+
+		ControllerType type = ControllerType.getControllerType(arg0);
+
+		switch (type) {
+		case PS2:
+			if (arg1 == PS2Pad.AXIS_ANALOG_LEFT_Y) {
+				if (arg2 == -1) {
+					selectedItem = selectedItem.getUp(selectedItem);
+				} else if (arg2 == 1) {
+					selectedItem = selectedItem.getDown(selectedItem);
+				}
+			}
 			return true;
-		} else if (arg2 == ButtonMap.downButton) {
-			selectedItem = selectedItem.getDown(selectedItem);
-			return true;
+
+		case XBOX360:
+			break;
+
+		default:
+			// TODO: Use PS2 mapping for now...
+			if (arg1 == PS2Pad.AXIS_ANALOG_LEFT_Y) {
+				if (arg2 == -1) {
+					selectedItem = selectedItem.getUp(selectedItem);
+				} else if (arg2 == 1) {
+					selectedItem = selectedItem.getDown(selectedItem);
+				}
+			}
+			break;
 		}
 		return false;
 	}
 
 	@Override
-	public boolean buttonUp(Controller arg0, int arg1) {
+	public boolean povMoved(Controller arg0, int arg1, PovDirection arg2) {
 		if (!hasControllerFocus) {
 			return false;
 		}
-		// Gdx.app.debug(className + " button up", arg0 + " " + arg1);
+
+		ControllerType type = ControllerType.getControllerType(arg0);
+
+		switch (type) {
+		case PS2:
+			if (arg2 == PS2Pad.BUTTON_DPAD_UP) {
+				selectedItem = selectedItem.getUp(selectedItem);
+			} else if (arg2 == PS2Pad.BUTTON_DPAD_DOWN) {
+				selectedItem = selectedItem.getDown(selectedItem);
+			}
+			return true;
+
+		case XBOX360:
+			if (arg2 == Xbox360Pad.BUTTON_DPAD_UP) {
+				selectedItem = selectedItem.getUp(selectedItem);
+			} else if (arg2 == Xbox360Pad.BUTTON_DPAD_DOWN) {
+				selectedItem = selectedItem.getDown(selectedItem);
+			}
+			return true;
+
+		default:
+			// TODO: Use PS2 mapping for now...
+			if (arg2 == PS2Pad.BUTTON_DPAD_UP) {
+				selectedItem = selectedItem.getUp(selectedItem);
+			} else if (arg2 == PS2Pad.BUTTON_DPAD_DOWN) {
+				selectedItem = selectedItem.getDown(selectedItem);
+			}
+			break;
+		}
 		return false;
 	}
 
@@ -151,11 +202,30 @@ public class MainScreen extends AbstractScreen {
 		if (!hasControllerFocus) {
 			return false;
 		}
-		// Gdx.app.debug(className + " button down", arg0 + " " + arg1);
-		if (arg1 == ButtonMap.enterButton) {
-			enterSelected();
+
+		ControllerType type = ControllerType.getControllerType(arg0);
+
+		switch (type) {
+		case PS2:
+			if (arg1 == PS2Pad.BUTTON_X) {
+				enterSelected();
+			}
 			return true;
+
+		case XBOX360:
+			if (arg1 == Xbox360Pad.BUTTON_A) {
+				enterSelected();
+			}
+			return true;
+
+		default:
+			// TODO: Use PS2 mapping for now...
+			if (arg1 == PS2Pad.BUTTON_X) {
+				enterSelected();
+			}
+			break;
 		}
+
 		return false;
 	}
 

@@ -33,11 +33,11 @@ public class Pad extends BoundedRectangle {
 	}
 
 	public boolean movingDown() {
-		return (vel.y > 0);
+		return (vel.y < 0);
 	}
 
 	public boolean movingUp() {
-		return (vel.y < 0);
+		return (vel.y > 0);
 	}
 
 	public boolean overlaps(Rectangle r) {
