@@ -20,15 +20,15 @@ import com.badlogic.gdx.controllers.Controller;
 
 public class DropInScreen extends AbstractScreen {
 
-	List<KeyMap> availableKeyMaps;
-	List<Controller> availableControllers;
+	private List<KeyMap> availableKeyMaps;
+	private List<Controller> availableControllers;
 
 	private List<RenderableRectangle> visibleBoardsRenderableRectangles = new ArrayList<RenderableRectangle>();
 	private List<RenderableString> visibleBoardsRenderableStrings = new ArrayList<RenderableString>();
 
-	String className = this.getClass().getSimpleName();
-	DropInMatchHandler handler;
-	ScreenRenderer screenRenderer;
+	private String className = this.getClass().getSimpleName();
+	private DropInMatchHandler handler;
+	private ScreenRenderer screenRenderer;
 
 	public DropInScreen(Game game, int width, int height) {
 		super(game, width, height);

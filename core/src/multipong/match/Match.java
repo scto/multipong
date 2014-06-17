@@ -33,7 +33,7 @@ public class Match {
 	private float stateTime = 0;
 	private float timeSinceMatchFinished = 0;
 
-	String className = this.getClass().getSimpleName();
+	private String className = this.getClass().getSimpleName();
 
 	private boolean needsRefreshAfterStartCountdown = true;
 
@@ -49,7 +49,7 @@ public class Match {
 
 	public void addLeftPlayer(KeyMap leftPlayerKeyMap,
 			Controller leftPlayerController) {
-		leftPlayer = new Player("leftPlayer", 0, leftPlayerKeyMap,
+		leftPlayer = new Player("Left Player", 0, leftPlayerKeyMap,
 				leftPlayerController);
 		board.setPlayers(leftPlayer, rightPlayer);
 		refreshRenderables();
@@ -58,7 +58,7 @@ public class Match {
 
 	public void addRightPlayer(KeyMap rightPlayerKeyMap,
 			Controller rightPlayerController) {
-		rightPlayer = new Player("rightPlayer", 0, rightPlayerKeyMap,
+		rightPlayer = new Player("Right Player", 0, rightPlayerKeyMap,
 				rightPlayerController);
 		board.setPlayers(leftPlayer, rightPlayer);
 		refreshRenderables();
@@ -71,20 +71,22 @@ public class Match {
 		Player roundWinner = BoardUpdater.getRoundWinner(board);
 
 		if (roundWinner != null) {
-			
+
 			if (Settings.padResetsToCenterAfterRound) {
 				board.leftPad.reset();
 				board.rightPad.reset();
 			}
-			
+
 			if (roundWinner == leftPlayer) {
 
 				leftPlayer.incrementScore();
 
 				if (Settings.ballResetsInRoundWinnerDirection) {
-					board.ball.resetWithLeftPlayerDirection(board.rightPad.getMidPointFacingBoard());
+					board.ball.resetWithLeftPlayerDirection(board.rightPad
+							.getMidPointFacingBoard());
 				} else {
-					board.ball.resetWithRightPlayerDirection(board.leftPad.getMidPointFacingBoard());
+					board.ball.resetWithRightPlayerDirection(board.leftPad
+							.getMidPointFacingBoard());
 				}
 
 			} else {
@@ -92,9 +94,11 @@ public class Match {
 				rightPlayer.incrementScore();
 
 				if (Settings.ballResetsInRoundWinnerDirection) {
-					board.ball.resetWithRightPlayerDirection(board.leftPad.getMidPointFacingBoard());
+					board.ball.resetWithRightPlayerDirection(board.leftPad
+							.getMidPointFacingBoard());
 				} else {
-					board.ball.resetWithLeftPlayerDirection(board.rightPad.getMidPointFacingBoard());
+					board.ball.resetWithLeftPlayerDirection(board.rightPad
+							.getMidPointFacingBoard());
 				}
 			}
 
@@ -251,6 +255,7 @@ public class Match {
 	public boolean roundHasBeenPlayed() {
 		return (leftPlayer.score + rightPlayer.score != 0);
 	}
+
 	public void setRedrawCountDown() {
 		redrawCountDown = Settings.timeFromRedrawToRoundBegins;
 		refreshRenderables();
@@ -294,7 +299,8 @@ public class Match {
 			boolean roundWon = checkForRoundWinner();
 
 			if (roundWon) {
-				// Always set match winner even if match is not finished yet.
+				// Always set match winner when round won, even if match is not
+				// finished yet.
 				matchWinner = (leftPlayer.score > rightPlayer.score) ? leftPlayer
 						: rightPlayer;
 				refreshRenderables();

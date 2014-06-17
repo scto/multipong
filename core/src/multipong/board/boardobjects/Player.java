@@ -7,7 +7,7 @@ import com.badlogic.gdx.controllers.Controller;
 public class Player {
 
 	public String name;
-	int padGfx;
+	public int padGfx;
 	public int score = 0;
 
 	public KeyMap keyMap;

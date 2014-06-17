@@ -55,14 +55,13 @@ public class MainScreen extends AbstractScreen {
 		}
 	}
 
-	public MainMenuItem selectedItem = MainMenuItem.values()[0];
-	MainMenuItem[] items = MainMenuItem.values();
-	int itemsSize = MainMenuItem.values().length;
+	private MainMenuItem selectedItem = MainMenuItem.values()[0];
+	private int itemsSize = MainMenuItem.values().length;
 
-	ScreenRenderer screenRenderer;
+	private ScreenRenderer screenRenderer;
 	private List<RenderableString> allRenderableStrings = new ArrayList<RenderableString>();
 
-	String className = this.getClass().getSimpleName();
+	private String className = this.getClass().getSimpleName();
 
 	public MainScreen(Game game, int width, int height) {
 		super(game, width, height);

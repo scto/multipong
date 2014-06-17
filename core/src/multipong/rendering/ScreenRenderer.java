@@ -24,25 +24,23 @@ public class ScreenRenderer {
 
 	private List<RenderableRectangle> allRenderableRectangles = new ArrayList<RenderableRectangle>();
 	private List<RenderableString> allRenderableStrings = new ArrayList<RenderableString>();
-	Color bkgColor = Color.BLACK;
+	private Color bkgColor = Color.BLACK;
 
-	SpriteBatch batch = new SpriteBatch();
-	Texture bkgTex;
+	private SpriteBatch batch = new SpriteBatch();
+	private Texture bkgTex;
 
-	Camera camera;
-	ShaderProgram distortionShader;
-	BitmapFont font = Fonts.fontSmall;
-	ShaderProgram glowShader;
-	ShaderProgram noisyPixelsShader;
+	private ShaderProgram distortionShader;
+	private BitmapFont font = Fonts.fontSmall;
+	private ShaderProgram glowShader;
+	private ShaderProgram noisyPixelsShader;
+	private ShaderProgram vignetteShader;
 
-	ShapeRenderer renderer = new ShapeRenderer();
-	float stateTime = 0;
-	ShaderProgram vignetteShader;
+	private ShapeRenderer renderer = new ShapeRenderer();
+	private float stateTime = 0;
 
 	int width, height;
 
 	public ScreenRenderer(Camera camera) {
-		this.camera = camera;
 
 		renderer.setProjectionMatrix(camera.combined);
 		batch.setProjectionMatrix(camera.combined);

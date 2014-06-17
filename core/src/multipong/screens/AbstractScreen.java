@@ -33,17 +33,17 @@ public class AbstractScreen implements Screen, InputProcessor,
 		return availableControllers;
 	}
 
-	int width, height;
+	protected int width, height;
 	protected float stateTime = 0;
 
-	Game game;
+	protected Game game;
 	protected List<KeyMap> keyMaps;
 	protected List<Controller> controllers;
 
 	protected OrthographicCamera camera;
 	protected Viewport viewport;
 
-	String className = this.getClass().getSimpleName();
+//	private String className = this.getClass().getSimpleName();
 
 	public AbstractScreen(Game game, int width, int height) {
 		this.game = game;
@@ -63,7 +63,6 @@ public class AbstractScreen implements Screen, InputProcessor,
 
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
 		Controllers.addListener(this);
 		Gdx.input.setInputProcessor(this);
 	}
@@ -76,7 +75,6 @@ public class AbstractScreen implements Screen, InputProcessor,
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
 		Controllers.removeListener(this);
 	}
 
@@ -93,13 +91,11 @@ public class AbstractScreen implements Screen, InputProcessor,
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
