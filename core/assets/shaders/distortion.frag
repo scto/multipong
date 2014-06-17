@@ -56,12 +56,12 @@ void main() {
 			if (cos(topY - y) < 0.5) {
 				float s = p;
 	
-				gl_FragColor = vec4(s, s, s, 0.25 - v * 0.5);
+				gl_FragColor = vec4(s, s, s, 0.4 - v * 0.5);
 	
 			} else {
 				float s = sin(p);
 	
-				gl_FragColor = vec4(s, s, s, 0.2 - v * 0.8);
+				gl_FragColor = vec4(s, s, s, 0.3 - v * 0.8);
 			}
 		}
 	
