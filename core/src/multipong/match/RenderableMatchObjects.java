@@ -1,7 +1,9 @@
-package multipong.rendering;
+package multipong.match;
 
 import multipong.board.boardobjects.Player;
 import multipong.font.Fonts;
+import multipong.rendering.RenderableRectangle;
+import multipong.rendering.RenderableString;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;

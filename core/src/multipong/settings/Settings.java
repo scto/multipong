@@ -88,7 +88,7 @@ public class Settings {
 	/**
 	 * The score needed to win a match.
 	 */
-	public static int matchScoreToWin = 10;
+	public static int matchScoreToWin = 3;
 
 	/**
 	 * Acceleration of a pad.
@@ -117,6 +117,11 @@ public class Settings {
 	public static float padXOffsetPercentOfBoardWidth = 5f;
 
 	/**
+	 * Reset the pad position to center on y-axis after a round is won.
+	 */
+	public static boolean padResetsToCenterAfterRound = true;
+
+	/**
 	 * Countdown before starting a new round, after the boards have been
 	 * redrawn.
 	 */
@@ -125,7 +130,7 @@ public class Settings {
 	/**
 	 * Countdown before match, in seconds.
 	 */
-	public static float timeMatchStartCountDownFrom = 0f;
+	public static float timeMatchStartCountDownFrom = 3f;
 
 	/**
 	 * How long to show the message "player is the winner!" after all matches
@@ -134,11 +139,25 @@ public class Settings {
 	public static float timeUntilDropOutAfterAllMatchesFinished = 3f;
 
 	/**
-	 * Use shaders.
+	 * This shader will draw distortions over the screen at somewhat random
+	 * intervals.
 	 */
 	public static boolean shadersUseDistortion = true;
+
+	/**
+	 * This shader will draw a grid over the screen which will make the screen
+	 * look like a noisy low-res display.
+	 */
 	public static boolean shadersUseNoisyPixels = true;
+
+	/**
+	 * This shader makes the corners of the screen darker.
+	 */
 	public static boolean shadersUseVignette = true;
+
+	/**
+	 * This will give all text and rectangles a color bleed look.
+	 */
 	public static boolean shadersUseColorBleed = true;
 
 }

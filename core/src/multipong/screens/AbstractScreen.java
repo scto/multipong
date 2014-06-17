@@ -59,8 +59,46 @@ public class AbstractScreen implements Screen, InputProcessor,
 
 		viewport = new StretchViewport(width, height, camera);
 
+	}
+
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
 		Controllers.addListener(this);
 		Gdx.input.setInputProcessor(this);
+	}
+
+	@Override
+	public void dispose() {
+		Controllers.removeListener(this);
+		game.dispose();
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+		Controllers.removeListener(this);
+	}
+
+	@Override
+	public void render(float deltaTime) {
+		camera.update();
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		viewport.update(width, height);
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
 
 	}
 
@@ -101,18 +139,6 @@ public class AbstractScreen implements Screen, InputProcessor,
 	}
 
 	@Override
-	public void dispose() {
-		game.dispose();
-
-	}
-
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public boolean keyDown(int keycode) {
 		// TODO Auto-generated method stub
 		return false;
@@ -137,12 +163,6 @@ public class AbstractScreen implements Screen, InputProcessor,
 	}
 
 	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public boolean povMoved(Controller arg0, int arg1, PovDirection arg2) {
 		// TODO Auto-generated method stub
 		// Gdx.app.debug(className + " pov ", arg0 + " " + arg1 + " " + arg2);
@@ -150,31 +170,9 @@ public class AbstractScreen implements Screen, InputProcessor,
 	}
 
 	@Override
-	public void render(float deltaTime) {
-		camera.update();
-	}
-
-	@Override
-	public void resize(int width, int height) {
-		viewport.update(width, height);
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public boolean scrolled(int amount) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

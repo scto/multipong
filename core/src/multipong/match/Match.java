@@ -9,7 +9,6 @@ import com.badlogic.gdx.controllers.Controller;
 import multipong.board.Board;
 import multipong.board.BoardUpdater;
 import multipong.board.boardobjects.Player;
-import multipong.rendering.RenderableMatchObjects;
 import multipong.rendering.RenderableRectangle;
 import multipong.rendering.RenderableString;
 import multipong.settings.Settings;
@@ -72,22 +71,28 @@ public class Match {
 		Player roundWinner = BoardUpdater.getRoundWinner(board);
 
 		if (roundWinner != null) {
+
 			if (roundWinner == leftPlayer) {
+
 				leftPlayer.incrementScore();
+
 				if (Settings.ballResetsInRoundWinnerDirection) {
 					board.ball.resetWithLeftPlayerDirection();
 				} else {
 					board.ball.resetWithRightPlayerDirection();
 				}
+				
+
 			} else {
+
 				rightPlayer.incrementScore();
+
 				if (Settings.ballResetsInRoundWinnerDirection) {
 					board.ball.resetWithRightPlayerDirection();
 				} else {
 					board.ball.resetWithLeftPlayerDirection();
 				}
 			}
-			refreshRenderables();
 			roundWon = true;
 		}
 		return roundWon;
@@ -118,10 +123,8 @@ public class Match {
 				.getBounds()));
 
 		if (isFinished()) {
-			Gdx.app.debug(
-					className,
-					"Refreshing with state: Match if finished "
-							+ this.toString());
+			Gdx.app.debug(className, "Refreshing with state: Match finished "
+					+ this.toString());
 			if (board == null || board.field == null) {
 				Gdx.app.debug(className, "board");
 			}
@@ -289,6 +292,7 @@ public class Match {
 				// Always set match winner even if match is not finished yet.
 				matchWinner = (leftPlayer.score > rightPlayer.score) ? leftPlayer
 						: rightPlayer;
+				refreshRenderables();
 			}
 
 			if (roundWon && pauseWhenRoundWon) {

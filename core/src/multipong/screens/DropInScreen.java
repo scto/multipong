@@ -1,9 +1,13 @@
 package multipong.screens;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import multipong.match.Match;
 import multipong.matchhandlers.DropInMatchHandler;
-import multipong.rendering.MatchRenderer;
+import multipong.rendering.RenderableRectangle;
+import multipong.rendering.RenderableString;
+import multipong.rendering.ScreenRenderer;
 import multipong.settings.Settings;
 import multipong.utils.ControllerType;
 import multipong.utils.KeyMap;
@@ -18,11 +22,13 @@ public class DropInScreen extends AbstractScreen {
 
 	List<KeyMap> availableKeyMaps;
 	List<Controller> availableControllers;
+
+	private List<RenderableRectangle> visibleBoardsRenderableRectangles = new ArrayList<RenderableRectangle>();
+	private List<RenderableString> visibleBoardsRenderableStrings = new ArrayList<RenderableString>();
+
 	String className = this.getClass().getSimpleName();
 	DropInMatchHandler handler;
-	MatchRenderer matchRenderer;
-
-	boolean hasControllerFocus = true;
+	ScreenRenderer screenRenderer;
 
 	public DropInScreen(Game game, int width, int height) {
 		super(game, width, height);
@@ -31,13 +37,15 @@ public class DropInScreen extends AbstractScreen {
 		availableControllers = loadControllers();
 
 		handler = new DropInMatchHandler(width, height);
-		matchRenderer = new MatchRenderer(camera, handler.getVisibleMatches());
+
+		screenRenderer = new ScreenRenderer(camera);
+//		updateVisibleBoardsRenderables();
 	}
 
 	@Override
 	public void dispose() {
 		super.dispose();
-		matchRenderer.dispose();
+		screenRenderer.dispose();
 	}
 
 	@Override
@@ -65,15 +73,17 @@ public class DropInScreen extends AbstractScreen {
 			if (arg1 == PS2Pad.BUTTON_X) {
 				availableControllers.remove(arg0);
 				handler.addNewPlayer(null, arg0);
+				return true;
 			}
-			return true;
+			break;
 
 		case XBOX360:
 			if (arg1 == Xbox360Pad.BUTTON_A) {
 				availableControllers.remove(arg0);
 				handler.addNewPlayer(null, arg0);
+				return true;
 			}
-			return true;
+			break;
 
 		default:
 			// TODO: Use PS2 mapping for now...
@@ -89,19 +99,32 @@ public class DropInScreen extends AbstractScreen {
 	@Override
 	public void render(float deltaTime) {
 		super.render(deltaTime);
-		matchRenderer.render(deltaTime);
-		update(deltaTime);
+		updateHandler(deltaTime);
+		updateRenderables();
+		screenRenderer.render(deltaTime);
 		stateTime += deltaTime;
+	}
+
+	private void updateRenderables() {
+		visibleBoardsRenderableRectangles.clear();
+		visibleBoardsRenderableStrings.clear();
+		for (Match match : handler.getVisibleMatches()) {
+			visibleBoardsRenderableRectangles
+					.addAll(match.renderableRectangles);
+			visibleBoardsRenderableStrings.addAll(match.renderableStrings);
+		}
+		screenRenderer.setRenderables(visibleBoardsRenderableRectangles,
+				visibleBoardsRenderableStrings);
 	}
 
 	private void resetScreen() {
 		availableKeyMaps = KeyMap.loadKeyMaps();
 		availableControllers = loadControllers();
 		handler = new DropInMatchHandler(width, height);
-		matchRenderer = new MatchRenderer(camera, handler.getVisibleMatches());
+		screenRenderer = new ScreenRenderer(camera);
 	}
 
-	private void update(float deltaTime) {
+	private void updateHandler(float deltaTime) {
 		handler.showBoardsInHiddenMatches();
 		handler.updateBoardsInVisibleMatches(deltaTime);
 

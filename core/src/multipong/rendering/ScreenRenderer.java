@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import multipong.font.Fonts;
-import multipong.match.Match;
 import multipong.settings.Settings;
 import multipong.utils.Shaders;
 
@@ -21,11 +20,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 
-public class MatchRenderer {
+public class ScreenRenderer {
 
-	List<RenderableRectangle> allBoardsRenderableRectangles = new ArrayList<RenderableRectangle>();
-	List<RenderableString> allBoardsRenderableStrings = new ArrayList<RenderableString>();
-	Color backgroundColor = Color.BLACK;
+	private List<RenderableRectangle> allRenderableRectangles = new ArrayList<RenderableRectangle>();
+	private List<RenderableString> allRenderableStrings = new ArrayList<RenderableString>();
+	Color bkgColor = Color.BLACK;
 
 	SpriteBatch batch = new SpriteBatch();
 	Texture bkgTex;
@@ -40,13 +39,10 @@ public class MatchRenderer {
 	float stateTime = 0;
 	ShaderProgram vignetteShader;
 
-	List<Match> visibleMatches;
-
 	int width, height;
 
-	public MatchRenderer(Camera camera, List<Match> visibleMatches) {
+	public ScreenRenderer(Camera camera) {
 		this.camera = camera;
-		this.visibleMatches = visibleMatches;
 
 		renderer.setProjectionMatrix(camera.combined);
 		batch.setProjectionMatrix(camera.combined);
@@ -55,7 +51,9 @@ public class MatchRenderer {
 		height = (int) camera.viewportHeight;
 
 		bkgTex = new Texture(width, height, Format.RGBA8888);
+
 		ShaderProgram.pedantic = false;
+
 		noisyPixelsShader = Shaders.loadNoisyPixelsShader();
 		vignetteShader = Shaders.loadVignetteShader();
 		distortionShader = Shaders.loadDistortionShader();
@@ -84,14 +82,12 @@ public class MatchRenderer {
 	public void render(float deltaTime) {
 		stateTime += deltaTime;
 
-		Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g,
-				backgroundColor.b, backgroundColor.a);
+		Gdx.gl.glClearColor(bkgColor.r, bkgColor.g, bkgColor.b, bkgColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		updateRenderables();
 		if (!Settings.shadersUseColorBleed) {
-			renderStrings(allBoardsRenderableStrings);
-			renderRectangles(allBoardsRenderableRectangles);
+			renderStrings();
+			renderRectangles();
 		} else {
 			renderColorBleed();
 		}
@@ -111,11 +107,10 @@ public class MatchRenderer {
 		float color3Yoffset = -1;
 
 		batch.begin();
-		for (RenderableString r : allBoardsRenderableStrings) {
+		for (RenderableString r : allRenderableStrings) {
 			font = r.font;
 			Color topColor = r.color;
 			float topColorAlpha = r.color.a;
-
 			r.color = color1;
 			font.setColor(r.color.r, r.color.g, r.color.b, topColorAlpha);
 			font.draw(batch, r.text, r.pos.x + color1Xoffset, r.pos.y
@@ -139,7 +134,7 @@ public class MatchRenderer {
 
 		enableBlend();
 		renderer.begin(ShapeType.Filled);
-		for (RenderableRectangle r : allBoardsRenderableRectangles) {
+		for (RenderableRectangle r : allRenderableRectangles) {
 			Color topColor = r.color;
 			float topColorAlpha = r.color.a;
 
@@ -206,33 +201,17 @@ public class MatchRenderer {
 			batch.end();
 		}
 
-		// batch.begin();
-		// glowShader.begin();
-		// glowShader.setUniformf("time", stateTime);
-		// for (Match match : visibleMatches) {
-		// glowShader.setUniformf("resolution", width, height);
-		// float[] coords = { match.board.leftPlayerPad.getX(),
-		// match.board.leftPlayerPad.getY(),
-		// match.board.leftPlayerPad.getRight(),
-		// match.board.leftPlayerPad.getTop() };
-		// glowShader.setUniform4fv("rect", coords, 0, 4);
-		// }
-		// glowShader.end();
-		// batch.setShader(glowShader);
-		// batch.draw(bkgTex, 0, 0);
-		// batch.end();
-
 		batch.begin();
 		batch.setShader(null);
 		batch.end();
 	}
 
-	private void renderRectangles(List<RenderableRectangle> renderableRectangles) {
+	private void renderRectangles() {
 		enableBlend();
 		renderer.begin(ShapeType.Filled);
-		for (RenderableRectangle renderableRectangle : renderableRectangles) {
-			renderer.setColor(renderableRectangle.color);
-			for (Rectangle rectangle : renderableRectangle.rects) {
+		for (RenderableRectangle r : allRenderableRectangles) {
+			renderer.setColor(r.color);
+			for (Rectangle rectangle : r.rects) {
 				renderer.rect(rectangle.x, rectangle.y, rectangle.width,
 						rectangle.height);
 			}
@@ -241,23 +220,25 @@ public class MatchRenderer {
 		disableBlend();
 	}
 
-	private void renderStrings(List<RenderableString> renderableStrings) {
+	private void renderStrings() {
 		batch.begin();
-		for (RenderableString renderableString : renderableStrings) {
-			font = renderableString.font;
-			font.setColor(renderableString.color);
-			font.draw(batch, renderableString.text, renderableString.pos.x,
-					renderableString.pos.y);
+		for (RenderableString r : allRenderableStrings) {
+			font = r.font;
+			font.setColor(r.color);
+			font.draw(batch, r.text, r.pos.x, r.pos.y);
 		}
 		batch.end();
 	}
 
-	public void updateRenderables() {
-		allBoardsRenderableRectangles.clear();
-		allBoardsRenderableStrings.clear();
-		for (Match match : visibleMatches) {
-			allBoardsRenderableRectangles.addAll(match.renderableRectangles);
-			allBoardsRenderableStrings.addAll(match.renderableStrings);
+	public void setRenderables(List<RenderableRectangle> rectangles,
+			List<RenderableString> strings) {
+		allRenderableRectangles.clear();
+		allRenderableStrings.clear();
+		if (rectangles != null) {
+			allRenderableRectangles.addAll(rectangles);
+		}
+		if (strings != null) {
+			allRenderableStrings.addAll(strings);
 		}
 	}
 
