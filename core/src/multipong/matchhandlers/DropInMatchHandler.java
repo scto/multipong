@@ -33,8 +33,7 @@ public class DropInMatchHandler {
 		}
 	}
 
-	public void addNewPlayer(KeyMap newPlayerKeys,
-			Controller newPlayerController) {
+	public void addNewPlayer(String name, KeyMap keyMap, Controller controller) {
 
 		Match boardWithoutChallanger = getMatchWithoutChallanger();
 
@@ -43,8 +42,7 @@ public class DropInMatchHandler {
 			// There is a shown or hidden board without challanger
 			Gdx.app.debug(className, "Found board without challanger: "
 					+ boardWithoutChallanger.toString());
-			boardWithoutChallanger.addRightPlayer(newPlayerKeys,
-					newPlayerController);
+			boardWithoutChallanger.addRightPlayer(name, keyMap, controller);
 
 			// Unpause the board if it is visible, otherwise, set all boards to
 			// pause when current rounds are finished.
@@ -67,7 +65,7 @@ public class DropInMatchHandler {
 			// There is a shown or hidden empty board
 			Gdx.app.debug(className,
 					"Found empty board: " + emptyBoard.toString());
-			emptyBoard.addLeftPlayer(newPlayerKeys, newPlayerController);
+			emptyBoard.addLeftPlayer(name, keyMap, controller);
 
 			// Board still lacks challanger so do not unpause it
 			return;
@@ -77,7 +75,7 @@ public class DropInMatchHandler {
 		Match hiddenBoard = new Match();
 		Gdx.app.debug(className,
 				"Created new hidden board: " + hiddenBoard.toString());
-		hiddenBoard.addLeftPlayer(newPlayerKeys, newPlayerController);
+		hiddenBoard.addLeftPlayer(name, keyMap, controller);
 		hiddenMatches.add(hiddenBoard);
 
 		// There must be an even number of boards.
@@ -243,6 +241,27 @@ public class DropInMatchHandler {
 				}
 			}
 		}
+	}
+
+	public int numberOfTotalPlayers() {
+		int players = 0;
+		for (Match match : hiddenMatches) {
+			if (match.hasLeftPlayer()) {
+				players++;
+			}
+			if (match.hasRightPlayer()) {
+				players++;
+			}
+		}
+		for (Match match : visibleMatches) {
+			if (match.hasLeftPlayer()) {
+				players++;
+			}
+			if (match.hasRightPlayer()) {
+				players++;
+			}
+		}
+		return players;
 	}
 
 	public int numberOfWaitingPlayers() {

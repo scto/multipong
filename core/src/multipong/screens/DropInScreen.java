@@ -39,7 +39,17 @@ public class DropInScreen extends AbstractScreen {
 		handler = new DropInMatchHandler(width, height);
 
 		screenRenderer = new ScreenRenderer(camera);
-//		updateVisibleBoardsRenderables();
+	}
+
+	private void addNewPlayer(KeyMap keys, Controller controller) {
+		if (keys != null) {
+			availableKeyMaps.remove(keys);
+		}
+		if (controller != null) {
+			availableControllers.remove(controller);
+		}
+		String name = "Player " + (handler.numberOfTotalPlayers() + 1);
+		handler.addNewPlayer(name, keys, controller);
 	}
 
 	@Override
@@ -52,8 +62,7 @@ public class DropInScreen extends AbstractScreen {
 	public boolean keyDown(int keycode) {
 		for (KeyMap keys : availableKeyMaps) {
 			if (keys.enterKey == keycode) {
-				availableKeyMaps.remove(keys);
-				handler.addNewPlayer(keys, null);
+				addNewPlayer(keys, null);
 				return true;
 			}
 		}
@@ -71,16 +80,14 @@ public class DropInScreen extends AbstractScreen {
 		switch (type) {
 		case PS2:
 			if (arg1 == PS2Pad.BUTTON_X) {
-				availableControllers.remove(arg0);
-				handler.addNewPlayer(null, arg0);
+				addNewPlayer(null, arg0);
 				return true;
 			}
 			break;
 
 		case XBOX360:
 			if (arg1 == Xbox360Pad.BUTTON_A) {
-				availableControllers.remove(arg0);
-				handler.addNewPlayer(null, arg0);
+				addNewPlayer(null, arg0);
 				return true;
 			}
 			break;
@@ -88,8 +95,7 @@ public class DropInScreen extends AbstractScreen {
 		default:
 			// TODO: Use PS2 mapping for now...
 			if (arg1 == PS2Pad.BUTTON_X) {
-				availableControllers.remove(arg0);
-				handler.addNewPlayer(null, arg0);
+				addNewPlayer(null, arg0);
 			}
 			break;
 		}

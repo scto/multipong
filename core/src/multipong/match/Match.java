@@ -47,18 +47,18 @@ public class Match {
 		recalculateBoardGeometry(x, y, width, height);
 	}
 
-	public void addLeftPlayer(KeyMap leftPlayerKeyMap,
+	public void addLeftPlayer(String name, KeyMap leftPlayerKeyMap,
 			Controller leftPlayerController) {
-		leftPlayer = new Player("Left Player", 0, leftPlayerKeyMap,
+		leftPlayer = new Player(name, 0, leftPlayerKeyMap,
 				leftPlayerController);
 		board.setPlayers(leftPlayer, rightPlayer);
 		refreshRenderables();
 		paused = true;
 	}
 
-	public void addRightPlayer(KeyMap rightPlayerKeyMap,
+	public void addRightPlayer(String name, KeyMap rightPlayerKeyMap,
 			Controller rightPlayerController) {
-		rightPlayer = new Player("Right Player", 0, rightPlayerKeyMap,
+		rightPlayer = new Player(name, 0, rightPlayerKeyMap,
 				rightPlayerController);
 		board.setPlayers(leftPlayer, rightPlayer);
 		refreshRenderables();
