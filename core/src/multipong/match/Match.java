@@ -49,8 +49,7 @@ public class Match {
 
 	public void addLeftPlayer(String name, KeyMap leftPlayerKeyMap,
 			Controller leftPlayerController) {
-		leftPlayer = new Player(name, 0, leftPlayerKeyMap,
-				leftPlayerController);
+		leftPlayer = new Player(name, 0, leftPlayerKeyMap, leftPlayerController);
 		board.setPlayers(leftPlayer, rightPlayer);
 		refreshRenderables();
 		paused = true;
@@ -266,8 +265,9 @@ public class Match {
 			timeSinceMatchFinished += deltaTime;
 		}
 		if (!paused) {
-
 			stateTime += deltaTime;
+
+			BoardUpdater.updatePads(board, deltaTime);
 
 			if (hasStartCountDown()) {
 				needsRefreshAfterStartCountdown = true;
@@ -294,7 +294,7 @@ public class Match {
 				needsRefreshAfterRedrawCountdown = false;
 			}
 
-			BoardUpdater.update(board, deltaTime);
+			BoardUpdater.updateBall(board, deltaTime);
 
 			boolean roundWon = checkForRoundWinner();
 

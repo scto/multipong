@@ -37,7 +37,7 @@ public class BoardUpdater {
 			board.ball.reverseX();
 
 			board.ball.increaseXVelocity();
-			
+
 			board.ball.addYVelocityFromPad(board.rightPad.getVelocity());
 
 		} else if (board.ball.overlaps(board.leftPad.getBounds())) {
@@ -47,7 +47,7 @@ public class BoardUpdater {
 			board.ball.reverseX();
 
 			board.ball.increaseXVelocity();
-			
+
 			board.ball.addYVelocityFromPad(board.leftPad.getVelocity());
 
 		}
@@ -94,6 +94,10 @@ public class BoardUpdater {
 	}
 
 	private static void parseInput(KeyMap keyMap, Controller controller, Pad pad) {
+
+		if (keyMap == null && controller == null) {
+			return;
+		}
 
 		if (controller != null) {
 
@@ -200,20 +204,17 @@ public class BoardUpdater {
 		}
 	}
 
-	public static void update(Board board, float deltaTime) {
+	public static void updatePads(Board board, float deltaTime) {
 		parseInput(board);
-		updateState(board, deltaTime);
-
-		checkBallHit(board);
 		checkPadBounds(board);
-		checkBallBounce(board);
-	}
-
-	public static void updateState(Board board, float deltaTime) {
-		board.ball.update(deltaTime);
 		board.leftPad.update(deltaTime);
 		board.rightPad.update(deltaTime);
+	}
 
+	public static void updateBall(Board board, float deltaTime) {
+		board.ball.update(deltaTime);
+		checkBallHit(board);
+		checkBallBounce(board);
 		board.stateTime += deltaTime;
 	}
 
