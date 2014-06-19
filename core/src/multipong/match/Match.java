@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.controllers.Controller;
-
 import multipong.board.Board;
 import multipong.board.BoardUpdater;
 import multipong.board.boardobjects.Player;
 import multipong.rendering.RenderableRectangle;
 import multipong.rendering.RenderableString;
 import multipong.settings.Settings;
-import multipong.utils.KeyMap;
 
 public class Match {
 
 	public Board board;
 	private Player leftPlayer;
 	private Player matchWinner;
+	
+	private int leftPlayerScore = 0;
+	private int rightPlayerScore = 0;
 
 	private boolean paused = true;
 
@@ -46,19 +46,24 @@ public class Match {
 	public Match(float x, float y, float width, float height) {
 		recalculateBoardGeometry(x, y, width, height);
 	}
-
-	public void addLeftPlayer(String name, KeyMap leftPlayerKeyMap,
-			Controller leftPlayerController) {
-		leftPlayer = new Player(name, 0, leftPlayerKeyMap, leftPlayerController);
+	
+	public void addPlayers(Player leftPlayer, Player rightPlayer) {
+		this.leftPlayer = leftPlayer;
+		this.rightPlayer = rightPlayer;
 		board.setPlayers(leftPlayer, rightPlayer);
 		refreshRenderables();
 		paused = true;
 	}
 
-	public void addRightPlayer(String name, KeyMap rightPlayerKeyMap,
-			Controller rightPlayerController) {
-		rightPlayer = new Player(name, 0, rightPlayerKeyMap,
-				rightPlayerController);
+	public void addLeftPlayer(Player player) {
+		leftPlayer = player;
+		board.setPlayers(leftPlayer, rightPlayer);
+		refreshRenderables();
+		paused = true;
+	}
+
+	public void addRightPlayer(Player player) {
+		rightPlayer = player;
 		board.setPlayers(leftPlayer, rightPlayer);
 		refreshRenderables();
 		paused = true;
@@ -78,7 +83,7 @@ public class Match {
 
 			if (roundWinner == leftPlayer) {
 
-				leftPlayer.incrementScore();
+				leftPlayerScore++;
 
 				if (Settings.ballResetsInRoundWinnerDirection) {
 					board.ball.resetWithLeftPlayerDirection(board.rightPad
@@ -90,7 +95,7 @@ public class Match {
 
 			} else {
 
-				rightPlayer.incrementScore();
+				rightPlayerScore++;
 
 				if (Settings.ballResetsInRoundWinnerDirection) {
 					board.ball.resetWithRightPlayerDirection(board.leftPad
@@ -143,8 +148,8 @@ public class Match {
 		if (leftPlayer == null || rightPlayer == null) {
 			return false;
 		}
-		return leftPlayer.score == Settings.matchScoreToWin
-				|| rightPlayer.score == Settings.matchScoreToWin;
+		return leftPlayerScore == Settings.matchScoreToWin
+				|| rightPlayerScore == Settings.matchScoreToWin;
 	}
 
 	public boolean isPaused() {
@@ -220,9 +225,9 @@ public class Match {
 			renderableStrings.add(RenderableMatchObjects.rightPlayerName(
 					board.getBounds(), rightPlayer.name));
 			renderableStrings.add(RenderableMatchObjects.leftPlayerScore(
-					board.getBounds(), leftPlayer));
+					board.getBounds(), leftPlayerScore));
 			renderableStrings.add(RenderableMatchObjects.rightPlayerScore(
-					board.getBounds(), rightPlayer));
+					board.getBounds(), rightPlayerScore));
 			renderableRectangles.add(RenderableMatchObjects
 					.leftPad(board.leftPad.getBounds()));
 			renderableRectangles.add(RenderableMatchObjects
@@ -252,12 +257,20 @@ public class Match {
 	}
 
 	public boolean roundHasBeenPlayed() {
-		return (leftPlayer.score + rightPlayer.score != 0);
+		return (leftPlayerScore + rightPlayerScore != 0);
 	}
 
 	public void setRedrawCountDown() {
 		redrawCountDown = Settings.timeFromRedrawToRoundBegins;
 		refreshRenderables();
+	}
+	
+	public int getLeftPlayerScore() {
+		return leftPlayerScore;
+	}
+	
+	public int getRightPlayerScore() {
+		return rightPlayerScore;
 	}
 
 	public void update(float deltaTime) {
@@ -301,7 +314,7 @@ public class Match {
 			if (roundWon) {
 				// Always set match winner when round won, even if match is not
 				// finished yet.
-				matchWinner = (leftPlayer.score > rightPlayer.score) ? leftPlayer
+				matchWinner = (leftPlayerScore > rightPlayerScore) ? leftPlayer
 						: rightPlayer;
 				refreshRenderables();
 			}

@@ -15,7 +15,25 @@ public class KeyMap {
 		this.downKey = downKey;
 		this.enterKey = enterKey;
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		KeyMap other = (KeyMap) obj;
+		if (downKey != other.downKey)
+			return false;
+		if (enterKey != other.enterKey)
+			return false;
+		if (upKey != other.upKey)
+			return false;
+		return true;
+	}
+
 	public static List<KeyMap> loadKeyMaps() {
 		List<KeyMap> availableKeyMaps = new ArrayList<KeyMap>();
 

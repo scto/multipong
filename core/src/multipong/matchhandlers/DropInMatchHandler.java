@@ -5,14 +5,17 @@ import java.util.List;
 
 import multipong.board.boardobjects.Player;
 import multipong.match.Match;
-import multipong.utils.KeyMap;
+import multipong.rendering.RenderableRectangle;
+import multipong.rendering.RenderableString;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.controllers.Controller;
 
 public class DropInMatchHandler {
-	private List<Match> visibleMatches = new ArrayList<Match>();
-	private List<Match> hiddenMatches = new ArrayList<Match>();
+	protected List<Match> visibleMatches = new ArrayList<Match>();
+	protected List<Match> hiddenMatches = new ArrayList<Match>();
+
+	protected List<RenderableString> renderableStrings = new ArrayList<RenderableString>();
+	protected List<RenderableRectangle> renderableRectangles = new ArrayList<RenderableRectangle>();
 
 	int width, height;
 	String className = this.getClass().getSimpleName();
@@ -33,7 +36,23 @@ public class DropInMatchHandler {
 		}
 	}
 
-	public void addNewPlayer(String name, KeyMap keyMap, Controller controller) {
+	public List<RenderableString> getRenderableStrings() {
+		renderableStrings.clear();
+		for (Match match : getVisibleMatches()) {
+			renderableStrings.addAll(match.renderableStrings);
+		}
+		return renderableStrings;
+	}
+
+	public List<RenderableRectangle> getRenderableRectangles() {
+		renderableRectangles.clear();
+		for (Match match : getVisibleMatches()) {
+			renderableRectangles.addAll(match.renderableRectangles);
+		}
+		return renderableRectangles;
+	}
+
+	public void addPlayer(Player player) {
 
 		Match boardWithoutChallanger = getMatchWithoutChallanger();
 
@@ -42,7 +61,7 @@ public class DropInMatchHandler {
 			// There is a shown or hidden board without challanger
 			Gdx.app.debug(className, "Found board without challanger: "
 					+ boardWithoutChallanger.toString());
-			boardWithoutChallanger.addRightPlayer(name, keyMap, controller);
+			boardWithoutChallanger.addRightPlayer(player);
 
 			// Unpause the board if it is visible, otherwise, set all boards to
 			// pause when current rounds are finished.
@@ -65,7 +84,7 @@ public class DropInMatchHandler {
 			// There is a shown or hidden empty board
 			Gdx.app.debug(className,
 					"Found empty board: " + emptyBoard.toString());
-			emptyBoard.addLeftPlayer(name, keyMap, controller);
+			emptyBoard.addLeftPlayer(player);
 
 			// Board still lacks challanger so do not unpause it
 			return;
@@ -75,7 +94,7 @@ public class DropInMatchHandler {
 		Match hiddenBoard = new Match();
 		Gdx.app.debug(className,
 				"Created new hidden board: " + hiddenBoard.toString());
-		hiddenBoard.addLeftPlayer(name, keyMap, controller);
+		hiddenBoard.addLeftPlayer(player);
 		hiddenMatches.add(hiddenBoard);
 
 		// There must be an even number of boards.
@@ -184,13 +203,19 @@ public class DropInMatchHandler {
 		}
 	}
 
-	private void recalculateAndShowBoards() {
+	protected void recalculateAndShowBoards() {
 		getVisibleMatches().addAll(hiddenMatches);
 		hiddenMatches.clear();
 
 		List<Match> recalcMatches = new ArrayList<Match>();
 
 		int amountBoards = getVisibleMatches().size();
+
+		if (amountBoards > 1 && amountBoards % 2 == 1) {
+			// Add an empty board since there is an odd number
+			visibleMatches.add(new Match(0, 0, width, height));
+			amountBoards++;
+		}
 
 		int rows = (amountBoards > 2) ? 2 : 1;
 		int columns;
@@ -232,7 +257,7 @@ public class DropInMatchHandler {
 		getVisibleMatches().addAll(recalcMatches);
 	}
 
-	private void resumeAllPlayableMatches() {
+	protected void resumeAllPlayableMatches() {
 		for (Match match : getVisibleMatches()) {
 			if (match.isPlayable()) {
 				match.resume();

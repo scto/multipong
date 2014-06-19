@@ -88,7 +88,7 @@ public class Settings {
 	/**
 	 * The score needed to win a match.
 	 */
-	public static int matchScoreToWin = 3;
+	public static int matchScoreToWin = 1;
 
 	/**
 	 * Acceleration of a pad.
@@ -137,6 +137,8 @@ public class Settings {
 	 * are finished, in drop-in mode. After this time, boards are reset.
 	 */
 	public static float timeUntilDropOutAfterAllMatchesFinished = 3f;
+
+	public static float timeOutNewPlayerSignUp = 5f;
 
 	/**
 	 * This shader will draw distortions over the screen at somewhat random

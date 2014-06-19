@@ -1,6 +1,5 @@
 package multipong.match;
 
-import multipong.board.boardobjects.Player;
 import multipong.font.Fonts;
 import multipong.rendering.RenderableRectangle;
 import multipong.rendering.RenderableString;
@@ -186,10 +185,10 @@ public class RenderableMatchObjects {
 	}
 
 	public static RenderableString leftPlayerScore(Rectangle board,
-			Player leftPlayer) {
+			int leftPlayerScore) {
 		RenderableString r = new RenderableString();
 		r.font = Fonts.fontMedium;
-		r.text = Integer.toString(leftPlayer.score);
+		r.text = Integer.toString(leftPlayerScore);
 		r.color = Color.WHITE;
 		float x = board.x;
 		float y = board.y;
@@ -204,10 +203,10 @@ public class RenderableMatchObjects {
 	}
 
 	public static RenderableString rightPlayerScore(Rectangle board,
-			Player rightPlayer) {
+			int rightPlayerScore) {
 		RenderableString r = new RenderableString();
 		r.font = Fonts.fontMedium;
-		r.text = Integer.toString(rightPlayer.score);
+		r.text = Integer.toString(rightPlayerScore);
 		r.color = Color.WHITE;
 		float x = board.x;
 		float y = board.y;

@@ -21,7 +21,8 @@ import com.badlogic.gdx.math.Vector2;
 public class MainScreen extends AbstractScreen {
 
 	public enum MainMenuItem {
-		DROPIN("Drop-in"), OPTIONS("Options"), CREDITS("Credits"), EXIT("Exit");
+		ALL_VS_ALL("All vs. all"), DROPIN("Drop-in"), OPTIONS("Options"), CREDITS(
+				"Credits"), EXIT("Exit");
 
 		private String name;
 
@@ -152,6 +153,10 @@ public class MainScreen extends AbstractScreen {
 
 	private void enterSelected() {
 		switch (selectedItem) {
+
+		case ALL_VS_ALL:
+			game.setScreen(new AllVsAllScreen(game, width, height));
+			break;
 
 		case DROPIN:
 			game.setScreen(new DropInScreen(game, width, height));
