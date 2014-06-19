@@ -18,6 +18,7 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 	private RenderableString timeOutMsg;
 	private List<RenderableString> statTable;
 	private boolean matchesPlaying = false;
+	private boolean tournamentFinished = false;
 
 	Rectangle statsWindow;
 
@@ -30,7 +31,9 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 		statsWindow = new Rectangle(0, 0, width, height);
 		timeOutMsg = RenderableStatScreenObjects.countDownMsg(statsWindow,
 				timeOutNewPlayerSignUp);
+		RenderableStatScreenObjects.setCountDownMsgToIdle(timeOutMsg);
 		updateStatsTableRenderables();
+		visibleMatches.clear();
 	}
 
 	public void startMatchups(List<Player[]> matchups) {
@@ -48,6 +51,7 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 
 		recalculateAndShowBoards();
 		resumeAllPlayableMatches();
+
 	}
 
 	@Override
@@ -75,31 +79,32 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 		return matchesPlaying;
 	}
 
+	public boolean tournamentFinished() {
+		return tournamentFinished;
+	}
+
 	public void update(float deltaTime) {
-		// stateTime += deltaTime;
-
-		if (!signUpHasTimedOut()) {
-			if (stats.getActivePlayers().size() <= 1) {
-				return;
-			}
-			timeOutNewPlayerSignUp -= deltaTime;
-			updateTimeOutRenderable();
-			return;
-
-		} else if (!matchesPlaying) {
-			// Start the matches
-			List<Player[]> allVsAllArrangement = stats.getArrangementAllVsAll();
-			startMatchups(allVsAllArrangement);
-			matchesPlaying = true;
+		if (tournamentFinished) {
 			return;
 		}
 
 		// Matches are playing so long as not all visible matches are finished.
 		matchesPlaying = !allVisibleMatchesAreFinished();
-		if (!matchesPlaying) {
-			resetTimeOut();
-			stats.deactivateAllPlayers();
+
+		if (matchesPlaying) {
+			// There are ongoing matches. Update them.
+			updateBoardsInVisibleMatches(deltaTime);
+			return;
+		}
+
+		// There are no ongoing matches from here on.
+
+		if (!visibleMatches.isEmpty()) {
+			// There are previous matches which stats have not been stored
+			// yet. Do so.
 			for (Match match : visibleMatches) {
+				// stats.activatePlayer(match.getLeftPlayer());
+				// stats.activatePlayer(match.getRightPlayer());
 				stats.addMatchResult(match.getLeftPlayer(),
 						match.getRightPlayer(), match.getLeftPlayerScore(),
 						match.getRightPlayerScore());
@@ -107,9 +112,38 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 			visibleMatches.clear();
 			updateStatsTableRenderables();
 			updateTimeOutRenderable();
-		} else {
-			updateBoardsInVisibleMatches(deltaTime);
+			return;
 		}
+
+		if (!signUpHasTimedOut()) {
+			// Not all players may have signed up yet. Decrease the countdown.
+			if (stats.getActivePlayers().size() < 2) {
+				// Do not count down if less than two players are active.
+				return;
+			}
+			timeOutNewPlayerSignUp -= deltaTime;
+			updateTimeOutRenderable();
+			return;
+		}
+
+		// Get the next matchup.
+		List<Player[]> matchArrangement = stats
+				.getArrangementAllVsAll(Settings.tournamentAllVsAllMaxTimesPlayersMeet);
+
+		if (matchArrangement.size() == 0) {
+			// Tournament is finished. Show it.
+			tournamentFinished = true;
+			updateStatsTableRenderables();
+			updateTimeOutRenderable();
+
+		} else {
+			// Start new matches
+			stats.deactivateAllPlayers();
+			startMatchups(matchArrangement);
+			matchesPlaying = true;
+			resetTimeOut();
+		}
+
 	}
 
 	@Override
@@ -118,8 +152,16 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 	}
 
 	private void updateTimeOutRenderable() {
-		RenderableStatScreenObjects.updateCountDownMsg(timeOutMsg,
-				timeOutNewPlayerSignUp);
+		if (tournamentFinished) {
+			RenderableStatScreenObjects.setCountDownMsgToFinished(timeOutMsg);
+
+		} else if (stats.getActivePlayers().size() <= 1) {
+			RenderableStatScreenObjects.setCountDownMsgToIdle(timeOutMsg);
+
+		} else {
+			RenderableStatScreenObjects.updateCountDownMsg(timeOutMsg,
+					timeOutNewPlayerSignUp);
+		}
 	}
 
 	private void updateStatsTableRenderables() {
@@ -127,22 +169,23 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 	}
 
 	public List<RenderableString> getRenderableStrings() {
-		if (!signUpHasTimedOut()) {
+		if (matchesPlaying) {
+			return super.getRenderableStrings();
+
+		} else {
 			renderableStrings.clear();
 			renderableStrings.add(timeOutMsg);
 			renderableStrings.addAll(statTable);
 			return renderableStrings;
-		} else {
-			return super.getRenderableStrings();
 		}
 	}
 
 	public List<RenderableRectangle> getRenderableRectangles() {
-		if (!signUpHasTimedOut()) {
+		if (matchesPlaying) {
+			return super.getRenderableRectangles();
+		} else {
 			renderableRectangles.clear();
 			return renderableRectangles;
-		} else {
-			return super.getRenderableRectangles();
 		}
 	}
 

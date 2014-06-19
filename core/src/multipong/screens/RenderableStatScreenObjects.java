@@ -18,8 +18,6 @@ public class RenderableStatScreenObjects {
 		RenderableString r = new RenderableString();
 		r.font = Fonts.fontSmall;
 		r.color = Color.WHITE;
-		// r.color = new Color(r.color.r, r.color.g, r.color.b, number
-		// - (int) number);
 		r.text = "Players must sign up in " + Integer.toString((int) number)
 				+ " seconds.";
 		float x = board.x;
@@ -36,12 +34,29 @@ public class RenderableStatScreenObjects {
 	public static void updateCountDownMsg(RenderableString renderableString,
 			float newNumber) {
 		RenderableString r = renderableString;
+		float previousStringLength = r.getWidth();
 		int newNumberInt = (int) newNumber;
-		// float newNumberDecimals = newNumber - newNumberInt;
-		// r.color = new Color(r.color.r, r.color.g, r.color.b,
-		// newNumberDecimals);
 		r.text = "Players must sign up in " + Integer.toString(newNumberInt)
 				+ " seconds.";
+		float sizeDiff = previousStringLength - r.getWidth();
+		r.pos.x += sizeDiff / 2;
+	}
+
+	public static void setCountDownMsgToIdle(RenderableString renderableString) {
+		RenderableString r = renderableString;
+		float previousStringLength = r.getWidth();
+		r.text = "Waiting for players...";
+		float sizeDiff = previousStringLength - r.getWidth();
+		r.pos.x += sizeDiff / 2;
+	}
+
+	public static void setCountDownMsgToFinished(
+			RenderableString renderableString) {
+		RenderableString r = renderableString;
+		float previousStringLength = r.getWidth();
+		r.text = "Tournament is finished, all active players have met each other.";
+		float sizeDiff = previousStringLength - r.getWidth();
+		r.pos.x += sizeDiff / 2;
 	}
 
 	public static List<RenderableString> statsTable(Rectangle board,
@@ -95,7 +110,7 @@ public class RenderableStatScreenObjects {
 		matchesPlayedHeader.pos = new Vector2(matchesPlayedXpos,
 				headerRowYoffset);
 
-		List<Player> players = stats.getPlayersSortedByWinsAndLosses();
+		List<Player> players = stats.getPlayersSortedByWinsLossesGamesPlayed();
 		int numberOfPlayers = players.size();
 		if (numberOfPlayers == 0) {
 			return strings;
@@ -127,13 +142,13 @@ public class RenderableStatScreenObjects {
 			RenderableString wins = new RenderableString();
 			wins.font = Fonts.fontSmall;
 			wins.color = Color.WHITE;
-			wins.text = Integer.toString(stats.getPlayerWins(player));
+			wins.text = Integer.toString(stats.getPlayerWonMatches(player));
 			wins.pos = new Vector2(winsXpos, currentYoffset);
 
 			RenderableString losses = new RenderableString();
 			losses.font = Fonts.fontSmall;
 			losses.color = Color.WHITE;
-			losses.text = Integer.toString(stats.getPlayerLosses(player));
+			losses.text = Integer.toString(stats.getPlayerLostMatches(player));
 			losses.pos = new Vector2(lossesXpos, currentYoffset);
 
 			RenderableString matchesPlayed = new RenderableString();

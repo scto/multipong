@@ -138,7 +138,16 @@ public class Settings {
 	 */
 	public static float timeUntilDropOutAfterAllMatchesFinished = 3f;
 
+	/**
+	 * Timeout in seconds for marking a player as active in a tournament.
+	 */
 	public static float timeOutNewPlayerSignUp = 5f;
+
+	/**
+	 * How many times a player can meet the same opponent in an All vs. All
+	 * tournament. If zero, there is no limit.
+	 */
+	public static int tournamentAllVsAllMaxTimesPlayersMeet = 1;
 
 	/**
 	 * This shader will draw distortions over the screen at somewhat random
