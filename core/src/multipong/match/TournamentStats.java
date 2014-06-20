@@ -54,7 +54,7 @@ public class TournamentStats {
 
 		public boolean isActive = true;
 
-		public LinkedHashMap<Player, List<MatchResult>> stats = new LinkedHashMap<Player, List<MatchResult>>();
+		public LinkedHashMap<Player, List<MatchResult>> matchResultMap = new LinkedHashMap<Player, List<MatchResult>>();
 
 		public void addMatchResult(Player opponent, int playerScore,
 				int opponentScore) {
@@ -70,18 +70,18 @@ public class TournamentStats {
 
 			MatchResult result = new MatchResult(playerScore, opponentScore);
 
-			if (stats.containsKey(opponent)) {
-				stats.get(opponent).add(result);
+			if (matchResultMap.containsKey(opponent)) {
+				matchResultMap.get(opponent).add(result);
 
 			} else {
 				List<MatchResult> resultList = new ArrayList<MatchResult>();
 				resultList.add(result);
-				stats.put(opponent, resultList);
+				matchResultMap.put(opponent, resultList);
 			}
 		}
 
-		public boolean playedOpponent(Player opponent) {
-			return stats.containsKey(opponent);
+		public boolean playerMetOpponent(Player opponent) {
+			return matchResultMap.containsKey(opponent);
 		}
 	}
 
@@ -99,19 +99,55 @@ public class TournamentStats {
 	}
 
 	/**
+	 * Check if the player is registered in the tournament.
+	 * 
+	 * @param player
+	 * @return
+	 */
+	public boolean playerIsRegistered(Player player) {
+		return stats.containsKey(player);
+	}
+
+	/**
+	 * Check if a player is currently marked as active in the tournament.
+	 * 
+	 * @param player
+	 * @return
+	 */
+	public boolean playerIsActive(Player player) {
+		if (playerIsRegistered(player)) {
+			return stats.get(player).isActive;
+		}
+		return false;
+	}
+
+	/**
 	 * Reactivate a deactivated player. If player is not in the tournament it
 	 * does nothing.
 	 * 
 	 * @param player
 	 */
 	public void activatePlayer(Player player) {
-		if (stats.containsKey(player)) {
+		if (playerIsRegistered(player)) {
 			stats.get(player).isActive = true;
 		}
 	}
 
 	/**
-	 * Adds the result of a match between two players to the statistics.
+	 * Activate all players in the list. If player is not in the tournament it
+	 * does nothing.
+	 * 
+	 * @param players
+	 */
+	public void activatePlayers(List<Player> players) {
+		for (Player player : players) {
+			activatePlayer(player);
+		}
+	}
+
+	/**
+	 * Adds the result of a match between two players to the statistics. If a
+	 * player does not exist, it registers the player first.
 	 * 
 	 * @param leftPlayer
 	 * @param rightPlayer
@@ -123,13 +159,13 @@ public class TournamentStats {
 		if (leftPlayer == null || rightPlayer == null) {
 			return;
 		}
-		if (!stats.containsKey(leftPlayer)) {
+		if (!playerIsRegistered(leftPlayer)) {
 			addPlayerToTournament(leftPlayer);
 		}
 		PlayerStats leftPlayerStats = stats.get(leftPlayer);
 		leftPlayerStats.addMatchResult(rightPlayer, leftScore, rightScore);
 
-		if (!stats.containsKey(rightPlayer)) {
+		if (!playerIsRegistered(rightPlayer)) {
 			addPlayerToTournament(rightPlayer);
 		}
 		PlayerStats rightPlayerStats = stats.get(rightPlayer);
@@ -146,7 +182,7 @@ public class TournamentStats {
 		if (player == null) {
 			return;
 		}
-		if (!stats.containsKey(player)) {
+		if (!playerIsRegistered(player)) {
 			stats.put(player, new PlayerStats());
 		} else {
 			activatePlayer(player);
@@ -169,7 +205,7 @@ public class TournamentStats {
 	 * @param player
 	 */
 	public void deactivatePlayer(Player player) {
-		if (stats.containsKey(player)) {
+		if (playerIsRegistered(player)) {
 			stats.get(player).isActive = false;
 		}
 	}
@@ -209,9 +245,9 @@ public class TournamentStats {
 				// Opponent is the same as player
 				continue;
 			}
-			if (playerStats.stats.containsKey(opponent)) {
+			if (playerStats.playerMetOpponent(opponent)) {
 				// Player has met opponent
-				List<MatchResult> matchesAgainstOpponent = playerStats.stats
+				List<MatchResult> matchesAgainstOpponent = playerStats.matchResultMap
 						.get(opponent);
 				int timesPlayedAgainstOpponent = matchesAgainstOpponent.size();
 
@@ -241,6 +277,74 @@ public class TournamentStats {
 	}
 
 	/**
+	 * True if all active players have met each other.
+	 * 
+	 * @return
+	 */
+	public boolean allActivePlayersHaveMetEachOther() {
+		// TODO: Use something more efficient, like Tarjan's Algorithm.
+		List<Player> activePlayers = getActivePlayers();
+
+		for (Player player : activePlayers) {
+
+			PlayerStats playerStats = stats.get(player);
+
+			for (Player opponent : activePlayers) {
+				if (player == opponent) {
+					continue;
+				}
+				if (!playerStats.playerMetOpponent(opponent)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * For all active players, find the fewest times it has has met any other
+	 * active player.
+	 * 
+	 * @return
+	 */
+	public int leastTimesActivePlayerMetActivePlayer() {
+
+		int leastTimes = Integer.MAX_VALUE;
+		for (Entry<Player, PlayerStats> playerEntry : stats.entrySet()) {
+
+			PlayerStats playerStats = playerEntry.getValue();
+
+			// Ignore inactive player
+			if (!playerStats.isActive) {
+				continue;
+			}
+
+			if (playerStats.matchResultMap.isEmpty()) {
+				// This active player has not played any matches.
+				return 0;
+			}
+
+			for (Entry<Player, List<MatchResult>> matchEntry : playerStats.matchResultMap
+					.entrySet()) {
+
+				Player opponent = matchEntry.getKey();
+				List<MatchResult> results = matchEntry.getValue();
+
+				if (!playerIsActive(opponent)) {
+					continue;
+				}
+
+				int timesMetOpponent = results.size();
+				if (timesMetOpponent < leastTimes) {
+					leastTimes = timesMetOpponent;
+				}
+			}
+
+		}
+		return (leastTimes == Integer.MAX_VALUE) ? 0 : leastTimes;
+	}
+
+	/**
 	 * In this match arrangement, all active players first meets a random unmet
 	 * player. If all players have met each other at least once, the arrangement
 	 * will be the same as if none of the players have met.
@@ -265,8 +369,15 @@ public class TournamentStats {
 	public List<Player[]> getArrangementAllVsAll(int maxTimesTwoPlayersMeet) {
 		List<Player[]> matchups = new ArrayList<Player[]>();
 
+		// This will be used to reactivate players who get deactivated by the
+		// algorthm.
 		List<Player> activePlayers = getActivePlayers();
-		int numberOfPlayersToArrange = activePlayers.size();
+
+		// Working list, players will get removed from this as they are paired
+		// off.
+		List<Player> worklist = getActivePlayers();
+
+		int numberOfPlayersToArrange = worklist.size();
 
 		if (numberOfPlayersToArrange <= 1) {
 			return matchups;
@@ -276,7 +387,7 @@ public class TournamentStats {
 
 		if (isOdd(numberOfPlayersToArrange)) {
 			playerToLeaveOut = getPlayerToLeaveOut();
-			activePlayers.remove(playerToLeaveOut);
+			worklist.remove(playerToLeaveOut);
 			deactivatePlayer(playerToLeaveOut);
 			numberOfPlayersToArrange--;
 		}
@@ -291,9 +402,9 @@ public class TournamentStats {
 			// Grab a random player and add it as left player
 			int leftPlayerIndex = MathUtils
 					.random(numberOfPlayersToArrange - 1);
-			Player leftPlayer = activePlayers.get(leftPlayerIndex);
+			Player leftPlayer = worklist.get(leftPlayerIndex);
 			pair[0] = leftPlayer;
-			activePlayers.remove(leftPlayerIndex);
+			worklist.remove(leftPlayerIndex);
 			deactivatePlayer(leftPlayer);
 			numberOfPlayersToArrange--;
 
@@ -315,7 +426,7 @@ public class TournamentStats {
 					.random(numberOfPossibleOpponents - 1);
 			Player rightPlayer = possibleOpponents.get(rightPlayerIndex);
 			pair[1] = rightPlayer;
-			activePlayers.remove(rightPlayer);
+			worklist.remove(rightPlayer);
 			deactivatePlayer(rightPlayer);
 			numberOfPlayersToArrange--;
 
@@ -329,6 +440,9 @@ public class TournamentStats {
 				break;
 			}
 		}
+
+		activatePlayers(activePlayers);
+
 		return matchups;
 	}
 
@@ -365,9 +479,9 @@ public class TournamentStats {
 				// Opponent is the same as player
 				continue;
 			}
-			if (playerStats.stats.containsKey(opponent)) {
+			if (playerStats.playerMetOpponent(opponent)) {
 				// Players have met
-				int timesMet = playerStats.stats.get(opponent).size();
+				int timesMet = playerStats.matchResultMap.get(opponent).size();
 				timesMetMap.put(new Integer(timesMet), opponent);
 			} else {
 				timesMetMap.put(new Integer(0), opponent);
@@ -396,6 +510,8 @@ public class TournamentStats {
 				leastMetPlayers.add(opponent);
 
 			} else {
+				// Since the map is sorted by how many times players have met,
+				// we do not need to continue if timesMet is larger than before.
 				break;
 			}
 		}
@@ -409,7 +525,7 @@ public class TournamentStats {
 	 * @return
 	 */
 	public int getPlayerLostMatches(Player player) {
-		if (!stats.containsKey(player)) {
+		if (!playerIsRegistered(player)) {
 			return 0;
 		}
 		return stats.get(player).matchesLost;
@@ -422,10 +538,25 @@ public class TournamentStats {
 	 * @return
 	 */
 	public int getPlayerMatchesPlayed(Player player) {
-		if (!stats.containsKey(player)) {
+		if (!playerIsRegistered(player)) {
 			return 0;
 		}
 		return stats.get(player).matchesPlayed;
+	}
+
+	/**
+	 * How many times the two players have played against each other.
+	 * 
+	 * @param player
+	 * @param opponent
+	 * @return
+	 */
+	public int getNumberOfMatchesPlayed(Player player, Player opponent) {
+		if (playerIsRegistered(player) && playerIsRegistered(opponent)
+				&& stats.get(player).playerMetOpponent(opponent)) {
+			return stats.get(player).matchResultMap.get(opponent).size();
+		}
+		return 0;
 	}
 
 	/**
@@ -446,8 +577,10 @@ public class TournamentStats {
 		Comparator<Player> scoreComparator = new Comparator<Player>() {
 			@Override
 			public int compare(Player p1, Player p2) {
+
 				PlayerStats p1stats = stats.get(p1);
 				PlayerStats p2stats = stats.get(p2);
+
 				if (p1stats.matchesWon > p2stats.matchesWon) {
 					return -1;
 				} else if (p1stats.matchesWon < p2stats.matchesWon) {
@@ -481,7 +614,7 @@ public class TournamentStats {
 	 * @return
 	 */
 	public int getPlayerTiedMatches(Player player) {
-		if (!stats.containsKey(player)) {
+		if (!playerIsRegistered(player)) {
 			return 0;
 		}
 		return stats.get(player).matchesTied;
@@ -520,6 +653,7 @@ public class TournamentStats {
 			return playerToLeaveOut;
 
 		} else {
+			// Take a random player who has never been left out.
 			int index = MathUtils.random(numberOfPlayersNeverLeftOut - 1);
 			Player playerToLeaveOut = playersNeverLeftOut.get(index);
 			leftOutPlayers.add(playerToLeaveOut);
@@ -534,7 +668,7 @@ public class TournamentStats {
 	 * @return
 	 */
 	public int getPlayerWonMatches(Player player) {
-		if (!stats.containsKey(player)) {
+		if (!playerIsRegistered(player)) {
 			return 0;
 		}
 		return stats.get(player).matchesWon;
@@ -557,7 +691,7 @@ public class TournamentStats {
 				// Active player is the same as player
 				continue;
 			}
-			if (playerStats.stats.containsKey(opponent)) {
+			if (playerStats.playerMetOpponent(opponent)) {
 				// Players have met
 				continue;
 			}
@@ -575,19 +709,6 @@ public class TournamentStats {
 	 */
 	private boolean isOdd(int num) {
 		return (num % 2 == 1);
-	}
-
-	/**
-	 * Check if a player is currently marked as active in the tournament.
-	 * 
-	 * @param player
-	 * @return
-	 */
-	public boolean playerIsActive(Player player) {
-		if (stats.containsKey(player)) {
-			return stats.get(player).isActive;
-		}
-		return false;
 	}
 
 }

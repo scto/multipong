@@ -110,6 +110,14 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 						match.getRightPlayerScore());
 			}
 			visibleMatches.clear();
+
+			if (stats.allActivePlayersHaveMetEachOther()
+					&& stats.leastTimesActivePlayerMetActivePlayer() == Settings.tournamentAllVsAllMaxTimesPlayersMeet) {
+				tournamentFinished = true;
+			} else {
+				stats.deactivateAllPlayers();
+			}
+
 			updateStatsTableRenderables();
 			updateTimeOutRenderable();
 			return;
@@ -138,7 +146,7 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 
 		} else {
 			// Start new matches
-			stats.deactivateAllPlayers();
+			// stats.deactivateAllPlayers();
 			startMatchups(matchArrangement);
 			matchesPlaying = true;
 			resetTimeOut();
