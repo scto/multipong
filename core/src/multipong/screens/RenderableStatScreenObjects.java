@@ -142,20 +142,20 @@ public class RenderableStatScreenObjects {
 			RenderableString wins = new RenderableString();
 			wins.font = Fonts.fontSmall;
 			wins.color = Color.WHITE;
-			wins.text = Integer.toString(stats.getPlayerWonMatches(player));
+			wins.text = Integer.toString(stats.getNumberOfWonMatches(player));
 			wins.pos = new Vector2(winsXpos, currentYoffset);
 
 			RenderableString losses = new RenderableString();
 			losses.font = Fonts.fontSmall;
 			losses.color = Color.WHITE;
-			losses.text = Integer.toString(stats.getPlayerLostMatches(player));
+			losses.text = Integer.toString(stats.getNumberOfLostMatches(player));
 			losses.pos = new Vector2(lossesXpos, currentYoffset);
 
 			RenderableString matchesPlayed = new RenderableString();
 			matchesPlayed.font = Fonts.fontSmall;
 			matchesPlayed.color = Color.WHITE;
 			matchesPlayed.text = Integer.toString(stats
-					.getPlayerMatchesPlayed(player));
+					.getNumberOfMatchesPlayed(player));
 			matchesPlayed.pos = new Vector2(matchesPlayedXpos, currentYoffset);
 
 			currentYoffset -= (name.getHeight() + yPadding);

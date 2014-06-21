@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -20,15 +21,22 @@ import multipong.board.boardobjects.Player;
  * a player has dropped-out, dropped-in, and so on.
  * 
  * It does not decide who has won a tournament, since it does not keep track of
- * what kind of tournament it is. Instead, use its arrangement methods to
- * generate lists of matchups for a specific kind of tournament. When the
- * arragement methods returns an empty list, the tournament is over.
+ * what kind of tournament it is. Instead, use its pairing methods to generate
+ * lists of pairings for a specific kind of tournament. When the pairings
+ * methods returns an empty list, the tournament is over.
  * 
+ * A new instance of this class should be created after a tournament is
+ * finished, or when switching tournament type, since it depends on earlier
+ * statistics when creating new pairings.
+ * 
+ * This class does not support ties.
+ * 
+ * This class is not thread-safe.
  */
 public class TournamentStats {
 
 	/**
-	 * This holds the scores of a match. TODO: Not really used anywhere...
+	 * This holds the scores of a match.
 	 */
 	public class MatchResult {
 		public int playerScore;
@@ -50,11 +58,10 @@ public class TournamentStats {
 		public int matchesPlayed = 0;
 		public int matchesWon = 0;
 		public int matchesLost = 0;
-		public int matchesTied = 0;
 
 		public boolean isActive = true;
 
-		public LinkedHashMap<Player, List<MatchResult>> matchResultMap = new LinkedHashMap<Player, List<MatchResult>>();
+		public Map<Player, List<MatchResult>> matchResultMap = new LinkedHashMap<Player, List<MatchResult>>();
 
 		public void addMatchResult(Player opponent, int playerScore,
 				int opponentScore) {
@@ -64,8 +71,6 @@ public class TournamentStats {
 				matchesWon++;
 			} else if (playerScore < opponentScore) {
 				matchesLost++;
-			} else {
-				matchesTied++;
 			}
 
 			MatchResult result = new MatchResult(playerScore, opponentScore);
@@ -86,7 +91,7 @@ public class TournamentStats {
 	}
 
 	private String className = this.getClass().getSimpleName();
-	private LinkedHashMap<Player, PlayerStats> stats = new LinkedHashMap<Player, PlayerStats>();
+	private Map<Player, PlayerStats> stats = new LinkedHashMap<Player, PlayerStats>();
 	private List<Player> leftOutPlayers = new ArrayList<Player>();
 
 	/**
@@ -96,29 +101,6 @@ public class TournamentStats {
 		for (Entry<Player, PlayerStats> entry : stats.entrySet()) {
 			entry.getValue().isActive = true;
 		}
-	}
-
-	/**
-	 * Check if the player is registered in the tournament.
-	 * 
-	 * @param player
-	 * @return
-	 */
-	public boolean playerIsRegistered(Player player) {
-		return stats.containsKey(player);
-	}
-
-	/**
-	 * Check if a player is currently marked as active in the tournament.
-	 * 
-	 * @param player
-	 * @return
-	 */
-	public boolean playerIsActive(Player player) {
-		if (playerIsRegistered(player)) {
-			return stats.get(player).isActive;
-		}
-		return false;
 	}
 
 	/**
@@ -190,6 +172,31 @@ public class TournamentStats {
 	}
 
 	/**
+	 * True if all active players have met each other.
+	 * 
+	 * @return
+	 */
+	public boolean allActivePlayersHaveMetEachOther() {
+		// TODO: Use something more efficient, like Tarjan's Algorithm.
+		List<Player> activePlayers = getActivePlayers();
+
+		for (Player player : activePlayers) {
+
+			PlayerStats playerStats = stats.get(player);
+
+			for (Player opponent : activePlayers) {
+				if (player == opponent) {
+					continue;
+				}
+				if (!playerStats.playerMetOpponent(opponent)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Deactivates all players in the tournament.
 	 */
 	public void deactivateAllPlayers() {
@@ -223,6 +230,39 @@ public class TournamentStats {
 			}
 		}
 		return activePlayers;
+	}
+
+	/**
+	 * A map with matches won as key, and as value, all the players who have won
+	 * this many matches.
+	 * 
+	 * @return
+	 */
+	private Map<Integer, List<Player>> getActivePlayersMatchesWonMap() {
+
+		Map<Integer, List<Player>> matchesWonMap = new TreeMap<Integer, List<Player>>();
+
+		for (Entry<Player, PlayerStats> entry : stats.entrySet()) {
+
+			Player player = entry.getKey();
+			PlayerStats playerStats = entry.getValue();
+
+			if (!playerStats.isActive) {
+				continue;
+			}
+
+			int matchesWon = playerStats.matchesWon;
+
+			if (!matchesWonMap.containsKey(matchesWon)) {
+				List<Player> players = new ArrayList<Player>();
+				players.add(player);
+				matchesWonMap.put(matchesWon, players);
+			} else {
+				matchesWonMap.get(matchesWon).add(player);
+			}
+		}
+
+		return matchesWonMap;
 	}
 
 	/**
@@ -277,183 +317,66 @@ public class TournamentStats {
 	}
 
 	/**
-	 * True if all active players have met each other.
+	 * Get the player with the highest amount of matches won. If there are
+	 * multiple players with the highest amount of matches won, they will all be
+	 * returned.
 	 * 
 	 * @return
 	 */
-	public boolean allActivePlayersHaveMetEachOther() {
-		// TODO: Use something more efficient, like Tarjan's Algorithm.
-		List<Player> activePlayers = getActivePlayers();
+	public List<Player> getAllPlayersWithMostMatchesWon() {
+		int mostMatchesWon = 0;
+		List<Player> winners = new ArrayList<Player>();
 
-		for (Player player : activePlayers) {
+		for (Entry<Player, PlayerStats> entry : stats.entrySet()) {
 
-			PlayerStats playerStats = stats.get(player);
+			Player player = entry.getKey();
+			PlayerStats playerStats = entry.getValue();
 
-			for (Player opponent : activePlayers) {
-				if (player == opponent) {
-					continue;
-				}
-				if (!playerStats.playerMetOpponent(opponent)) {
-					return false;
-				}
+			if (playerStats.matchesWon > mostMatchesWon) {
+				mostMatchesWon = playerStats.matchesWon;
+				winners.clear();
+				winners.add(player);
+
+			} else if (playerStats.matchesWon == mostMatchesWon) {
+				winners.add(player);
 			}
 		}
-		return true;
+		return winners;
 	}
 
 	/**
-	 * For all active players, find the fewest times it has has met any other
-	 * active player.
+	 * Get a list of drop-ins, players who are active, but have played less
+	 * games than the one(s) who have played the most games. This obviously
+	 * gives wrong results in elimination tournaments...
 	 * 
 	 * @return
 	 */
-	public int leastTimesActivePlayerMetActivePlayer() {
+	private List<Player> getDropIns() {
+		List<Player> dropIns = new ArrayList<Player>();
+		int mostMatches = getMostMatchesPlayedByAnyPlayer();
 
-		int leastTimes = Integer.MAX_VALUE;
-		for (Entry<Player, PlayerStats> playerEntry : stats.entrySet()) {
+		for (Entry<Player, PlayerStats> entry : stats.entrySet()) {
+			Player player = entry.getKey();
+			PlayerStats playerStats = entry.getValue();
 
-			PlayerStats playerStats = playerEntry.getValue();
+			if (playerStats.matchesPlayed < mostMatches) {
+				dropIns.add(player);
+			}
+		}
+		return dropIns;
+	}
 
-			// Ignore inactive player
+	public List<Player> getInactivePlayers() {
+		List<Player> inactivePlayers = new ArrayList<Player>();
+
+		for (Entry<Player, PlayerStats> entry : stats.entrySet()) {
+			Player player = entry.getKey();
+			PlayerStats playerStats = entry.getValue();
 			if (!playerStats.isActive) {
-				continue;
-			}
-
-			if (playerStats.matchResultMap.isEmpty()) {
-				// This active player has not played any matches.
-				return 0;
-			}
-
-			for (Entry<Player, List<MatchResult>> matchEntry : playerStats.matchResultMap
-					.entrySet()) {
-
-				Player opponent = matchEntry.getKey();
-				List<MatchResult> results = matchEntry.getValue();
-
-				if (!playerIsActive(opponent)) {
-					continue;
-				}
-
-				int timesMetOpponent = results.size();
-				if (timesMetOpponent < leastTimes) {
-					leastTimes = timesMetOpponent;
-				}
-			}
-
-		}
-		return (leastTimes == Integer.MAX_VALUE) ? 0 : leastTimes;
-	}
-
-	/**
-	 * In this match arrangement, all active players first meets a random unmet
-	 * player. If all players have met each other at least once, the arrangement
-	 * will be the same as if none of the players have met.
-	 * 
-	 * If there is an odd number of players a random player will be left out of
-	 * the match. The same player will not be left out twice until all players
-	 * have been left out once.
-	 * 
-	 * Limit how many times a player can meet another with
-	 * {@code maxTimesTwoPlayersMeet}. If set to zero, this tournament will go
-	 * on forever.
-	 * 
-	 * This arrangement supports drop-in/drop-out. If a player joins an ongoing
-	 * tournament with a max amount of times to play each opponent, each player
-	 * will get to meet the new player, so long as they are still active.
-	 * 
-	 * @param maxTimesTwoPlayersMeet
-	 *            The max amount of times two players can play against each
-	 *            other. 0 = infinite times.
-	 * @return A list of player match pairings.
-	 */
-	public List<Player[]> getArrangementAllVsAll(int maxTimesTwoPlayersMeet) {
-		List<Player[]> matchups = new ArrayList<Player[]>();
-
-		// This will be used to reactivate players who get deactivated by the
-		// algorthm.
-		List<Player> activePlayers = getActivePlayers();
-
-		// Working list, players will get removed from this as they are paired
-		// off.
-		List<Player> worklist = getActivePlayers();
-
-		int numberOfPlayersToArrange = worklist.size();
-
-		if (numberOfPlayersToArrange <= 1) {
-			return matchups;
-		}
-
-		Player playerToLeaveOut = null;
-
-		if (isOdd(numberOfPlayersToArrange)) {
-			playerToLeaveOut = getPlayerToLeaveOut();
-			worklist.remove(playerToLeaveOut);
-			deactivatePlayer(playerToLeaveOut);
-			numberOfPlayersToArrange--;
-		}
-
-		// There are now always an even number of players.
-		while (true) {
-			if (numberOfPlayersToArrange == 0) {
-				break;
-			}
-			Player[] pair = new Player[2];
-
-			// Grab a random player and add it as left player
-			int leftPlayerIndex = MathUtils
-					.random(numberOfPlayersToArrange - 1);
-			Player leftPlayer = worklist.get(leftPlayerIndex);
-			pair[0] = leftPlayer;
-			worklist.remove(leftPlayerIndex);
-			deactivatePlayer(leftPlayer);
-			numberOfPlayersToArrange--;
-
-			List<Player> possibleOpponents;
-			if (maxTimesTwoPlayersMeet <= 0) {
-				possibleOpponents = getLeastMetActivePlayers(leftPlayer);
-			} else {
-				possibleOpponents = getActivePlayersMetFewerTimesThanMax(
-						leftPlayer, maxTimesTwoPlayersMeet);
-				if (possibleOpponents.size() == 0) {
-					// Player has met all other players max amount of times.
-					// Ignore it in the matchups.
-					continue;
-				}
-			}
-
-			int numberOfPossibleOpponents = possibleOpponents.size();
-			int rightPlayerIndex = MathUtils
-					.random(numberOfPossibleOpponents - 1);
-			Player rightPlayer = possibleOpponents.get(rightPlayerIndex);
-			pair[1] = rightPlayer;
-			worklist.remove(rightPlayer);
-			deactivatePlayer(rightPlayer);
-			numberOfPlayersToArrange--;
-
-			matchups.add(pair);
-
-			if (numberOfPlayersToArrange == 0) {
-				break;
-			} else if (numberOfPlayersToArrange == 1) {
-				// This shouldn't happen.
-				Gdx.app.debug(className, "One player is left over!");
-				break;
+				inactivePlayers.add(player);
 			}
 		}
-
-		activatePlayers(activePlayers);
-
-		return matchups;
-	}
-
-	public List<Player[]> getArrangementDoubleElimination() {
-		// TODO
-		return null;
-	}
-
-	public List<Player[]> getArrangementSwiss() {
-		// TODO
-		return null;
+		return inactivePlayers;
 	}
 
 	/**
@@ -493,9 +416,11 @@ public class TournamentStats {
 			return leastMetPlayers;
 		}
 
-		// Add the players met fewest times, e.g. if the players has met three
-		// opponents one time, five opponents two times, one opponent three
-		// times, add only the three met once.
+		/*
+		 * Add the players met fewest times, e.g. if the players has met three
+		 * opponents one time, five opponents two times, one opponent three
+		 * times, add only the three met once.
+		 */
 		int leastNumberOfMatches = Integer.MAX_VALUE;
 		for (Entry<Integer, Player> entry : timesMetMap.entrySet()) {
 
@@ -518,13 +443,24 @@ public class TournamentStats {
 		return leastMetPlayers;
 	}
 
+	private int getMostMatchesPlayedByAnyPlayer() {
+		int mostMatches = 0;
+		for (Entry<Player, PlayerStats> entry : stats.entrySet()) {
+			PlayerStats playerStats = entry.getValue();
+			if (playerStats.matchesPlayed > mostMatches) {
+				mostMatches = playerStats.matchesPlayed;
+			}
+		}
+		return mostMatches;
+	}
+
 	/**
 	 * How many matches player has lost.
 	 * 
 	 * @param player
 	 * @return
 	 */
-	public int getPlayerLostMatches(Player player) {
+	public int getNumberOfLostMatches(Player player) {
 		if (!playerIsRegistered(player)) {
 			return 0;
 		}
@@ -537,7 +473,7 @@ public class TournamentStats {
 	 * @param player
 	 * @return
 	 */
-	public int getPlayerMatchesPlayed(Player player) {
+	public int getNumberOfMatchesPlayed(Player player) {
 		if (!playerIsRegistered(player)) {
 			return 0;
 		}
@@ -557,6 +493,19 @@ public class TournamentStats {
 			return stats.get(player).matchResultMap.get(opponent).size();
 		}
 		return 0;
+	}
+
+	/**
+	 * How many matches player has won.
+	 * 
+	 * @param player
+	 * @return
+	 */
+	public int getNumberOfWonMatches(Player player) {
+		if (!playerIsRegistered(player)) {
+			return 0;
+		}
+		return stats.get(player).matchesWon;
 	}
 
 	/**
@@ -608,33 +557,26 @@ public class TournamentStats {
 	}
 
 	/**
-	 * How many matches player has tied.
-	 * 
-	 * @param player
-	 * @return
-	 */
-	public int getPlayerTiedMatches(Player player) {
-		if (!playerIsRegistered(player)) {
-			return 0;
-		}
-		return stats.get(player).matchesTied;
-	}
-
-	/**
 	 * Randomly chooses an active player to leave out (used when there is one
 	 * player too many). Keeps track of which players have been left out of a
 	 * game previously, and chooses one which has never been left out. If all
 	 * active players have been left out once, it resets the tracking and
 	 * chooses any active player randomly.
 	 * 
+	 * TODO: This does not work if a player is deactivated, all players get left
+	 * out once, the list resets, then the player comes back again. The player
+	 * will have been left out one time too few. It would be better to map how
+	 * many times a player is left out. Not that it really matters...
+	 * 
+	 * @param players
+	 *            List of players to choose from
 	 * @return
 	 */
-	public Player getPlayerToLeaveOut() {
-		List<Player> activePlayers = getActivePlayers();
+	public Player getPlayerToLeaveOut(List<Player> players) {
 		List<Player> playersNeverLeftOut = new ArrayList<Player>();
 
 		// Grab all players never left out.
-		for (Player player : activePlayers) {
+		for (Player player : players) {
 			if (!leftOutPlayers.contains(player)) {
 				playersNeverLeftOut.add(player);
 			}
@@ -645,9 +587,9 @@ public class TournamentStats {
 		if (numberOfPlayersNeverLeftOut == 0) {
 			// All active players have been left out at least once. Grab a
 			// random player.
-			int numberOfActivePlayers = activePlayers.size();
+			int numberOfActivePlayers = players.size();
 			int index = MathUtils.random(numberOfActivePlayers - 1);
-			Player playerToLeaveOut = activePlayers.get(index);
+			Player playerToLeaveOut = players.get(index);
 			leftOutPlayers.clear();
 			leftOutPlayers.add(playerToLeaveOut);
 			return playerToLeaveOut;
@@ -659,19 +601,6 @@ public class TournamentStats {
 			leftOutPlayers.add(playerToLeaveOut);
 			return playerToLeaveOut;
 		}
-	}
-
-	/**
-	 * How many matches player has won.
-	 * 
-	 * @param player
-	 * @return
-	 */
-	public int getPlayerWonMatches(Player player) {
-		if (!playerIsRegistered(player)) {
-			return 0;
-		}
-		return stats.get(player).matchesWon;
 	}
 
 	/**
@@ -702,6 +631,22 @@ public class TournamentStats {
 	}
 
 	/**
+	 * Increase the number of matches player has won with one. In the results it
+	 * will look like the player played against itself.
+	 * 
+	 * @param player
+	 */
+	public void giveBye(Player player) {
+		if (!playerIsRegistered(player)) {
+			addPlayerToTournament(player);
+		}
+		PlayerStats playerStats = stats.get(player);
+		playerStats.matchesWon++;
+		playerStats.matchesPlayed++;
+		playerStats.addMatchResult(player, 1, 0);
+	}
+
+	/**
 	 * Check if an integer is odd.
 	 * 
 	 * @param num
@@ -709,6 +654,283 @@ public class TournamentStats {
 	 */
 	private boolean isOdd(int num) {
 		return (num % 2 == 1);
+	}
+
+	/**
+	 * For all active players, find the fewest times it has has met any other
+	 * active player.
+	 * 
+	 * @return
+	 */
+	public int leastTimesActivePlayerMetActivePlayer() {
+
+		int leastTimes = Integer.MAX_VALUE;
+		for (Entry<Player, PlayerStats> playerEntry : stats.entrySet()) {
+
+			Player player = playerEntry.getKey();
+			PlayerStats playerStats = playerEntry.getValue();
+
+			// Ignore inactive player
+			if (!playerStats.isActive) {
+				continue;
+			}
+
+			if (playerStats.matchResultMap.isEmpty()) {
+				// This active player has not played any matches.
+				return 0;
+			}
+
+			for (Entry<Player, List<MatchResult>> matchEntry : playerStats.matchResultMap
+					.entrySet()) {
+
+				Player opponent = matchEntry.getKey();
+				List<MatchResult> results = matchEntry.getValue();
+
+				if (!playerIsActive(opponent) || opponent == player) {
+					continue;
+				}
+
+				int timesMetOpponent = results.size();
+				if (timesMetOpponent < leastTimes) {
+					leastTimes = timesMetOpponent;
+				}
+			}
+
+		}
+		return (leastTimes == Integer.MAX_VALUE) ? 0 : leastTimes;
+	}
+
+	public List<Player[]> matchListDoubleElimination() {
+		// TODO
+		return null;
+	}
+
+	/**
+	 * <p>
+	 * In this match pairing, all active players first meets a random unmet
+	 * player. If all players have met each other at least once, the arrangement
+	 * will be the same as if none of the players have met.
+	 * </p>
+	 * <p>
+	 * If there is an odd number of players a random player will be left out of
+	 * the match. The same player will not be left out twice until all players
+	 * have been left out once. There is no "bye", the player will get to play
+	 * all others eventually.
+	 * </p>
+	 * <p>
+	 * Limit how many times a player will meet another with
+	 * {@code maxTimesTwoPlayersMeet}. If set to zero, this tournament will go
+	 * on forever.
+	 * </p>
+	 * <p>
+	 * This arrangement supports drop-in/drop-out. If a player joins an ongoing
+	 * tournament with a max amount of times to play each opponent, each player
+	 * will get to meet the new player, so long as they are still active.
+	 * </p>
+	 * <p>
+	 * When all players have met each other the max number of times, this method
+	 * will return an empty list. Another way to check if if a tournament of
+	 * this type is over is to use:
+	 * </p>
+	 * <p>
+	 * {@code leastTimesActivePlayerMetActivePlayer() == maxNumber && allActivePlayersHaveMetEachOther()}
+	 * </p>
+	 * 
+	 * @param maxTimesTwoPlayersMeet
+	 *            The max amount of times two players can play against each
+	 *            other. 0 = infinite times.
+	 * @return A list of player match pairings.
+	 */
+	public List<Player[]> pairingsAllVsAll(int maxTimesTwoPlayersMeet) {
+		List<Player[]> pairings = new ArrayList<Player[]>();
+
+		// TODO: Make this more readable...
+
+		// This will be used to reactivate players who get deactivated by the
+		// algorthm.
+		List<Player> activePlayers = getActivePlayers();
+
+		// Working list, players will get removed from this as they are paired
+		// off.
+		List<Player> worklist = getActivePlayers();
+
+		int numberOfPlayersToArrange = worklist.size();
+
+		if (numberOfPlayersToArrange <= 1) {
+			return pairings;
+		}
+
+		if (isOdd(numberOfPlayersToArrange)) {
+			Player playerToLeaveOut = getPlayerToLeaveOut(worklist);
+			worklist.remove(playerToLeaveOut);
+			deactivatePlayer(playerToLeaveOut);
+			numberOfPlayersToArrange--;
+		}
+
+		// There are now always an even number of players.
+		while (true) {
+			if (numberOfPlayersToArrange == 0) {
+				break;
+			}
+			Player[] pair = new Player[2];
+
+			// Grab a random player and add it as left player
+			int leftPlayerIndex = MathUtils
+					.random(numberOfPlayersToArrange - 1);
+			Player leftPlayer = worklist.get(leftPlayerIndex);
+			pair[0] = leftPlayer;
+			worklist.remove(leftPlayerIndex);
+			deactivatePlayer(leftPlayer);
+			numberOfPlayersToArrange--;
+
+			List<Player> possibleOpponents;
+			if (maxTimesTwoPlayersMeet <= 0) {
+				possibleOpponents = getLeastMetActivePlayers(leftPlayer);
+			} else {
+				possibleOpponents = getActivePlayersMetFewerTimesThanMax(
+						leftPlayer, maxTimesTwoPlayersMeet);
+				if (possibleOpponents.size() == 0) {
+					// Player has met all other players max amount of times.
+					// Ignore player in the pairings.
+					continue;
+				}
+			}
+
+			int numberOfPossibleOpponents = possibleOpponents.size();
+			int rightPlayerIndex = MathUtils
+					.random(numberOfPossibleOpponents - 1);
+			Player rightPlayer = possibleOpponents.get(rightPlayerIndex);
+			pair[1] = rightPlayer;
+			worklist.remove(rightPlayer);
+			deactivatePlayer(rightPlayer);
+			numberOfPlayersToArrange--;
+
+			pairings.add(pair);
+
+			if (numberOfPlayersToArrange == 0) {
+				break;
+			} else if (numberOfPlayersToArrange == 1) {
+				// This shouldn't happen.
+				Gdx.app.debug(className, "One player is left over!");
+				break;
+			}
+		}
+
+		activatePlayers(activePlayers);
+
+		return pairings;
+	}
+
+	/**
+	 * Creates pairings for Swiss-type tournament. Winners meet winners, losers
+	 * meet losers.
+	 * 
+	 * In this type of tournament, if there is an odd number of players, give
+	 * one of them an automatic win, "bye", and leave the player out this
+	 * round.The rest of the players can either win or lose a round (no ties).
+	 * They will therefore be divided into even numbers of winners and losers.
+	 * 
+	 * If a player drops out of the game (is deactivated) it will be removed
+	 * from the tournament. Players are not allowed to drop-in during this
+	 * tournament (they will be ignored during pairing).
+	 * 
+	 * @return
+	 */
+	public List<Player[]> pairingSwiss() {
+		List<Player[]> pairings = new ArrayList<Player[]>();
+
+		List<Player> dropIns = getDropIns();
+		for (Player dropIn : dropIns) {
+			removePlayerFromTournament(dropIn);
+		}
+		List<Player> dropOuts = getInactivePlayers();
+		for (Player dropOut : dropOuts) {
+			removePlayerFromTournament(dropOut);
+		}
+
+		List<Player> activePlayers = getActivePlayers();
+		int numberOfPlayersToArrange = activePlayers.size();
+
+		if (numberOfPlayersToArrange <= 1) {
+			// Only one player, no pairing possible.
+			return pairings;
+		}
+		if (numberOfPlayersToArrange == 2) {
+			Player leftPlayer = activePlayers.get(0);
+			Player rightPlayer = activePlayers.get(1);
+
+			int leftPlayerMatchesWon = getNumberOfWonMatches(leftPlayer);
+			int rightPlayerMatchesWon = getNumberOfWonMatches(rightPlayer);
+
+			if (leftPlayerMatchesWon == rightPlayerMatchesWon) {
+				Player[] pair = { leftPlayer, rightPlayer };
+				pairings.add(pair);
+			}
+			/*
+			 * If the (only) two players have won an equal amount of matches
+			 * they get to play each other. Otherwise, one will be the winner
+			 * and the tournament is over.
+			 */
+			return pairings;
+		}
+
+		/*
+		 * This map will contain >= 3 players. They have played an equal amount
+		 * of matches. Because players may have dropped out there is no
+		 * guarantee there is a player who has won an equal amount of matches as
+		 * another. If onw
+		 */
+		Map<Integer, List<Player>> matchesWonMap = getActivePlayersMatchesWonMap();
+
+		for (Entry<Integer, List<Player>> entry : matchesWonMap.entrySet()) {
+
+			List<Player> playersWithCommonNumMatchesWon = entry.getValue();
+
+			/*
+			 * In this type of tournament, if there is an odd number of players,
+			 * give one of them an automatic win, "bye", and leave the player
+			 * out this round. The rest of the players can either win or lose a
+			 * round (no ties). They will therefore be divided into even numbers
+			 * of winners and losers. The player who got the bye will count
+			 * among the winners. There will therefore be odd amount of winners.
+			 */
+			if (isOdd(playersWithCommonNumMatchesWon.size())) {
+				Player playerToGiveBye = getPlayerToLeaveOut(playersWithCommonNumMatchesWon);
+				playersWithCommonNumMatchesWon.remove(playerToGiveBye);
+				giveBye(playerToGiveBye);
+			}
+
+		}
+		return null;
+	}
+
+	/**
+	 * Check if a player is currently marked as active in the tournament.
+	 * 
+	 * @param player
+	 * @return
+	 */
+	public boolean playerIsActive(Player player) {
+		if (playerIsRegistered(player)) {
+			return stats.get(player).isActive;
+		}
+		return false;
+	}
+
+	/**
+	 * Check if the player is registered in the tournament.
+	 * 
+	 * @param player
+	 * @return
+	 */
+	public boolean playerIsRegistered(Player player) {
+		return stats.containsKey(player);
+	}
+
+	public void removePlayerFromTournament(Player player) {
+		if (playerIsRegistered(player)) {
+			stats.remove(player);
+		}
 	}
 
 }

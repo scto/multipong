@@ -114,6 +114,7 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 			if (stats.allActivePlayersHaveMetEachOther()
 					&& stats.leastTimesActivePlayerMetActivePlayer() == Settings.tournamentAllVsAllMaxTimesPlayersMeet) {
 				tournamentFinished = true;
+				stats.activateAllPlayers();
 			} else {
 				stats.deactivateAllPlayers();
 			}
@@ -136,7 +137,7 @@ public class AllVsAllMatchHandler extends DropInMatchHandler {
 
 		// Get the next matchup.
 		List<Player[]> matchArrangement = stats
-				.getArrangementAllVsAll(Settings.tournamentAllVsAllMaxTimesPlayersMeet);
+				.pairingsAllVsAll(Settings.tournamentAllVsAllMaxTimesPlayersMeet);
 
 		if (matchArrangement.size() == 0) {
 			// Tournament is finished. Show it.
